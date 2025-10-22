@@ -3,27 +3,18 @@ package da.obligatorio.peajes.modelo;
 import java.util.ArrayList;
 
 
-public class Administrador {
+    public class Administrador extends Usuario {
     public String nombre;
-    public String contrasenia;
-    public String cedula;
+    
     public ArrayList<Estado> estados;
 
     public Administrador(String nombre, String contrasenia,String cedula) {
+        super(contrasenia, cedula);
         this.nombre = nombre;
-        this.contrasenia = contrasenia;
-        this.cedula = cedula;
     }
 
-   public String getCedula() {
-    return cedula;
-}
 
-public void setCedula(String cedula) {
-    this.cedula = cedula;
-}
-
- public String getNombre() {
+    public String getNombre() {
         return nombre;
     }
 
@@ -31,11 +22,5 @@ public void setCedula(String cedula) {
         this.nombre = nombre;
     }
 
-    public String getContrasenia() {
-        return contrasenia;
-    }
-
-    public void setContrasenia(String contrasenia) {
-        this.contrasenia = contrasenia;
-    }
+  
 }
