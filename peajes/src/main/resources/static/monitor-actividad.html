@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Monitor de Actividad</title>
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+  <main class="auth-card" role="main">
+    <div class="brand">
+      <div class="logo">MON</div>
+      <div>
+        <h1>Monitor de actividad</h1>
+        <p class="small">Área de administración</p>
+      </div>
+    </div>
+
+    <p class="lead">Acceso correcto. Aquí puede implementar el panel de control.</p>
+
+    <div class="actions" style="margin-top:18px;">
+      <form id="logoutForm" method="post" action="/logoutAdmin">
+        <button type="submit" class="primary">Cerrar sesión</button>
+      </form>
+      <a class="ghost" href="/login-admin.html">Volver al login</a>
+    </div>
+
+    <div id="info" class="msg" style="margin-top:14px;"></div>
+  </main>
+</body>
+</html>

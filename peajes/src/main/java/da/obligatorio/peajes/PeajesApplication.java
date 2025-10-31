@@ -9,8 +9,8 @@ import da.obligatorio.peajes.modelo.DatosPrueba;
 public class PeajesApplication {
 
 	public static void main(String[] args) {
+		DatosPrueba.cargar(); // <<-- importante
 		SpringApplication.run(PeajesApplication.class, args);
-		DatosPrueba.cargar();
 	}
 
 }

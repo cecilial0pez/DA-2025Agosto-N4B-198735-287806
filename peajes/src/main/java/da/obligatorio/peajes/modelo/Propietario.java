@@ -19,7 +19,7 @@ public class Propietario extends Usuario {
         this.nombre = nombre;
         
         this.saldo = saldo;
-        this.estado.nombre = "Habilitado";
+        this.estado = (estado != null) ? estado : new Estado("Habilitado");
     }
     
 

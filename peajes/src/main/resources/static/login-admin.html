@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login Administrador</title>
+  <link rel="stylesheet" href="/css/auth.css" />
+</head>
+<body>
+  <main class="auth-card" role="main" aria-labelledby="title">
+    <div class="brand">
+      <div class="logo">ADM</div>
+      <div>
+        <h1 id="title">Ingreso Administrador</h1>
+        <p class="small">Acceso seguro al panel de administración</p>
+      </div>
+    </div>
+
+    <p class="lead">Introduce tu cédula y contraseña.</p>
+
+    <form id="formAdmin" novalidate>
+      <div class="field">
+        <label class="small" for="cedula">Cédula</label>
+        <input id="cedula" name="cedula" type="text" inputmode="numeric" autocomplete="username" required />
+      </div>
+
+      <div class="field">
+        <label class="small" for="password">Contraseña</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary">Entrar</button>
+        <a class="ghost" href="/login-prop.html">Soy propietario</a>
+      </div>
+
+      <div id="msg" class="msg" role="status" aria-live="polite"></div>
+    </form>
+
+    <div class="footer">
+      <small>¿Problemas para entrar? Contacte al administrador del sistema.</small>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const form = document.getElementById('formAdmin');
+      const msg = document.getElementById('msg');
+
+      function show(type, text){
+        msg.className = 'msg ' + (type==='error' ? 'error' : 'success');
+        msg.textContent = text;
+      }
+
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+        msg.textContent = '';
+        const cedula = form.cedula.value.trim();
+        const password = form.password.value;
+        if(!cedula || !password){
+          show('error','Complete todos los campos.');
+          return;
+        }
+
+        try{
+          const fd = new FormData();
+          fd.append('cedula', cedula);
+          fd.append('password', password);
+
+          const res = await fetch('/loginAdm', {
+            method: 'POST',
+            body: fd,
+            credentials: 'same-origin'
+          });
+
+          if(!res.ok){
+            show('error', 'Error de comunicación con el servidor.');
+            return;
+          }
+
+          const data = await res.json();
+          if(Array.isArray(data) && data.length>0 && data[0].accion === 'loginExitoso'){
+            show('success','Login correcto. Redirigiendo...');
+            const ruta = data[0].ruta || '/';
+            setTimeout(()=> window.location.href = ruta, 600);
+          } else {
+            show('error', 'Credenciales incorrectas.');
+          }
+
+        }catch(err){
+          console.error(err);
+          show('error','Ocurrió un error inesperado.');
+        }
+      });
+    })();
+  </script>
+  <script src="/js/vistaWeb.js"></script>
+</body>
+</html>

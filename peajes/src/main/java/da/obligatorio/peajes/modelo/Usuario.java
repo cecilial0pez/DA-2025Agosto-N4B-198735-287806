@@ -28,7 +28,7 @@ public abstract class Usuario {
                 }
             }
            
-            if (soloNumeros && digitos>=6&&digitos<=8){
+            if (soloNumeros && digitos>=6&&digitos<8){
                 ok = true;
             }    
         }
