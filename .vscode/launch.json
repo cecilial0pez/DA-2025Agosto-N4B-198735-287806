@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-PeajesApplication<peajes>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "da.obligatorio.peajes.PeajesApplication",
+            "projectName": "peajes",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -19,14 +19,15 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
       const data = await res.json();
+      console.log(data);
       if (Array.isArray(data) && data.length > 0) {
-        if (data[0].accion === 'loginExitoso') {
+        if (data[0].id === 'loginExitoso') {
           showMsg(msgEl, 'success', 'Login correcto. Redirigiendo...');
-          const ruta = data[0].ruta || '/';
+          const ruta = data[0].parametro || '/';
           setTimeout(() => window.location.href = ruta, 500);
           return;
         } else {
-          const texto = data[0].ruta || 'Credenciales incorrectas.';
+          const texto = data[0].parametro || 'Credenciales incorrectas.';
           showMsg(msgEl, 'error', texto);
           return;
         }

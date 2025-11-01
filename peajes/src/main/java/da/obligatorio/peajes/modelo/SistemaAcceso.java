@@ -25,32 +25,39 @@ private List<Propietario> propietarios = new ArrayList<>();
         }else if (u instanceof Administrador){
             administradores.add((Administrador)u);
         }
-    } //no seguras del instaceof
+    } 
 
-     public Propietario loginPropietario(String nom,String pwd) throws PeajeException{
-       Propietario prop =  (Propietario) login(nom, pwd, propietarios);
-       if(prop==null) throw new PeajeException("Login incorrecto");
-       return prop;
+     public Propietario loginPropietario(String ced, String pwd) throws PeajeException {
+        Propietario prop = (Propietario) login(ced, pwd, propietarios);
+        if (prop == null) {
+            throw new PeajeException("Login incorrecto");
+        }
+        return prop;
     }
 
-      // devuelve el Administrador; quien manipula la sesión es el controlador
-      public Administrador loginAdministrador(String ced,String pwd) throws PeajeException{
-       Administrador adm =  (Administrador) login(ced, pwd, administradores);
-       if(adm==null) throw new PeajeException("Login incorrecto");
-       return adm;
+    public Administrador loginAdministrador(String ced, String pwd) throws PeajeException {
+        Administrador adm = (Administrador) login(ced, pwd, administradores);
+        if (adm == null) {
+            throw new PeajeException("Login incorrecto");
+        }
+        return adm;
     }
 
-     public Usuario login(String ced, String pwd, List<?> lista){
-        Usuario usuario;
-        
-        for(Object o:lista){
-            usuario = (Usuario)o;
-            if(usuario.getCedula().equals(ced) && usuario.getContrasenia().equals(pwd)){
+    private Usuario login(String ced, String pwd, List<? extends Usuario> lista) {
+        if (ced == null || pwd == null) return null;
+        String cedTrim = ced.trim();
+        String pwdTrim = pwd.trim();
+        for (Usuario usuario : lista) {
+            if (usuario != null
+                    && cedTrim.equals(usuario.getCedula())
+                    && pwdTrim.equals(usuario.getContrasenia())) {
                 return usuario;
             }
         }
         return null;
     }
+
+    
 
     public void logout(HttpSession sesionHttp, Administrador adm) {
        // Obtener la sesión HTTP actual
