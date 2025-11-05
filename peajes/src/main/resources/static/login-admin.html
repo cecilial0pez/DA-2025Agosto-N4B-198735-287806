@@ -1,3 +1,4 @@
+<!-- filepath: c:\Users\cecil\OneDrive\Documentos\GitHub\DA-2025Agosto-N4B-198735-287806\peajes\src\main\resources\static\login-admin.html -->
 <!doctype html>
 <html lang="es">
 <head>
@@ -42,58 +43,44 @@
     </div>
   </main>
 
+  <script src="/js/vistaWeb.js"></script>
   <script>
     (function(){
       const form = document.getElementById('formAdmin');
       const msg = document.getElementById('msg');
 
-      function show(type, text){
-        msg.className = 'msg ' + (type==='error' ? 'error' : 'success');
-        msg.textContent = text;
-      }
-
-      form.addEventListener('submit', async function(e){
+      form.addEventListener('submit', function(e){
         e.preventDefault();
         msg.textContent = '';
         const cedula = form.cedula.value.trim();
-        const password = form.password.value;
+        const password = form.password.value.trim();
         if(!cedula || !password){
-          show('error','Complete todos los campos.');
+          msg.className = 'msg error';
+          msg.textContent = 'Complete todos los campos.';
           return;
         }
-
-        try{
-          const fd = new FormData();
-          fd.append('cedula', cedula);
-          fd.append('password', password);
-
-          const res = await fetch('/loginAdm', {
-            method: 'POST',
-            body: fd,
-            credentials: 'same-origin'
-          });
-
-          if(!res.ok){
-            show('error', 'Error de comunicación con el servidor.');
-            return;
-          }
-
-          const data = await res.json();
-          if(Array.isArray(data) && data.length>0 && data[0].accion === 'loginExitoso'){
-            show('success','Login correcto. Redirigiendo...');
-            const ruta = data[0].ruta || '/';
-            setTimeout(()=> window.location.href = ruta, 600);
-          } else {
-            show('error', 'Credenciales incorrectas.');
-          }
-
-        }catch(err){
-          console.error(err);
-          show('error','Ocurrió un error inesperado.');
-        }
+        const params = new URLSearchParams(new FormData(form)).toString();
+        submit('/loginAdm', params, 'POST');
       });
+
+      window.mostrar_loginExitoso = function(ruta){
+        msg.className = 'msg success';
+        msg.textContent = 'Login correcto. Redirigiendo...';
+        const destino = ruta || '/';
+        setTimeout(() => window.location.href = destino, 500);
+      };
+
+      window.mostrar_loginError = function(texto){
+        msg.className = 'msg error';
+        msg.textContent = texto || 'Credenciales incorrectas.';
+      };
+
+      window.procesarErrorSubmit = function(status, texto){
+        msg.className = 'msg error';
+        msg.textContent = 'Error de servidor (' + status + ').';
+        console.error('Error submit loginAdm:', status, texto);
+      };
     })();
   </script>
-  <script src="/js/vistaWeb.js"></script>
 </body>
 </html>
