@@ -1,0 +1,82 @@
+/* Estilos simples para menú lateral */
+:root{
+  --sidebar-w: 260px;
+  --accent: #2b6cb0;
+  --muted: #6b7280;
+  --bg: #f7fafc;
+  --card: #ffffff;
+}
+
+*{box-sizing:border-box;font-family:Segoe UI, Roboto, Arial, sans-serif;}
+html,body{height:100%;margin:0;background:var(--bg);color:#111;}
+.sidebar{
+  position:fixed;
+  left:0;top:0;bottom:0;
+  width:var(--sidebar-w);
+  background:linear-gradient(180deg,var(--accent),#1f4f88);
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  padding:18px;
+}
+.sidebar-header{margin-bottom:18px;}
+.logo{
+  font-weight:700;
+  font-size:20px;
+  letter-spacing:1px;
+  margin-bottom:8px;
+}
+.admin-name{
+  font-size:14px;
+  color:rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.06);
+  padding:8px 10px;
+  border-radius:8px;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.sidebar-nav{flex:1;display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.nav-item{
+  background:rgba(255,255,255,0.06);
+  color:#fff;
+  border:0;
+  padding:12px 14px;
+  text-align:left;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:14px;
+}
+.nav-item:hover{background:rgba(255,255,255,0.12);}
+
+.sidebar-footer{margin-top:12px;}
+.logout{
+  width:100%;
+  padding:10px 14px;
+  background:#e53e3e;
+  color:#fff;border:0;border-radius:8px;cursor:pointer;font-weight:600;
+}
+.logout:hover{background:#c53030;}
+
+.content{
+  margin-left:var(--sidebar-w);
+  padding:28px;
+  min-height:100vh;
+}
+.content-header h1{margin:0 0 6px 0;font-size:22px;color:#0f172a;}
+.lead{margin:0;color:var(--muted);}
+
+.panel{
+  margin-top:18px;
+  background:var(--card);
+  padding:18px;
+  border-radius:10px;
+  box-shadow:0 6px 18px rgba(15,23,42,0.06);
+  min-height:220px;
+}
+
+.msg{padding:10px;border-radius:8px;margin:8px 0;}
+.msg.success{background:#ecfdf5;color:#065f46;}
+.msg.error{background:#fff5f5;color:#7f1d1d;}

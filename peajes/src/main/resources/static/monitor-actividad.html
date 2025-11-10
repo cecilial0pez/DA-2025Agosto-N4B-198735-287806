@@ -1,31 +1,95 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Monitor de Actividad</title>
-  <link rel="stylesheet" href="/css/auth.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel - Monitor de actividad</title>
+  <link rel="stylesheet" href="/css/menu.css" />
 </head>
 <body>
-  <main class="auth-card" role="main">
-    <div class="brand">
-      <div class="logo">MON</div>
-      <div>
-        <h1>Monitor de actividad</h1>
-        <p class="small">Área de administración</p>
-      </div>
+  <aside class="sidebar" role="navigation" aria-label="Menú lateral">
+    <div class="sidebar-header">
+      <div class="logo">PEAJES</div>
+      <div class="admin-name" id="adminName">Cargando...</div>
     </div>
 
-    <p class="lead">Acceso correcto. Aquí puede implementar el panel de control.</p>
+    <nav class="sidebar-nav">
+      <button class="nav-item" id="btnEmular">Emular Tránsito</button>
+      <button class="nav-item" id="btnBonificaciones">Asignar Bonificaciones</button>
+      <button class="nav-item" id="btnCambiarEstado">Cambiar estado de propietario</button>
+    </nav>
 
-    <div class="actions" style="margin-top:18px;">
-      <form id="logoutForm" method="post" action="/logoutAdmin">
-        <button type="submit" class="primary">Cerrar sesión</button>
-      </form>
-      <a class="ghost" href="/login-admin.html">Volver al login</a>
+    <div class="sidebar-footer">
+      <button class="logout" id="btnLogout">Cerrar sesión</button>
     </div>
+  </aside>
 
-    <div id="info" class="msg" style="margin-top:14px;"></div>
+  <main class="content" role="main">
+    <header class="content-header">
+      <h1>Monitor de actividad</h1>
+      <p class="lead">Panel administrativo</p>
+    </header>
+
+    <section id="panel" class="panel">
+      <p>Bienvenido al panel. Seleccione una opción del menú.</p>
+    </section>
   </main>
+
+  <script src="/js/utilesVista.js"></script>
+  <script src="/js/vistaWeb.js"></script>
+  <script>
+    (function(){
+      // Handler que la respuesta del servidor debe invocar:
+      window.mostrar_nombre = function(nombre) {
+        document.getElementById('adminName').textContent = nombre || 'Administrador';
+      };
+
+      window.mostrar_menuError = function(texto) {
+        const panel = document.getElementById('panel');
+        panel.innerHTML = '<p class="msg error">' + (texto || 'Error cargando menú') + '</p>';
+      };
+
+      // Al cargar la vista solicitamos el nombre al endpoint /menu/cargarMenu
+      document.addEventListener('DOMContentLoaded', function(){
+        // usa la función submit definida en vistaWeb.js
+        if (typeof submit === 'function') {
+          submit('/menu/cargarMenu', '', 'POST');
+        } else {
+          // fallback: fetch directo y ejecutar mostrar_nombre
+          fetch('/menu/cargarMenu', { method: 'POST', credentials: 'same-origin' })
+            .then(r => r.ok ? r.json() : Promise.reject(r))
+            .then(data => {
+              if (Array.isArray(data) && data.length>0 && data[0].accion === 'nombre') {
+                window.mostrar_nombre(data[0].ruta || data[0].parametro || data[0].mensaje || data[0].ruta);
+              } else if (Array.isArray(data) && data.length>0 && data[0].accion === 'menuError') {
+                window.mostrar_menuError(data[0].ruta || data[0].parametro || data[0].mensaje);
+              } else {
+                console.warn('Respuesta inesperada cargarMenu', data);
+              }
+            }).catch(e => {
+              console.error('Error cargando menu', e);
+              window.mostrar_menuError('No se pudo contactar al servidor');
+            });
+        }
+
+        // logout button
+        document.getElementById('btnLogout').addEventListener('click', function(){
+          if (typeof submit === 'function') {
+            submit('/logout', '', 'POST');
+          } else {
+            fetch('/logout', { method: 'POST', credentials: 'same-origin' })
+              .then(r => r.ok ? r.json() : Promise.reject(r))
+              .then(data => {
+                if (Array.isArray(data) && data.length>0 && data[0].accion === 'logout') {
+                  window.location.href = data[0].ruta || '/login-admin.html';
+                } else {
+                  alert('Error al cerrar sesión');
+                }
+              }).catch(()=> alert('Error de conexión'));
+          }
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
