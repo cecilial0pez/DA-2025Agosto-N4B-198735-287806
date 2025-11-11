@@ -6,7 +6,24 @@ public class Tarifa {
     public double Monto;
     public List<Categoria> categorias;
     public List<Puesto> puestos;
-    
+
+    public List<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public void setCategorias(List<Categoria> categorias) {
+        this.categorias = categorias;
+    }
+
+   
+    public List<Puesto> getPuestos() {
+        return puestos;
+    }
+
+    public void setPuestos(List<Puesto> puestos) {
+        this.puestos = puestos;
+    }
+
     public Tarifa(double monto) {
         Monto = monto;
     }

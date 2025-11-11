@@ -24,8 +24,17 @@ package da.obligatorio.peajes.modelo;
     Vehiculo v3= new Vehiculo("GHI9012", c3, "Ford F-150", "Negro");
     Vehiculo v4= new Vehiculo("JKL3456", c4, "Mercedes-Benz Sprinter", "Blanco");
     
+//Datos prueba Tarifa 
+    Tarifa t1= new Tarifa(100.0);
+    Tarifa t2= new Tarifa(50.0);
+    Tarifa t3= new Tarifa(200.0);
+
+    //Datos prueba Puesto
+    Puesto p1= new Puesto("Puesto1", t1);
+    Puesto p2= new Puesto("Puesto2", t2);
+
     //Datos prueba Transito (vehiculo, date, puesto, totalPagado)
-    Transito d1= new Transito(v2, )
+  
 
     //Agregar datos de prueba a la fachada
         fachada.agregarUsuario(a1);
@@ -36,9 +45,18 @@ package da.obligatorio.peajes.modelo;
         fachada.agregarCategoria(c2);
         fachada.agregarCategoria(c3);
         fachada.agregarCategoria(c4);
-     fachada.agregarVehiculo(v2);
-      fachada.agregarVehiculo(v3);
-      fachada.agregarVehiculo(v4);
+
+        fachada.agregarVehiculo(v1);
+        fachada.agregarVehiculo(v2);
+        fachada.agregarVehiculo(v3);
+        fachada.agregarVehiculo(v4);
+
+        fachada.agregarTarifa(t1);
+        fachada.agregarTarifa(t2);
+        fachada.agregarTarifa(t3);
+
+        
+       
 
 
 

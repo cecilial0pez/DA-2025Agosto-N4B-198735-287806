@@ -51,7 +51,11 @@ public class Fachada {
     }
 
     public void agregarPuesto(Puesto p){
-        s.Peaje.agregarPuesto(p);
+        sPeaje.agregarPuesto(p);
+    }
+
+    public void agregarTarifa (Tarifa t){
+        sPeaje.agregarTarifa(t);
     }
 
 

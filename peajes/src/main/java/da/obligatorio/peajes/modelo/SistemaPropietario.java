@@ -9,7 +9,7 @@ public class SistemaPropietario {
 
     public void agregarVehiculo(Vehiculo v) {
         try{
-            if(v != null && !vehiculos.contains(v) && v.VerificarMatricula()){
+            if(v != null && !vehiculos.contains(v) && v.VerificarMatricula(v.getMatricula())){
         vehiculos.add(v);
             }
         }catch(Exception e){
