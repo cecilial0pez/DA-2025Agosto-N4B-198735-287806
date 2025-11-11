@@ -24,15 +24,12 @@ public class Fachada {
      public void agregarUsuario(Usuario u ) {
         sAcceso.agregarUsuario(u);
     }
-
   
-      public Propietario loginPropietario(String ced, String pwd) throws PeajeException {
+    public Propietario loginPropietario(String ced, String pwd) throws PeajeException {
         return sAcceso.loginPropietario(ced, pwd);
     }
-
-
-      // la fachada NO debe recibir ni manipular HttpSession; devuelve el Administrador
-      public Administrador loginAdministrador(String ced, String pwd) throws PeajeException {
+  
+    public Administrador loginAdministrador(String ced, String pwd) throws PeajeException {
         return sAcceso.loginAdministrador(ced, pwd);
     }
 
@@ -43,8 +40,20 @@ public class Fachada {
 
 
     //SISTEMA PROPIETARIO
+    public void agregarVehiculo (Vehiculo v){
+        sPropietario.agregarVehiculo(v);
+    } 
+
 
     //SISTEMA PEAJE
+    public void agregarCategoria(Categoria c){
+        sPeaje.agregarCategoria(c);
+    }
+
+    public void agregarPuesto(Puesto p){
+        s.Peaje.agregarPuesto(p);
+    }
+
 
     
 
