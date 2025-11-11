@@ -4,12 +4,11 @@ import java.util.Date;
 
 //abstracta para que calcule descuento por polimorfismo
 public abstract class Bonificacion {
-    public String nombre;
-    public double descuento; // porcentaje de descuento
+    private String nombre;
+    private double descuento;
 
-    public Bonificacion(String nombre, double descuento) {
+    public Bonificacion(String nombre) {
         this.nombre = nombre;
-        this.descuento = descuento;
     }
 
     public double getDescuento() {
@@ -32,6 +31,14 @@ public abstract class Bonificacion {
 
     public abstract double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto,
             Date fecha);
+
+    @Override
+    public String toString() {
+        return "Tipo Cliente: " + nombre;
+    }
+    
+
+    
 
     /*
      * Metodos agregados

@@ -1,7 +1,7 @@
 package da.obligatorio.peajes.modelo;
 
 public class Categoria{
-    public String nombre;
+    private String nombre;
     
 
     public Categoria(String nombre) {

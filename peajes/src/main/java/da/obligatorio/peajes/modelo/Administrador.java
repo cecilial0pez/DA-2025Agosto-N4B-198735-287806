@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 
     public class Administrador extends Usuario {
-    public String nombre;
-    
-    public ArrayList<Estado> estados;
+   private String nombre;
+
+   private ArrayList<Estado> estados;
 
     public Administrador(String nombre, String contrasenia,String cedula) {
         super(contrasenia, cedula);

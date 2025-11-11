@@ -3,9 +3,9 @@ package da.obligatorio.peajes.modelo;
 import java.util.List;
 
 public class Tarifa {
-    public double Monto;
-    public List<Categoria> categorias;
-    public List<Puesto> puestos;
+    private double Monto;
+    private List<Categoria> categorias;
+    private List<Puesto> puestos;
 
     public List<Categoria> getCategorias() {
         return categorias;

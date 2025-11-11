@@ -24,16 +24,23 @@ package da.obligatorio.peajes.modelo;
     Vehiculo v3= new Vehiculo("GHI9012", c3, "Ford F-150", "Negro");
     Vehiculo v4= new Vehiculo("JKL3456", c4, "Mercedes-Benz Sprinter", "Blanco");
     
-//Datos prueba Tarifa 
+    //Datos prueba Tarifa 
     Tarifa t1= new Tarifa(100.0);
     Tarifa t2= new Tarifa(50.0);
     Tarifa t3= new Tarifa(200.0);
 
     //Datos prueba Puesto
-    Puesto p1= new Puesto("Puesto1", t1);
-    Puesto p2= new Puesto("Puesto2", t2);
+    Puesto puesto1= new Puesto("Santa Lucia", "Ruta 11 km 81");
+    Puesto puesto2= new Puesto("Pando", "Ruta 8 km 45");
+    Puesto puesto3= new Puesto("Canelones", "Ruta 5 km 23");
+    Puesto puesto4= new Puesto("Colonia", "Ruta 1 km 120");
 
-    //Datos prueba Transito (vehiculo, date, puesto, totalPagado)
+    //Datos prueba Bonificacion
+    Bonificacion b1= new Bonificacion("Frecuente") ;
+    Bonificacion b2= new Bonificacion("Exonerado") ;
+    Bonificacion b3= new Bonificacion("Trabajador") ;
+
+       
   
 
     //Agregar datos de prueba a la fachada
@@ -55,9 +62,10 @@ package da.obligatorio.peajes.modelo;
         fachada.agregarTarifa(t2);
         fachada.agregarTarifa(t3);
 
-        
-       
-
+        fachada.agregarPuesto(puesto1);
+        fachada.agregarPuesto(puesto2);
+        fachada.agregarPuesto(puesto3);
+        fachada.agregarPuesto(puesto4);
 
 
       // Datos de prueba para el sistema de peaje

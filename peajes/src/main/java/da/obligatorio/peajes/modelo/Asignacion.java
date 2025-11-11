@@ -3,12 +3,11 @@ package da.obligatorio.peajes.modelo;
 import java.sql.Date;
 
 public class Asignacion {
-    public Date fechaAsignacion;
-    public Bonificacion bonificacion;
-    public Propietario propietario; //duda 
-    public Puesto puesto;
+    private Date fechaAsignacion;
+    private Bonificacion bonificacion;
+    private Propietario propietario; //duda
+    private Puesto puesto;
 
-    
     public Asignacion(Date fechaAsignacion, Bonificacion bonificacion, Propietario propietario, Puesto puesto) {
         this.fechaAsignacion = fechaAsignacion;
         this.bonificacion = bonificacion;

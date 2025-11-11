@@ -7,12 +7,11 @@ import da.obligatorio.peajes.modelo.Puesto;
 import da.obligatorio.peajes.modelo.Vehiculo;
 
 public class Transito {
-    public Vehiculo vehiculo;
-    public Date fechaHora;
-    public Puesto puesto;
-    public double totalPagado;
-   
-  
+    private Vehiculo vehiculo;
+    private Date fechaHora;
+    private Puesto puesto;
+    private double totalPagado;
+
     public Transito(Vehiculo vehiculo, Date fechaHora, Puesto puesto, double totalPagado) {
         this.vehiculo = vehiculo;
         this.fechaHora = fechaHora;

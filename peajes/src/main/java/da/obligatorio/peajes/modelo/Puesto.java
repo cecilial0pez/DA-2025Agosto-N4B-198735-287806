@@ -6,19 +6,18 @@ import da.obligatorio.peajes.modelo.Tarifa;
 import da.obligatorio.peajes.modelo.Transito;
 
 public class Puesto {
-    public String nombre;
-    public String direccion;
-    public List<Tarifa> tarifa;
-    public List<Transito> transito;
+    private String nombre;
+    private String direccion;
+    private List<Tarifa> tarifa;
+    // private List<Transito> transito;
 
 
     
-    public Puesto(String nombre, String direccion, List<Tarifa> tarifa, List<Transito> transito) {
+    public Puesto(String nombre, String direccion) {
         this.nombre = nombre;
         this.direccion = direccion;
-        this.tarifa = tarifa;
-        this.transito = transito;
     }
+
     public String getNombre() {
         return nombre;
     }

@@ -11,21 +11,21 @@ import java.time.LocalDateTime;
 
 public class Propietario extends Usuario {
   
-    public String nombre;
+    private String nombre;
    
-    public double saldo; //hacer saldominimocomometodo Saldo mínimo para alerta: 500
-    public Estado estado;
-    public List<Vehiculo> vehiculos;
-    public List<Notificacion> notificaciones; 
-    public List<Asignacion> asignaciones; 
-    public List<Transito> transitos;
+    private double saldo; //hacer saldominimocomometodo Saldo mínimo para alerta: 500
+    private Estado estado;
+    private List<Vehiculo> vehiculos;
+    private List<Notificacion> notificaciones; 
+    private List<Asignacion> asignaciones; 
+    private List<Transito> transitos;
 
     public Propietario(String contrasenia, String cedula, String nombre, Double saldo, Estado estado) {
         super(contrasenia, cedula);
         this.nombre = nombre;
         
         this.saldo = saldo;
-        this.estado = (estado != null) ? estado : new Estado("Habilitado");
+        this.estado = Estado.Habilitado; //por defecto al crear un propietario
     }
     
 

@@ -4,9 +4,9 @@ import java.sql.Date;
 import java.util.List;
 
 public class Notificacion {
-    public String mensaje;
-    public Date fechaHoraEnvio;
-    public List<Propietario> propietarios;
+    private String mensaje;
+    private Date fechaHoraEnvio;
+    private List<Propietario> propietarios;
 
     public Notificacion(String mensaje) {
         this.mensaje = mensaje;
