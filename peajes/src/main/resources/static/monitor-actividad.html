@@ -37,6 +37,7 @@
 
   <script src="/js/utilesVista.js"></script>
   <script src="/js/vistaWeb.js"></script>
+  <script src="/js/sse.js"></script>
   <script>
     (function(){
       // Handler que la respuesta del servidor debe invocar:
@@ -48,6 +49,15 @@
         const panel = document.getElementById('panel');
         panel.innerHTML = '<p class="msg error">' + (texto || 'Error cargando menú') + '</p>';
       };
+
+      // Agregar manejo de logout (backend puede devolver "logout" o "logoutAdmin")
+      window.mostrar_logout = function(ruta) {
+        const destino = ruta || '/login-admin.html';
+        document.getElementById('panel').innerHTML = '<p class="msg success">Sesión cerrada. Redirigiendo...</p>';
+        setTimeout(() => window.location.href = destino, 350);
+      };
+      // alias por si el controlador devuelve 'logoutAdmin'
+      window.mostrar_logoutAdmin = window.mostrar_logout;
 
       // Al cargar la vista solicitamos el nombre al endpoint /menu/cargarMenu
       document.addEventListener('DOMContentLoaded', function(){
@@ -75,12 +85,12 @@
         // logout button
         document.getElementById('btnLogout').addEventListener('click', function(){
           if (typeof submit === 'function') {
-            submit('/logout', '', 'POST');
+            submit('/logoutAdmin', '', 'POST');
           } else {
-            fetch('/logout', { method: 'POST', credentials: 'same-origin' })
+            fetch('/logoutAdmin', { method: 'POST', credentials: 'same-origin' })
               .then(r => r.ok ? r.json() : Promise.reject(r))
               .then(data => {
-                if (Array.isArray(data) && data.length>0 && data[0].accion === 'logout') {
+                if (Array.isArray(data) && data.length>0 && data[0].accion === 'logoutAdmin') {
                   window.location.href = data[0].ruta || '/login-admin.html';
                 } else {
                   alert('Error al cerrar sesión');
