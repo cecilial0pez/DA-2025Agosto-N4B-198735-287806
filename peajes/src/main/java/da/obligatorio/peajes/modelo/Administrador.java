@@ -4,23 +4,12 @@ import java.util.ArrayList;
 
 
     public class Administrador extends Usuario {
-   private String nombre;
-
-   private ArrayList<Estado> estados;
-
-    public Administrador(String nombre, String contrasenia,String cedula) {
-        super(contrasenia, cedula);
-        this.nombre = nombre;
+        
+    public Administrador(String contrasenia, String cedula,String nombre) {
+        super(contrasenia,cedula,nombre);
     }
 
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+  
 
   
 }

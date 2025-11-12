@@ -8,22 +8,18 @@ import java.time.ZoneId;
 public class Trabajador extends Bonificacion {
 
     public Trabajador() {
-        super("Trabajador", 0.8);
+        super("Trabajador");
     }
 
-    public double calcularBonificacion() {
-
-        return 0;
-    }
-
+    
     @Override
     public double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto, Date fecha) {
-
+        double descuento = 0.8;
         if (propietario == null || vehiculo == null || puesto == null || fecha == null) {
             return 0;
         }
-        if (nombre.equals("Trabajador") && esDiaDeSemana(fecha)) {
-            return this.descuento = 0.8;
+        if (esDiaDeSemana(fecha)) {
+            return descuento;
         }
         return 0;
     }

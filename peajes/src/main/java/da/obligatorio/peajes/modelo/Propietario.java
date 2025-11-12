@@ -11,33 +11,19 @@ import java.time.LocalDateTime;
 
 public class Propietario extends Usuario {
   
-    private String nombre;
-   
     private double saldo; //hacer saldominimocomometodo Saldo mínimo para alerta: 500
-    private Estado estado;
+    private Estado estado=new Habilitado(this);
     private List<Vehiculo> vehiculos;
     private List<Notificacion> notificaciones; 
     private List<Asignacion> asignaciones; 
+    private List<Notificacion> notifs;
     private List<Transito> transitos;
 
-    public Propietario(String contrasenia, String cedula, String nombre, Double saldo, Estado estado) {
-        super(contrasenia, cedula);
-        this.nombre = nombre;
-        
-        this.saldo = saldo;
-        this.estado = Estado.Habilitado; //por defecto al crear un propietario
+    public Propietario(String contrasenia, String cedula, String nombre, Double saldo) {
+        super(contrasenia,cedula,nombre);
+        this.saldo = saldo;   
     }
     
-
- 
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
 
 
     public Double getSaldo() {
@@ -94,16 +80,23 @@ public class Propietario extends Usuario {
         //CHEQUEAR SI ESTA BIEN
     }
 
-    public void registrarTransito(Transito transito){//crear un nuevo objeto transito y agregarlo a una lista de transitos   
-        if(this.transitos == null){
-            this.transitos = new ArrayList<Transito>();
-        }
-        this.transitos.add(transito);
-    }
 
-    public void hacerRegistrarTransito (Vehiculo vehiculo, Date fechaHora, Puesto puesto, double totalPagado){
-        Transito transito = new Transito(vehiculo, fechaHora, puesto, totalPagado);
-        registrarTransito(transito);
+
+     public void registrarTransito (Vehiculo vehiculo, Date fechaHora, Puesto puesto, double totalPagado){
+         if(this.transitos == null){
+             this.transitos = new ArrayList<Transito>();
+         }
+       Transito transito=  new Transito( fechaHora, vehiculo, puesto, this, totalPagado);
+        hacerRegistrarTransito (transito);
+        
+     }
+
+     public void hacerRegistrarTransito (Transito transito){
+       if(this.transitos == null){
+         this.transitos = new ArrayList<Transito>();
+        }
+       this.transitos.add(transito);
+        
     }
 
     public void asignarBonificacion (){
@@ -122,12 +115,16 @@ public class Propietario extends Usuario {
         //metodo para hacer la aplicacion de descuento a un propietario
     }
 
-    public void registrarNotificacion (){
-        //metodo para registrar notificacion a un propietario
+    public void registrarNotificacion (String mensaje) throws PeajeException{
+        Notificacion notificacion = new Notificacion(mensaje);
+        notificacion.validar();
+        if(notificaciones.contains(notificacion)) throw new PeajeException("Ya existe la notificacion");
+
+        hacerRegistrarNotificacion (notificacion);
     }
 
-    public void hacerRegistrarNotificacion (){
-        //metodo para hacer el registro de notificacion a un propietario
+    public void hacerRegistrarNotificacion (Notificacion notificacion){
+        notificaciones.add(notificacion);
     }
 
 

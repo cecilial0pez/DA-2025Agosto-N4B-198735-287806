@@ -1,11 +1,16 @@
 package da.obligatorio.peajes.modelo;
 
+import observador.Observable;
+import observador.Observador;
+
+import java.util.ArrayList;
+
 import jakarta.servlet.http.HttpSession;
 
-public class Fachada {
+public class Fachada extends Observable {
 
     private SistemaAcceso sAcceso = new SistemaAcceso();
-    private SistemaPropietario sPropietario = new SistemaPropietario();
+    // private SistemaPropietario sPropietario = new SistemaPropietario();
     private SistemaPeaje sPeaje = new SistemaPeaje();
 
      //SINGLETON
@@ -18,6 +23,8 @@ public class Fachada {
     
     private Fachada() {
     }
+
+     public enum Eventos{cambioBonificaciones,cambioListaNotificaciones};
 
     //SISTEMA ACCESO
 
@@ -38,14 +45,7 @@ public class Fachada {
     }
 
 
-
-    //SISTEMA PROPIETARIO
-    public void agregarVehiculo (Vehiculo v){
-        sPropietario.agregarVehiculo(v);
-    } 
-
-
-    //SISTEMA PEAJE
+    //SISTEMA PEAJE DUDA DE POR QUE ESTE SISTEMA CONCOCE TODO
     public void agregarCategoria(Categoria c){
         sPeaje.agregarCategoria(c);
     }
@@ -58,7 +58,25 @@ public class Fachada {
         sPeaje.agregarTarifa(t);
     }
 
+    public void agregarEstado (Estado e){
+        sPeaje.agregarEstado(e);
+    }
 
-    
+    public void agregarTransito (Transito t){
+        sPeaje.agregarTransito(t);
+    }
+
+    public void agregarVehiculo (Vehiculo v){
+        sPeaje.agregarVehiculo(v);
+    } 
+
+    public void agregarNotificacion (Notificacion n){
+        sPeaje.agregarNotificacion(n);
+    }
+
+    //Devuelve las notificaciones de cada propietario en el scope
+    public ArrayList<Notificacion> getNotificaciones() {
+        return sPeaje.getNotificaciones();
+    }
 
 }

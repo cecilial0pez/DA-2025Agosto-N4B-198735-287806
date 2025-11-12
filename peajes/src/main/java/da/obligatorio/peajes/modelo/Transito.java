@@ -1,6 +1,7 @@
 package da.obligatorio.peajes.modelo;
 
-import java.sql.Date;
+import java.util.Date;
+import java.util.Calendar;
 import java.time.LocalDateTime;
 
 import da.obligatorio.peajes.modelo.Puesto;
@@ -19,6 +20,10 @@ public class Transito {
         this.totalPagado = totalPagado;
     }
     
+    public Transito(java.util.Date date, Vehiculo v1, Puesto puesto1, Propietario p1, double d) {
+        //TODO Auto-generated constructor stub
+    }
+
     public Vehiculo getVehiculo() {
         return vehiculo;
     }

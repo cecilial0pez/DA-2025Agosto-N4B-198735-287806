@@ -5,13 +5,15 @@ import java.util.ArrayList;
 public abstract class Usuario {
     private String contrasenia;
     private String cedula;
+    private String nombre;
     private ArrayList<Propietario> propietarios = new ArrayList();
     private ArrayList<Administrador> administradores = new ArrayList();
 
 
-     public Usuario(String contrasenia, String cedula) {
+     public Usuario(String contrasenia, String cedula,String nombre) {
         this.contrasenia = contrasenia;
         this.cedula = cedula;
+        this.nombre = nombre;
     }
 
      public boolean verificarCedula(String cedula){
@@ -41,12 +43,24 @@ public abstract class Usuario {
      }
 
 
-
+     public String getNombre() {
+         return nombre;
+     }
 
      public String getCedula() {
          return cedula;
      }
-// verificar que tenga setters 
+
+     public boolean setNombre(String unNombre) {
+         this.nombre = unNombre;
+         return true;
+     }
+        public boolean setContrasenia(String unaContrasenia) {
+            this.contrasenia = unaContrasenia;
+            return true;
+        }
+
+       
     public boolean setCedula(String unaCedula) {
        if(verificarCedula(unaCedula)){
             cedula = unaCedula;

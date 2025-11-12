@@ -1,5 +1,9 @@
 package da.obligatorio.peajes.controlador;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
@@ -8,13 +12,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import da.obligatorio.peajes.ConexionNavegador;
+import da.obligatorio.peajes.Respuesta;
+import da.obligatorio.peajes.dto.NotificacionDTO;
+import da.obligatorio.peajes.modelo.Fachada;
 import da.obligatorio.peajes.modelo.PeajeException;
 import da.obligatorio.peajes.modelo.Propietario;
 import jakarta.servlet.http.HttpSession;
+import observador.Observable;
+import observador.Observador;
+
 
 @RestController
 @Scope("session")
-public class ControladorPropietario {
+public class ControladorPropietario implements Observador {
     private final ConexionNavegador conexionNavegador; 
 
     public ControladorPropietario(@Autowired ConexionNavegador conexionNavegador) {
@@ -41,6 +51,52 @@ public class ControladorPropietario {
         }
         throw new PeajeException("Sesión expirada o no iniciada");
     }
+
+     private Respuesta notificaciones(){
+        return  new Respuesta("notificaciones", NotificacionDTO.listaNotificacionesDto(Fachada.getInstancia().getNotificaciones()));
+    }
+
+   @Override
+   public void actualizar(Object evento, Observable origen) {
+    // TODO Auto-generated method stub
+    if(evento.equals(Fachada.Eventos.cambioListaNotificaciones)){
+            conexionNavegador.enviarJSON(Respuesta.lista(notificaciones()));
+        }
+   }
+
+  
+
+
+    // private Respuesta tiposContacto(){
+
+    //     tiposContacto = new ArrayList<TipoContacto>(Fachada.getInstancia().getTiposContacto());
+
+    //     List<NombreDto> tiposDto = new ArrayList<NombreDto>();
+        
+    //     for(TipoContacto tc:tiposContacto){
+    //         tiposDto.add(new NombreDto(tc.getNombre()));
+    //     }
+    //     return new Respuesta("tiposContacto", tiposDto);
+    // }
+    //  private Respuesta tiposTelefono(){
+
+    //     tiposTelefono = new ArrayList<TipoTelefono>(Fachada.getInstancia().getTiposTelefono());
+
+    //     List<NombreDto> tiposDto = new ArrayList<NombreDto>();
+        
+    //     for(TipoTelefono tt:tiposTelefono){
+    //         tiposDto.add(new NombreDto(tt.getNombre()));
+    //     }
+    //     return new Respuesta("tiposTelefono", tiposDto);
+    // }
+    //  @Override
+    //  public void actualizar(Object evento, Observable origen) {
+    //     if(evento.equals(Agenda.Eventos.cambioListaContactos) || evento.equals(Agenda.Eventos.cambioEstado)){
+    //         conexionNavegador.enviarJSON(Respuesta.lista(agenda()));
+    //     }
+    //  }
+
+
 
     
 
