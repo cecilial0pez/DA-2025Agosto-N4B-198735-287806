@@ -15,15 +15,20 @@ public class Habilitado extends Estado {
     public void desHabilitar() throws PeajeException {
         getPropietario().cambiarEstado(new Deshabilitado(getPropietario()));
     }
-// poner lo que corresponda
-     @Override
+
+    @Override
     public void penalizar() throws PeajeException {
-        throw new PeajeException("No se puede penalizar, ya está deshabilitado");
+        getPropietario().setEstado(new Penalizado(getPropietario()));
+    }
+
+    @Override
+    public boolean puedeLoguearse() {
+        return true;
     }
 
     @Override
     public void suspender() throws PeajeException {
-        throw new PeajeException("No se puede suspender, ya está deshabilitado");
+        getPropietario().setEstado(new Suspendido(getPropietario()));
     }
-    
+
 }

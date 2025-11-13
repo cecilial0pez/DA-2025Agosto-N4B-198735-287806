@@ -24,5 +24,5 @@ public class Suspendido extends Estado {
     public void suspender() throws PeajeException {
         throw new PeajeException("El propietario ya está suspendido.");
     }
-    
+
 }
