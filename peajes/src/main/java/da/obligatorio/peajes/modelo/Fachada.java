@@ -54,9 +54,9 @@ public class Fachada extends Observable {
         sPeaje.agregarPuesto(p);
     }
 
-    public void agregarTarifa (Tarifa t){
-        sPeaje.agregarTarifa(t);
-    }
+    // // public void agregarTarifa (Tarifa t){
+    // //     sPeaje.agregarTarifa(t);
+    // // }
 
     public void agregarEstado (Estado e){
         sPeaje.agregarEstado(e);
@@ -70,13 +70,13 @@ public class Fachada extends Observable {
         sPeaje.agregarVehiculo(v);
     } 
 
-    public void agregarNotificacion (Notificacion n){
-        sPeaje.agregarNotificacion(n);
-    }
+    // public void agregarNotificacion (Notificacion n){
+    //     sPeaje.agregarNotificacion(n);
+    // }
 
-    //Devuelve las notificaciones de cada propietario en el scope
-    public ArrayList<Notificacion> getNotificaciones() {
-        return sPeaje.getNotificaciones();
-    }
+    // //Devuelve las notificaciones de cada propietario en el scope
+    // public ArrayList<Notificacion> getNotificaciones() {
+    //     return sPeaje.getNotificaciones();
+    // }
 
 }

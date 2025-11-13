@@ -74,9 +74,9 @@ public class DatosPrueba {
         fachada.agregarVehiculo(v3);
         fachada.agregarVehiculo(v4);
 
-        fachada.agregarTarifa(t1);
-        fachada.agregarTarifa(t2);
-        fachada.agregarTarifa(t3);
+        // fachada.agregarTarifa(t1);
+        // fachada.agregarTarifa(t2);
+        // fachada.agregarTarifa(t3);
 
         fachada.agregarPuesto(puesto1);
         fachada.agregarPuesto(puesto2);
@@ -89,7 +89,7 @@ public class DatosPrueba {
 
         fachada.agregarTransito(tr1);
 
-        fachada.agregarNotificacion(n1);
+        // fachada.agregarNotificacion(n1);
 
 
       // Datos de prueba para el sistema de peaje

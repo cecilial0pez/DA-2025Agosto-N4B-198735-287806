@@ -8,18 +8,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import da.obligatorio.peajes.ConexionNavegador;
 import da.obligatorio.peajes.Respuesta;
 import da.obligatorio.peajes.dto.NotificacionDTO;
+import da.obligatorio.peajes.dto.PropietarioDTO;
 import da.obligatorio.peajes.modelo.Fachada;
 import da.obligatorio.peajes.modelo.PeajeException;
 import da.obligatorio.peajes.modelo.Propietario;
 import jakarta.servlet.http.HttpSession;
 import observador.Observable;
 import observador.Observador;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -56,6 +62,31 @@ public class ControladorPropietario implements Observador {
         return  new Respuesta("notificaciones", NotificacionDTO.listaNotificacionesDto(Fachada.getInstancia().getNotificaciones()));
     }
 
+    @PostMapping("/infoProp")
+    public List<Respuesta> infoProp(HttpSession sesionHttp) {
+        try {
+            Propietario prop = propietarioEnSesion(sesionHttp);
+            PropietarioDTO dto = new PropietarioDTO(prop);
+            return Respuesta.lista(new Respuesta("infoProp", dto));
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("infoPropError", e.getMessage()));
+        }
+    }
+
+     @PostMapping("/vehiculosProp")
+    public List<Respuesta> vehiculosProp(HttpSession sesionHttp) {
+        try {
+            Propietario prop = propietarioEnSesion(sesionHttp);
+            
+            return Respuesta.lista(new Respuesta("infoProp", dto));
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("infoPropError", e.getMessage()));
+        }
+    }
+    
+    
+    
+
    @Override
    public void actualizar(Object evento, Observable origen) {
     // TODO Auto-generated method stub
@@ -63,6 +94,26 @@ public class ControladorPropietario implements Observador {
             conexionNavegador.enviarJSON(Respuesta.lista(notificaciones()));
         }
    }
+
+//    Curso normal:
+// 1) El sistema muestra:
+// • Nombre completo del propietario
+// • Estado
+// • Saldo actual
+// • Tabla con las bonificaciones asignadas- Información: Nombre de la bonificación, puesto,
+// fecha de asignada.
+// • Tabla de vehículos registrados – Información: Número de matrícula, modelo, color, cantidad
+// de tránsitos realizados y monto total gastado en sus tránsitos.
+// • Tabla de tránsitos realizados ordenados por fecha/hora descendente – Información:
+// Nombre del puesto, número de matrícula, nombre de la tarifa, monto de la tarifa, nombre de la
+// bonificación, monto de la bonificación, monto pagado, fecha y hora.
+// • Tabla de notificaciones del sistema ordenados por fecha/hora descendente. Información:
+// Fecha y hora, mensaje
+// 2) Opcionalmente el propietario indica que desea borrar las notificaciones recibidas.
+//  El sistema borra todas las notificaciones del propietario.
+// Cursos alternativos:
+// 2) En caso de que el propietario no tenga notificaciones se muestra mensaje “No hay
+// notificaciones para borrar”
 
   
 
