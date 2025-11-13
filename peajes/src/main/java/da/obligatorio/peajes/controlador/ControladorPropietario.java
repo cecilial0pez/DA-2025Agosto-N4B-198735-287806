@@ -17,9 +17,11 @@ import da.obligatorio.peajes.ConexionNavegador;
 import da.obligatorio.peajes.Respuesta;
 import da.obligatorio.peajes.dto.NotificacionDTO;
 import da.obligatorio.peajes.dto.PropietarioDTO;
+import da.obligatorio.peajes.dto.VehiculoDTO;
 import da.obligatorio.peajes.modelo.Fachada;
 import da.obligatorio.peajes.modelo.PeajeException;
 import da.obligatorio.peajes.modelo.Propietario;
+import da.obligatorio.peajes.modelo.Vehiculo;
 import jakarta.servlet.http.HttpSession;
 import observador.Observable;
 import observador.Observador;
@@ -77,16 +79,72 @@ public class ControladorPropietario implements Observador {
     public List<Respuesta> vehiculosProp(HttpSession sesionHttp) {
         try {
             Propietario prop = propietarioEnSesion(sesionHttp);
-            
-            return Respuesta.lista(new Respuesta("infoProp", dto));
+
+            List<VehiculoDTO> listaDto = new ArrayList<>();
+            List<Vehiculo> vehiculos = prop.getVehiculos();
+            if (vehiculos != null) {
+                for (Vehiculo v : vehiculos) {
+                    listaDto.add(new VehiculoDTO(v));
+                }
+            }
+
+            return Respuesta.lista(new Respuesta("vehiculosProp", listaDto));
         } catch (PeajeException e) {
-            return Respuesta.lista(new Respuesta("infoPropError", e.getMessage()));
+            return Respuesta.lista(new Respuesta("vehiculosPropError", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/transitosProp")
+    public List<Respuesta> transitosProp(HttpSession sesionHttp) {
+        try {
+            Propietario prop = propietarioEnSesion(sesionHttp);
+
+            List<TransitoDTO> listaDto = new ArrayList<>();
+            List<Transito> transitos = prop.getTransitos();
+            if (transitos != null) {
+                for (Transito t : transitos) {
+                    listaDto.add(new TransitoDTO(t));
+                }
+            }
+
+            return Respuesta.lista(new Respuesta("transitosProp", listaDto));
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("transitosPropError", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/notisProp")
+    public List<Respuesta> notisProp(HttpSession sesionHttp) {
+        try{
+            Propietario prop=propietarioEnSesion(sesionHttp)
+            List<NotificacionDTO> listaDto=new ArrayList<>();
+            List<Notificacion> notis=prop.getNotificaciones();
+            if(notis!=null){
+                for(Notificacion n:notis){
+                    listaDto.add(new NotificacionDTO(n));
+                }
+            }
+            return Respuesta.lista(new Respuesta("notisProp", listaDto));
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("notisPropError", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/borrarNotisProp"){
+    public List<Respuesta> borrarNotisProp(HttpSession sesionHttp) {
+        try{
+            Propietario prop=propietarioEnSesion(sesionHttp);
+            List<Notificacion> notis=prop.getNotificaciones();
+            if(notis==null || notis.isEmpty()){
+                return Respuesta.lista(new Respuesta("borrarNotisPropError", "No hay notificaciones para borrar"));
+            }
+            Fachada.getInstancia().borrarNotificacionesPropietario(prop);
+            return Respuesta.lista(new Respuesta("borrarNotisProp", "Notificaciones borradas correctamente"));
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("borrarNotisPropError", e.getMessage()));
         }
     }
     
-    
-    
-
    @Override
    public void actualizar(Object evento, Observable origen) {
     // TODO Auto-generated method stub
@@ -115,31 +173,7 @@ public class ControladorPropietario implements Observador {
 // 2) En caso de que el propietario no tenga notificaciones se muestra mensaje “No hay
 // notificaciones para borrar”
 
-  
 
-
-    // private Respuesta tiposContacto(){
-
-    //     tiposContacto = new ArrayList<TipoContacto>(Fachada.getInstancia().getTiposContacto());
-
-    //     List<NombreDto> tiposDto = new ArrayList<NombreDto>();
-        
-    //     for(TipoContacto tc:tiposContacto){
-    //         tiposDto.add(new NombreDto(tc.getNombre()));
-    //     }
-    //     return new Respuesta("tiposContacto", tiposDto);
-    // }
-    //  private Respuesta tiposTelefono(){
-
-    //     tiposTelefono = new ArrayList<TipoTelefono>(Fachada.getInstancia().getTiposTelefono());
-
-    //     List<NombreDto> tiposDto = new ArrayList<NombreDto>();
-        
-    //     for(TipoTelefono tt:tiposTelefono){
-    //         tiposDto.add(new NombreDto(tt.getNombre()));
-    //     }
-    //     return new Respuesta("tiposTelefono", tiposDto);
-    // }
     //  @Override
     //  public void actualizar(Object evento, Observable origen) {
     //     if(evento.equals(Agenda.Eventos.cambioListaContactos) || evento.equals(Agenda.Eventos.cambioEstado)){
