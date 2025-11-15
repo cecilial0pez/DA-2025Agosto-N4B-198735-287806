@@ -75,25 +75,25 @@ public class Propietario extends Usuario {
     }
 
    
-    public void cambiarEstado(Estado estadoPropietario) throws PeajeException {
-        this.estado = estadoPropietario;
-        // para cambiar el estado del propietario
+    // public void cambiarEstado(Estado estadoPropietario) throws PeajeException {
+    //     this.estado = estadoPropietario;
+    //     // para cambiar el estado del propietario
 
-        if (estadoPropietario.getNombre().equals("Penalizado")) {
-            this.estado.penalizar();
-            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Penalizado."));
-        }
-        if (estadoPropietario.getNombre().equals("Suspendido")) {
-            this.estado.suspender();
-            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Suspendido."));
-        if(estadoPropietario.getNombre().equals("Habilitado")) {
-            this.estado.habilitar();
-            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Habilitado."));
-        }
-        if(estadoPropietario.getNombre().equals("Deshabilitado")) {
-            this.estado.desHabilitar();
-            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Deshabilitado."));
-        }}
+    //     if (estadoPropietario.getNombre().equals("Penalizado")) {
+    //         this.estado.penalizar();
+    //         this.notificaciones.add(new Notificacion("Su estado ha cambiado a Penalizado."));
+    //     }
+    //     if (estadoPropietario.getNombre().equals("Suspendido")) {
+    //         this.estado.suspender();
+    //         this.notificaciones.add(new Notificacion("Su estado ha cambiado a Suspendido."));
+    //     if(estadoPropietario.getNombre().equals("Habilitado")) {
+    //         this.estado.habilitar();
+    //         this.notificaciones.add(new Notificacion("Su estado ha cambiado a Habilitado."));
+    //     }
+    //     if(estadoPropietario.getNombre().equals("Deshabilitado")) {
+    //         this.estado.desHabilitar();
+    //         this.notificaciones.add(new Notificacion("Su estado ha cambiado a Deshabilitado."));
+    //     }}
 // otros métodos prof
     public boolean puedeLoguearse() {
         // Delegar la lógica al objeto Estado (null-safe).
@@ -117,12 +117,31 @@ public class Propietario extends Usuario {
 
     }
 
-    public void asignarBonificacion(Puesto puesto, Bonificacion bonificacion) {
-        
+    public void asignarBonificacion(Puesto puesto, Bonificacion bonificacion)throws PeajeException {
+         if (bonificacion == null || puesto == null)
+            return;
+        if (!this.estado.puedeLoguearse()) {
+            throw new PeajeException("El propietario esta deshabilitado. No se pueden asignar bonificaciones");
+        }
+        if (this.asignaciones == null)
+            this.asignaciones = new ArrayList<>();
+        Asignacion a = new Asignacion(bonificacion, this, puesto);
+        this.asignaciones.add(a);
     }
 
-    public void hacerAsignarBonificacion() {
-        // metodo para hacer la asignacion de bonificacion a un propietario
+    public boolean puedeBonificarse(Puesto puesto) {
+        if (puesto == null) {
+            return false;
+        }
+        if (asignaciones == null || asignaciones.isEmpty()) {
+            return true;
+        }
+        for (Asignacion asignacion : asignaciones) {
+            if (asignacion != null && puesto.equals(asignacion.getPuesto())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void aplicarDescuento() {

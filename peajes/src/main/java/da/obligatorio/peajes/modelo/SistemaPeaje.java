@@ -60,12 +60,21 @@ public class SistemaPeaje {
         p.getTransitos().add(t);
     }
 
-    public void buscarAgregarAsignacionBonificacion(String nombrePuesto,String nombreBonificacion,String cedula ) throws PeajeException{
+    public void AgregarAsignacionBonificacion(String nombrePuesto,String nombreBonificacion,String cedula ) throws PeajeException{
         Puesto puestoAbuscar=buscarPuesto(nombrePuesto);    
         Propietario propietarioAbuscar=buscarPropietario(cedula);
         Bonificacion bonificacionAbuscar=buscarBonificacion(nombreBonificacion);
-        propietarioAbuscar.
+        if(puestoAbuscar != null && propietarioAbuscar != null && bonificacionAbuscar != null){
+            if(propietarioAbuscar.puedeBonificarse(puestoAbuscar)){
+                propietarioAbuscar.asignarBonificacion(puestoAbuscar, bonificacionAbuscar);
+            }
+            else{
+                throw new PeajeException("Ya existe una bonificacion para ese puesto");
+            }
+        }
     }
+
+    public void AgregarTransito()
 
     // public void AgregarNotificacion(Notificacion n){
     //     // notificaciones.add(n);
@@ -105,6 +114,16 @@ public class SistemaPeaje {
                 return b;
             }
         }
+        throw new PeajeException("No existe una bonificacion con ese nombre")
+    }
+
+    private Vehiculo buscarVehiculo(String matricula) throws PeajeException{
+        for (Vehiculo v:vehiculos){
+            if(v.getMatricula().equals(matricula)){
+                return v;
+            }
+        }
+        throw new PeajeException ("No existe vehiculo con esa matricula")
     }
 
 

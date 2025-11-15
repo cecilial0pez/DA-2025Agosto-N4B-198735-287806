@@ -14,6 +14,7 @@ public class Transito {
     private Puesto puesto;
     private Tarifa tarifa;
     private double totalPagado;
+    private String nombreBonificacion;
 
     public Transito(Vehiculo vehiculo, Date fechaHora, Puesto puesto, Tarifa tarifa) {
         this.vehiculo = vehiculo;
