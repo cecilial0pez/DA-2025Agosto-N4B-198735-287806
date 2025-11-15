@@ -3,37 +3,29 @@ package da.obligatorio.peajes.modelo;
 import java.util.List;
 
 public class Tarifa {
-    private double Monto;
-    private List<Categoria> categorias;
-    private List<Puesto> puestos;
-
-    public List<Categoria> getCategorias() {
-        return categorias;
-    }
-
-    public void setCategorias(List<Categoria> categorias) {
-        this.categorias = categorias;
-    }
-
+    private double monto;
+    private Categoria categoria;
    
-    public List<Puesto> getPuestos() {
-        return puestos;
+
+    public Tarifa(double monto, Categoria categoria) {
+        this.monto = monto;
+        this.categoria = categoria;
+    }
+    public Categoria getCategoria() {
+        return categoria;
     }
 
-    public void setPuestos(List<Puesto> puestos) {
-        this.puestos = puestos;
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 
-    public Tarifa(double monto) {
-        Monto = monto;
-    }
 
     public double getMonto() {
-        return Monto;
+        return monto;
     }
 
     public void setMonto(double monto) {
-        Monto = monto;
+        this.monto = monto;
     }
 
     //Metodos agregados

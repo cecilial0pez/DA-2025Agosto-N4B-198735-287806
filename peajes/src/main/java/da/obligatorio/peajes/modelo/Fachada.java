@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpSession;
 public class Fachada extends Observable {
 
     private SistemaAcceso sAcceso = new SistemaAcceso();
-    // private SistemaPropietario sPropietario = new SistemaPropietario();
     private SistemaPeaje sPeaje = new SistemaPeaje();
 
      //SINGLETON
@@ -45,30 +44,40 @@ public class Fachada extends Observable {
     }
 
 
-    //SISTEMA PEAJE DUDA DE POR QUE ESTE SISTEMA CONCOCE TODO
+    //Metodos para agregar datos al sistema peaje
     public void agregarCategoria(Categoria c){
         sPeaje.agregarCategoria(c);
     }
+
+     public void agregarVehiculo (Vehiculo v){
+        sPeaje.agregarVehiculo(v);
+    } 
 
     public void agregarPuesto(Puesto p){
         sPeaje.agregarPuesto(p);
     }
 
-    // // public void agregarTarifa (Tarifa t){
-    // //     sPeaje.agregarTarifa(t);
-    // // }
-
-    public void agregarEstado (Estado e){
+     public void agregarEstado(Estado e){
         sPeaje.agregarEstado(e);
     }
+
+   public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
+        try {
+            sPeaje.agregarTarifa(nombrePuesto, nombreCategoria, monto);
+        } catch (PeajeException e) {
+            throw new PeajeException(e.getMessage());
+        }
+    }
+
+    // public void agregarEstado (Estado e){
+    //     sPeaje.agregarEstado(e);
+    // }
 
     public void agregarTransito (Transito t){
         sPeaje.agregarTransito(t);
     }
 
-    public void agregarVehiculo (Vehiculo v){
-        sPeaje.agregarVehiculo(v);
-    } 
+   
 
     // public void agregarNotificacion (Notificacion n){
     //     sPeaje.agregarNotificacion(n);

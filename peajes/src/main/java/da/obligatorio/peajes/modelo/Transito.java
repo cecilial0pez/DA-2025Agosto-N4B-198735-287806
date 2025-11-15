@@ -6,18 +6,20 @@ import java.time.LocalDateTime;
 
 import da.obligatorio.peajes.modelo.Puesto;
 import da.obligatorio.peajes.modelo.Vehiculo;
+import da.obligatorio.peajes.modelo.Tarifa;
 
 public class Transito {
     private Vehiculo vehiculo;
     private Date fechaHora;
     private Puesto puesto;
+    private Tarifa tarifa;
     private double totalPagado;
 
-    public Transito(Vehiculo vehiculo, Date fechaHora, Puesto puesto, double totalPagado) {
+    public Transito(Vehiculo vehiculo, Date fechaHora, Puesto puesto, Tarifa tarifa) {
         this.vehiculo = vehiculo;
         this.fechaHora = fechaHora;
         this.puesto = puesto;
-        this.totalPagado = totalPagado;
+        this.tarifa = tarifa;
     }
     
     public Vehiculo getVehiculo() {
@@ -29,6 +31,15 @@ public class Transito {
     public Date getFechaHora() {
         return fechaHora;
     }
+
+    public Tarifa getTarifa() {
+        return tarifa;
+    }
+
+    public void setTarifa(Tarifa tarifa) {
+        this.tarifa = tarifa;
+    }
+    
     public void setFechaHora(Date fechaHora) {
         this.fechaHora = fechaHora;
     }

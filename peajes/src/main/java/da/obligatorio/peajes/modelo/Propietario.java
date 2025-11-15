@@ -11,19 +11,23 @@ import java.time.LocalDateTime;
 
 public class Propietario extends Usuario {
 
-    private double saldo; // hacer saldominimocomometodo Saldo mínimo para alerta: 500
-    private Estado estado = new Habilitado(this);
-    // listas
+    private double saldo; 
+    private double saldoMinimo ;
+    private Estado estado ;
+    // Listas
     private List<Vehiculo> vehiculos;
     private List<Asignacion> asignaciones;
     private List<Notificacion> notificaciones;
     private List<Transito> transitos;
 
-    public Propietario(String contrasenia, String cedula, String nombre, Double saldo) {
+    public Propietario(String contrasenia, String cedula, String nombre, Double saldo,double saldoMinimo, Estado estado) {
         super(contrasenia, cedula, nombre);
         this.saldo = saldo;
+        this.saldoMinimo = saldoMinimo;
+        this.estado = estado;
     }
 
+    //getters y setters 
     public Double getSaldo() {
         return saldo;
     }
@@ -44,6 +48,13 @@ public class Propietario extends Usuario {
         return vehiculos;
     }
 
+    public List<Notificacion> getNotificaciones() {
+        return notificaciones;
+    }
+
+    public List<Transito> getTransitos() {
+        return transitos;
+    }
     public void setVehiculos(List<Vehiculo> vehiculos) {
         this.vehiculos = vehiculos;
     }

@@ -6,14 +6,20 @@ import java.util.Calendar;
 
 public class DatosPrueba {
     
-    public static void cargar(){
+    public static void cargar() throws PeajeException{
         
     Fachada fachada = Fachada.getInstancia();
-       
+    
+    //Datos prueba Estado 
+    Estado e1= new Habilitado();
+    Estado e2= new Deshabilitado();
+    Estado e3= new Suspendido();
+    Estado e4= new Penalizado();
+
     //Datos prueba  usuarios  
     Administrador a1= new Administrador("Admin1", "admin123", "1234567");
     Administrador a2= new Administrador("Admin2", "admin456", "8765432");
-    Propietario p1= new Propietario("prop123", "1122334", "Propietario1",5000.0);
+    Propietario p1= new Propietario("prop123", "1122334", "Propietario1",5000.0, 500.0, e1);
     
     //Datos prueba Categoria 
     Categoria c1= new Categoria("Automovil"); 
@@ -27,10 +33,6 @@ public class DatosPrueba {
     Vehiculo v3= new Vehiculo("GHI9012", c3, "Ford F-150", "Negro");
     Vehiculo v4= new Vehiculo("JKL3456", c4, "Mercedes-Benz Sprinter", "Blanco");
     
-    //Datos prueba Tarifa 
-    Tarifa t1= new Tarifa(100.0);
-    Tarifa t2= new Tarifa(50.0);
-    Tarifa t3= new Tarifa(200.0);
 
     //Datos prueba Puesto
     Puesto puesto1= new Puesto("Santa Lucia", "Ruta 11 km 81");
@@ -43,13 +45,9 @@ public class DatosPrueba {
     Bonificacion b2= new Exonerado();
     Bonificacion b3= new Trabajador();
     
-   //Datos prueba Estado 
-    Estado e1= new Habilitado(p1);
-    // Estado e2= new Inhabilitado();
-    // Estado e3= new Suspendido();
-    // Estado e4= new Penalizado();
+   
 
-    // ...
+    // Fechas para probar 
 
     Calendar cal = Calendar.getInstance();
     cal.set(2025, Calendar.JUNE, 15, 10, 30, 0);
@@ -58,8 +56,13 @@ public class DatosPrueba {
     Transito tr1= new Transito( v1, fechaHora, puesto1, 90.0);
 
     //Datos prueba Notificacion
-    Notificacion n1= new Notificacion("Transito registrado con exito");
+    // Notificacion n1= new Notificacion("Transito registrado con exito");
     //Agregar datos de prueba a la fachada
+        fachada.agregarEstado(e1);
+        fachada.agregarEstado(e2);
+        fachada.agregarEstado(e3);
+        fachada.agregarEstado(e4);
+
         fachada.agregarUsuario(a1);
         fachada.agregarUsuario(a2);
         fachada.agregarUsuario(p1);
@@ -74,26 +77,39 @@ public class DatosPrueba {
         fachada.agregarVehiculo(v3);
         fachada.agregarVehiculo(v4);
 
-        // fachada.agregarTarifa(t1);
-        // fachada.agregarTarifa(t2);
-        // fachada.agregarTarifa(t3);
-
         fachada.agregarPuesto(puesto1);
         fachada.agregarPuesto(puesto2);
         fachada.agregarPuesto(puesto3);
         fachada.agregarPuesto(puesto4);
 
-        
+         //Datos prueba Tarifa para puesto Santa Lucia
+        fachada.agregarTarifa("Santa Lucia", "Automovil", 100.00);
+        fachada.agregarTarifa("Santa Lucia", "Moto", 50.00);
+        fachada.agregarTarifa("Santa Lucia", "Camion", 200.00);
+        fachada.agregarTarifa("Santa Lucia", "Bus", 150.00);
 
-        fachada.agregarEstado(e1);
+        //Datos prueba Tarifa para puesto Pando
+        fachada.agregarTarifa("Pando", "Automovil", 80.00);
+        fachada.agregarTarifa("Pando", "Moto", 40.00);
+        fachada.agregarTarifa("Pando", "Camion", 160.00);
+        fachada.agregarTarifa("Pando", "Bus", 120.00);
 
+        //Datos prueba Tarifa para puesto Canelones
+        fachada.agregarTarifa("Canelones", "Automovil", 90.00);
+        fachada.agregarTarifa("Canelones", "Moto", 45.00);
+        fachada.agregarTarifa("Canelones", "Camion", 180.00);
+        fachada.agregarTarifa("Canelones", "Bus", 135.00);
+
+        //Datos prueba Tarifa para puesto Colonia
+        fachada.agregarTarifa("Colonia", "Automovil", 85.00);
+        fachada.agregarTarifa("Colonia", "Moto", 42.50);
+        fachada.agregarTarifa("Colonia", "Camion", 170.00);
+        fachada.agregarTarifa("Colonia", "Bus", 127.50);
+
+       
         fachada.agregarTransito(tr1);
 
         // fachada.agregarNotificacion(n1);
-
-
-      // Datos de prueba para el sistema de peaje
-
 
        
     }

@@ -5,7 +5,7 @@ import java.sql.Date;
 public class Asignacion {
     private Date fechaAsignacion;
     private Bonificacion bonificacion;
-    private Propietario propietario; //duda
+    private Propietario propietario; 
     private Puesto puesto;
 
     public Asignacion(Date fechaAsignacion, Bonificacion bonificacion, Propietario propietario, Puesto puesto) {

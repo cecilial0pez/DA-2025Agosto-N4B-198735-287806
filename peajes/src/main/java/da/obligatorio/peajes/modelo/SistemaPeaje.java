@@ -1,20 +1,36 @@
 package da.obligatorio.peajes.modelo;
 
 import java.lang.reflect.Array;
+import java.sql.Date;
 import java.util.ArrayList;
 
 public class SistemaPeaje {
     private ArrayList<Puesto> puestosPeaje = new ArrayList();
     private ArrayList<Categoria> categorias = new ArrayList();
-    // private ArrayList<Tarifa> tarifas = new ArrayList(); ////lo precisa tener
-    // solamente el propietario -prof
-    private ArrayList<Transito> transitos = new ArrayList();// lo precisa tener solamente el propietario..?
+    // private ArrayList<Transito> transitos = new ArrayList();// lo precisa tener solamente el propietario..?
     private ArrayList<Estado> estados = new ArrayList();
     private ArrayList<Vehiculo> vehiculos = new ArrayList();
+    private ArrayList<Propietario> propietarios = new ArrayList();
+    private ArrayList<Asignacion> asignacionesBonificaciones = new ArrayList();
     // private ArrayList<Notificacion> notificaciones = new ArrayList();//lo precisa
     // tener solamente el propietario -prof
 
-    // si este sistema tiene acceso a todo o para agregar un transito
+    public ArrayList<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public ArrayList<Puesto> getPuestosPeaje() {
+        return puestosPeaje;
+    }
+
+    //Métodos para agregar datos. 
+    public void agregarEstado(Estado e) {
+     estados.add(e);
+     }
+
+    public void agregarPropietario(Propietario prop) {
+        propietarios.add(prop);
+    }
 
     public void agregarCategoria(Categoria c) {
         categorias.add(c);
@@ -24,24 +40,54 @@ public class SistemaPeaje {
         puestosPeaje.add(p);
     }
 
-    public void agregarTransito(Transito t) {
-        transitos.add(t);
-    }
-
-    public void agregarEstado(Estado e) {
-        estados.add(e);
-    }
-
+  
     public void agregarVehiculo(Vehiculo v) {
         vehiculos.add(v);
+    }  
+
+
+    public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
+        Puesto puestoAbuscar=buscarPuesto(nombrePuesto);    
+        Categoria categoriaAbuscar=buscarCategoria(nombreCategoria);
+        if(puestoAbuscar != null && categoriaAbuscar != null){
+            Tarifa tarifa = new Tarifa(monto,categoriaAbuscar);
+            puestoAbuscar.getTarifas().add(tarifa);
+        }else{
+            throw new PeajeException("El puesto buscado o la cateogria buscada no existen");
+        }
     }
 
-    public ArrayList<Categoria> getCategorias() {
-        return categorias;
+    public void agregarTransito(Transito t, Puesto p) {
+        p.getTransitos().add(t);
     }
 
-    public ArrayList<Puesto> getPuestosPeaje() {
-        return puestosPeaje;
+    public void agregarAsignacionBonificacion(String nombrePuesto,String nombreBonificacion,Propietario propietario ) throws PeajeException{
+        
     }
+
+    // public void AgregarNotificacion(Notificacion n){
+    //     // notificaciones.add(n);
+    // }
+
+    //Metodos de busqueda
+     private Puesto buscarPuesto(String nombrePuesto) throws PeajeException {
+        for (Puesto p : puestosPeaje) {
+            if (p.getNombre().equals(nombrePuesto)) {
+                return p;
+            }
+        }
+        throw new PeajeException("No existe un puesto con ese nombre");
+    }
+    
+    private Categoria buscarCategoria(String nombreCategoria) throws PeajeException {
+        for (Categoria c : categorias) {
+            if (c.getNombre().equals(nombreCategoria)) {
+                return c;
+            }
+        }
+        throw new PeajeException("No existe una categoría con ese nombre ");
+    }
+
+
 
 }
