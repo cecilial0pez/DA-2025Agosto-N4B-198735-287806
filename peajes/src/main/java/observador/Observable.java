@@ -6,10 +6,7 @@ package observador;
 
 import java.util.ArrayList;
 
-/**
- *
- * @author Dario
- */
+
 public class Observable {
     
     private ArrayList<Observador> observadores = new ArrayList<>();

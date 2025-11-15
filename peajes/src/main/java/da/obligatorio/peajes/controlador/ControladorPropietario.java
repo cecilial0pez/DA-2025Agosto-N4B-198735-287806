@@ -179,8 +179,6 @@ public class ControladorPropietario implements Observador {
     //     if(evento.equals(Agenda.Eventos.cambioListaContactos) || evento.equals(Agenda.Eventos.cambioEstado)){
     //         conexionNavegador.enviarJSON(Respuesta.lista(agenda()));
     //     }
-    //  }
-
 
 
     
