@@ -100,14 +100,14 @@ public class Propietario extends Usuario {
         return this.estado != null && this.estado.puedeLoguearse();
     }
 
-    public void registrarTransito(Vehiculo vehiculo, Date fechaHora, Puesto puesto, double totalPagado) {
-        if (this.transitos == null) {
-            this.transitos = new ArrayList<Transito>();
-        }
-        Transito transito = new Transito(fechaHora, vehiculo, puesto, this, totalPagado);
-        hacerRegistrarTransito(transito);
+    // public void registrarTransito(Vehiculo vehiculo, Date fechaHora, Puesto puesto, double totalPagado) {
+    //     if (this.transitos == null) {
+    //         this.transitos = new ArrayList<Transito>();
+    //     }
+    //     Transito transito = new Transito(fechaHora, vehiculo, puesto, this, totalPagado);
+    //     hacerRegistrarTransito(transito);
 
-    }
+    // }
 
     public void hacerRegistrarTransito(Transito transito) {
         if (this.transitos == null) {
@@ -117,8 +117,8 @@ public class Propietario extends Usuario {
 
     }
 
-    public void asignarBonificacion() {
-        // metodo para asignar bonificacion a un propietario
+    public void asignarBonificacion(Puesto puesto, Bonificacion bonificacion) {
+        
     }
 
     public void hacerAsignarBonificacion() {

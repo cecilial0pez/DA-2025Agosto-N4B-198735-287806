@@ -7,11 +7,10 @@ import java.util.ArrayList;
 public class SistemaPeaje {
     private ArrayList<Puesto> puestosPeaje = new ArrayList();
     private ArrayList<Categoria> categorias = new ArrayList();
-    // private ArrayList<Transito> transitos = new ArrayList();// lo precisa tener solamente el propietario..?
     private ArrayList<Estado> estados = new ArrayList();
     private ArrayList<Vehiculo> vehiculos = new ArrayList();
     private ArrayList<Propietario> propietarios = new ArrayList();
-    private ArrayList<Asignacion> asignacionesBonificaciones = new ArrayList();
+    private ArrayList<Bonificacion> bonificaciones = new ArrayList();
     // private ArrayList<Notificacion> notificaciones = new ArrayList();//lo precisa
     // tener solamente el propietario -prof
 
@@ -61,8 +60,11 @@ public class SistemaPeaje {
         p.getTransitos().add(t);
     }
 
-    public void agregarAsignacionBonificacion(String nombrePuesto,String nombreBonificacion,Propietario propietario ) throws PeajeException{
-        
+    public void buscarAgregarAsignacionBonificacion(String nombrePuesto,String nombreBonificacion,String cedula ) throws PeajeException{
+        Puesto puestoAbuscar=buscarPuesto(nombrePuesto);    
+        Propietario propietarioAbuscar=buscarPropietario(cedula);
+        Bonificacion bonificacionAbuscar=buscarBonificacion(nombreBonificacion);
+        propietarioAbuscar.
     }
 
     // public void AgregarNotificacion(Notificacion n){
@@ -86,6 +88,23 @@ public class SistemaPeaje {
             }
         }
         throw new PeajeException("No existe una categoría con ese nombre ");
+    }
+
+    private Propietario buscarPropietario(String cedula) throws PeajeException {
+        for (Propietario p : propietarios) {
+            if (p.getCedula().equals(cedula)) {
+                return p;
+            }
+        }
+        throw new PeajeException("No existe un propietario con esa cédula ");
+    }
+
+    private Bonificacion buscarBonificacion(String nombre) throws PeajeException{
+        for (Bonificacion b:bonificaciones){
+            if(b.getNombre().equals(nombre)){
+                return b;
+            }
+        }
     }
 
 
