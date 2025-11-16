@@ -90,6 +90,14 @@ public class Fachada extends Observable {
         sPeaje.eliminarNotificaciones(propietario);
     }
 
+    public List<Puesto> getPuestosPeaje(){
+        return sPeaje.getPuestosPeaje();
+    }   
+
+    public List<Tarifa> getTarifasPuesto(String nombrePuesto) throws PeajeException{
+        return sPeaje.getTarifasPuesto(nombrePuesto);
+    }
+
     // public void AgregarAsignacionBonificacion(String nombrePuesto,String nombreBonificacion,String cedula ) throws PeajeException{
     //     try {
     //         sPeaje.AgregarAsignacionBonificacion(nombrePuesto, nombreBonificacion, cedula);

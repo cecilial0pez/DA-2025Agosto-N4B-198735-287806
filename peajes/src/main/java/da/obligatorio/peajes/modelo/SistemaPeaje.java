@@ -228,4 +228,13 @@ public class SistemaPeaje {
         return new ArrayList<>();
     }
 
+    public List<Tarifa> getTarifasPuesto(String nombrePuesto) throws PeajeException{
+        Puesto puestoAbuscar=buscarPuesto(nombrePuesto);    
+        if(puestoAbuscar != null){
+            return puestoAbuscar.getTarifas();
+        }else{
+            throw new PeajeException("El puesto buscado no existe");
+        }
+    }
+
 }
