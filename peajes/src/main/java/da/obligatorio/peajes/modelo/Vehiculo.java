@@ -1,17 +1,27 @@
 package da.obligatorio.peajes.modelo;
 
 public class Vehiculo{
-    public String matricula;
-    public Categoria categoria;
-    public String modelo;
-    public String color;
+    private String matricula;
+    private Categoria categoria;
+    private String modelo;
+    private String color;
+    private Propietario propietario;
 
     
-    public Vehiculo(String matricula, Categoria categoria, String modelo, String color) {
+    public Vehiculo(String matricula, Categoria categoria, String modelo, String color, Propietario propietario) {
         this.matricula = matricula;
         this.categoria = categoria;
         this.modelo = modelo;
         this.color = color;
+        this.propietario = propietario;
+    }
+
+    public Propietario getPropietario() {
+        return propietario;
+    }
+
+    public void setPropietario(Propietario propietario) {
+        this.propietario = propietario;
     }
     
     public String getMatricula() {

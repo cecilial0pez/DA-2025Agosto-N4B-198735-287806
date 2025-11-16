@@ -17,8 +17,8 @@ public class TransitoDTO {
         this.matricula= transito.getVehiculo().getMatricula();
         this.Nombretarifa= transito.getTarifa().getCategoria().getNombre();
         this.montoTarifa=transito.getTarifa().getMonto();
-        this.nombreBonificacion= 
-        this.montoBonificacion=
+        this.nombreBonificacion= transito.getNombreBonificacion();
+        this.montoBonificacion= 
         this.montoPagado= transito.getTotalPagado();
         this.fechayHora= transito.getFechaHora().toString();
 

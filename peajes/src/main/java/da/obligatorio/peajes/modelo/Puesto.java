@@ -46,11 +46,18 @@ public class Puesto {
         this.tarifasDePuesto = tarifasDePuesto;
     }
 
+
     // Metodos agregados
-    public boolean verificarPuesto(Puesto unPuesto) {
-        if (unPuesto != null) {
-            return true;
+    public void agregarTransito(Transito transito) {
+        transitos.add(transito);
+    }   
+
+    public Tarifa TarifaPorCategoria(Categoria categoria) throws PeajeException {
+        for (Tarifa t : tarifasDePuesto) {
+            if (t.getCategoria().getNombre().equals(categoria.getNombre())) {
+                return t;
+            }
         }
-        return false;
+        throw new PeajeException("No hay tarifa para esa categoria en este puesto");
     }
 }

@@ -37,6 +37,14 @@ public class Transito {
         return tarifa;
     }
 
+    public String getNombreBonificacion() {
+        return nombreBonificacion;
+    }
+
+    public void setNombreBonificacion(String nombreBonificacion) {
+        this.nombreBonificacion = nombreBonificacion;
+    }
+    
     public void setTarifa(Tarifa tarifa) {
         this.tarifa = tarifa;
     }

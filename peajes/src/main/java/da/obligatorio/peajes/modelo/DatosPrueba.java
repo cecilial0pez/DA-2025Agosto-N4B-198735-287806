@@ -16,6 +16,12 @@ public class DatosPrueba {
     Estado e3= new Suspendido();
     Estado e4= new Penalizado();
 
+    
+    //Datos prueba Bonificacion
+    Bonificacion b1= new Frecuente() ;
+    Bonificacion b2= new Exonerado();
+    Bonificacion b3= new Trabajador();
+
     //Datos prueba  usuarios  
     Administrador a1= new Administrador("Admin1", "admin123", "1234567");
     Administrador a2= new Administrador("Admin2", "admin456", "8765432");
@@ -28,10 +34,10 @@ public class DatosPrueba {
     Categoria c4= new Categoria("Bus");
 
     // Datos prueba Vehiculos
-    Vehiculo v1= new Vehiculo("ABC1234", c1, "Toyota Corolla", "Rojo");
-    Vehiculo v2= new Vehiculo("DEF5678", c2, "Honda CBR500R", "Azul");
-    Vehiculo v3= new Vehiculo("GHI9012", c3, "Ford F-150", "Negro");
-    Vehiculo v4= new Vehiculo("JKL3456", c4, "Mercedes-Benz Sprinter", "Blanco");
+    Vehiculo v1= new Vehiculo("ABC1234", c1, "Toyota Corolla", "Rojo", p1);
+    Vehiculo v2= new Vehiculo("DEF5678", c2, "Honda CBR500R", "Azul", p1);
+    Vehiculo v3= new Vehiculo("GHI9012", c3, "Ford F-150", "Negro", p1);
+    Vehiculo v4= new Vehiculo("JKL3456", c4, "Mercedes-Benz Sprinter", "Blanco", p1);
     
 
     //Datos prueba Puesto
@@ -40,12 +46,6 @@ public class DatosPrueba {
     Puesto puesto3= new Puesto("Canelones", "Ruta 5 km 23");
     Puesto puesto4= new Puesto("Colonia", "Ruta 1 km 120");
 
-    //Datos prueba Bonificacion
-    Bonificacion b1= new Frecuente() ;
-    Bonificacion b2= new Exonerado();
-    Bonificacion b3= new Trabajador();
-    
-   
 
     // Fechas para probar 
 
@@ -53,7 +53,7 @@ public class DatosPrueba {
     cal.set(2025, Calendar.JUNE, 15, 10, 30, 0);
     Date fechaHora = cal.getTime();
     //Datos prueba Transito
-    Transito tr1= new Transito( v1, fechaHora, puesto1, 90.0);
+    // Transito tr1= new Transito( v1, fechaHora, puesto1, 90.0);
 
     //Datos prueba Notificacion
     // Notificacion n1= new Notificacion("Transito registrado con exito");
@@ -107,7 +107,7 @@ public class DatosPrueba {
         fachada.agregarTarifa("Colonia", "Bus", 127.50);
 
        
-        fachada.agregarTransito(tr1);
+       
 
         // fachada.agregarNotificacion(n1);
 
