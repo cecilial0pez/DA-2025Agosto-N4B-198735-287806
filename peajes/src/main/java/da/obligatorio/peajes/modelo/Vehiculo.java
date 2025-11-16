@@ -6,7 +6,8 @@ public class Vehiculo{
     private String modelo;
     private String color;
     private Propietario propietario;
-
+    private int cantidadTransitos;
+    private int montoTotalGastado;
     
     public Vehiculo(String matricula, Categoria categoria, String modelo, String color, Propietario propietario) {
         this.matricula = matricula;
@@ -14,6 +15,8 @@ public class Vehiculo{
         this.modelo = modelo;
         this.color = color;
         this.propietario = propietario;
+        this.cantidadTransitos = 0;
+        this.montoTotalGastado = 0;
     }
 
     public Propietario getPropietario() {
@@ -49,6 +52,22 @@ public class Vehiculo{
         this.color = color;
     }
 
+    public int getCantidadTransitos() {
+        return cantidadTransitos;
+    }
+
+    public int getMontoTotalGastado() {
+        return montoTotalGastado;
+    }
+
+    public void incrementarCantidadTransitos() {
+        this.cantidadTransitos++;
+    }
+    
+     public void incrementarMontoTotalGastado(int monto) {
+        this.montoTotalGastado += monto;
+    }
+    
     //metodosAgregados
 
 

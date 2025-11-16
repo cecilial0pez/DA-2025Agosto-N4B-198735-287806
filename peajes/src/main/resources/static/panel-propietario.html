@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel Propietario</title>
+  <link rel="stylesheet" href="/css/panel-propietario.css" />
+</head>
+<body class="dash-body">
+  <aside class="dash-sidebar">
+    <div class="sidebar-header">
+      <div class="logo">PR</div>
+      <div class="sidebar-title">
+        <h1>Panel del propietario</h1>
+        <p id="nombreProp" class="small">Cargando...</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item" id="btnRefrescarDatos">Actualizar datos</button>
+      <button class="nav-item" id="btnRefrescarVeh">Actualizar vehículos</button>
+      <button class="nav-item" id="btnRefrescarTransitos">Actualizar tránsitos</button>
+      <button class="nav-item" id="btnRefrescarNotis">Actualizar notificaciones</button>
+    </nav>
+
+    <button class="logout" id="btnLogoutProp">Cerrar sesión</button>
+  </aside>
+
+  <main class="dash-main">
+    <section class="main-panel" id="panel-datos">
+      <header class="panel-header">
+        <h2>Resumen de cuenta</h2>
+      </header>
+      <div id="infoProp" class="info-grid">
+        <p class="msg">Cargando información del propietario...</p>
+      </div>
+    </section>
+
+    <section class="main-panel" id="panel-bonificaciones">
+      <header class="panel-header">
+        <h2>Bonificaciones asignadas</h2>
+      </header>
+      <div id="bonificacionesProp" class="tabla-wrapper">
+        <p class="msg">Cargando bonificaciones...</p>
+      </div>
+    </section>
+
+    <section class="main-panel" id="panel-vehiculos">
+      <header class="panel-header">
+        <h2>Vehículos registrados</h2>
+      </header>
+      <div id="vehiculosProp" class="tabla-wrapper">
+        <p class="msg">Cargando vehículos...</p>
+      </div>
+    </section>
+
+    <section class="main-panel" id="panel-transitos">
+      <header class="panel-header">
+        <h2>Tránsitos realizados</h2>
+      </header>
+      <div id="transitosProp" class="tabla-wrapper">
+        <p class="msg">Cargando tránsitos...</p>
+      </div>
+    </section>
+
+    <section class="main-panel" id="panel-notificaciones">
+      <header class="panel-header">
+        <h2>Notificaciones del sistema</h2>
+        <button class="ghost" id="btnBorrarNotis">Borrar notificaciones</button>
+      </header>
+      <div id="notisProp" class="tabla-wrapper">
+        <p class="msg">Cargando notificaciones...</p>
+      </div>
+      <div id="estadoNotis" class="msg" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="/js/utilesVista.js"></script>
+  <script src="/js/vistaWeb.js"></script>
+  <script>
+    (function () {
+      const infoEl = document.getElementById('infoProp');
+      const bonifEl = document.getElementById('bonificacionesProp');
+      const vehEl = document.getElementById('vehiculosProp');
+      const transEl = document.getElementById('transitosProp');
+      const notisEl = document.getElementById('notisProp');
+      const estadoNotis = document.getElementById('estadoNotis');
+      const nombreProp = document.getElementById('nombreProp');
+
+      const endpoints = {
+        info: '/infoProp',
+        bonificaciones: '/bonificacionesProp',
+        vehiculos: '/vehiculosProp',
+        transitos: '/transitosProp',
+        notis: '/notisProp',
+        borrarNotis: '/borrarNotisProp',
+        logout: '/logoutProp'
+      };
+
+      function renderTabla(destino, lista, vacio) {
+        if (!Array.isArray(lista) || lista.length === 0) {
+          destino.innerHTML = '<p class="msg">' + vacio + '</p>';
+          return;
+        }
+        destino.innerHTML = crearTablaDesdeJson(lista);
+      }
+
+      function refrescarTodo() {
+        submit(endpoints.info, '', 'POST');
+        submit(endpoints.bonificaciones, '', 'POST');
+        submit(endpoints.vehiculos, '', 'POST');
+        submit(endpoints.transitos, '', 'POST');
+        submit(endpoints.notis, '', 'POST');
+      }
+
+      document.addEventListener('DOMContentLoaded', refrescarTodo);
+
+      document.getElementById('btnRefrescarDatos').addEventListener('click', () => {
+        submit(endpoints.info, '', 'POST');
+        submit(endpoints.bonificaciones, '', 'POST');
+      });
+      document.getElementById('btnRefrescarVeh').addEventListener('click', () => {
+        submit(endpoints.vehiculos, '', 'POST');
+      });
+      document.getElementById('btnRefrescarTransitos').addEventListener('click', () => {
+        submit(endpoints.transitos, '', 'POST');
+      });
+      document.getElementById('btnRefrescarNotis').addEventListener('click', () => {
+        submit(endpoints.notis, '', 'POST');
+      });
+      document.getElementById('btnBorrarNotis').addEventListener('click', () => {
+        estadoNotis.textContent = 'Procesando...';
+        estadoNotis.className = 'msg';
+        submit(endpoints.borrarNotis, '', 'POST');
+      });
+      document.getElementById('btnLogoutProp').addEventListener('click', () => {
+        submit(endpoints.logout, '', 'POST');
+      });
+
+      window.mostrar_infoProp = function (dto) {
+        if (!dto) return;
+        nombreProp.textContent = dto.nombre ? dto.nombre + ' (' + dto.estado + ')' : 'Propietario';
+        infoEl.innerHTML = `
+          <div><span>Nombre</span><strong>${dto.nombre || '-'}</strong></div>
+          <div><span>Estado</span><strong>${dto.estado || '-'}</strong></div>
+          <div><span>Saldo</span><strong>${dto.saldo ?? '-'}</strong></div>
+        `;
+      };
+
+      window.mostrar_infoPropError = function (texto) {
+        infoEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudo cargar la información personal.') + '</p>';
+      };
+
+      window.mostrar_bonificacionesProp = function (lista) {
+        renderTabla(bonifEl, lista, 'No hay bonificaciones asignadas.');
+      };
+
+      window.mostrar_bonificacionesPropError = function (texto) {
+        bonifEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudo cargar la lista de bonificaciones.') + '</p>';
+      };
+
+      window.mostrar_vehiculosProp = function (lista) {
+        renderTabla(vehEl, lista, 'Sin vehículos registrados.');
+      };
+
+      window.mostrar_vehiculosPropError = function (texto) {
+        vehEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudo cargar la lista de vehículos.') + '</p>';
+      };
+
+      window.mostrar_transitosProp = function (lista) {
+        renderTabla(transEl, lista, 'Sin tránsitos registrados.');
+      };
+
+      window.mostrar_transitosPropError = function (texto) {
+        transEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudo cargar la lista de tránsitos.') + '</p>';
+      };
+
+      window.mostrar_notisProp = function (lista) {
+        estadoNotis.textContent = '';
+        estadoNotis.className = 'msg';
+        renderTabla(notisEl, lista, 'No hay notificaciones.');
+      };
+
+      window.mostrar_notisPropError = function (texto) {
+        notisEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudo cargar las notificaciones.') + '</p>';
+      };
+
+      window.mostrar_borrarNotisProp = function (mensaje) {
+        estadoNotis.className = 'msg success';
+        estadoNotis.textContent = mensaje || 'Notificaciones borradas correctamente.';
+        submit(endpoints.notis, '', 'POST');
+      };
+
+      window.mostrar_borrarNotisPropError = function (texto) {
+        estadoNotis.className = 'msg error';
+        estadoNotis.textContent = texto || 'No hay notificaciones para borrar.';
+      };
+
+      window.mostrar_logoutProp = function (ruta) {
+        document.body.innerHTML = '<div class="fullscreen-msg">Cerrando sesión...</div>';
+        setTimeout(() => { window.location.href = ruta || '/login-prop.html'; }, 400);
+      };
+
+      window.procesarErrorSubmit = function (status, texto) {
+        console.error('Panel propietario error:', status, texto);
+      };
+    })();
+  </script>
+</body>
+</html>

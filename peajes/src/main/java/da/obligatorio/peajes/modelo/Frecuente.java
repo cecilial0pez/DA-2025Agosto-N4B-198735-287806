@@ -13,23 +13,7 @@ public class Frecuente extends Bonificacion {
     // bonificación frecuente.
     @Override
     public double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto, Date fecha) {
-        // if (propietario == null || vehiculo == null || puesto == null || fecha == null) {
-        //     return 0;
-        // }
-
-        // List<Transito> transitos = propietario.getTransitos();
-        // if (transitos == null || transitos.isEmpty()) {
-        //     return 0;
-        // }
-        // String matActual = vehiculo.getMatricula();
-        // if (matActual == null || matActual.isEmpty()) {
-        //     return 0;
-        // }
-        // String puestoActual = puesto.getNombre();
-        // if (puestoActual == null || puestoActual.isEmpty()) {
-        //     return 0;
-        // }
-
+       
         // // recorro transitos y cuento los previos
         // int transitosPrevios = 0;
         // for (int i = 0; i < transitos.size(); i++) {

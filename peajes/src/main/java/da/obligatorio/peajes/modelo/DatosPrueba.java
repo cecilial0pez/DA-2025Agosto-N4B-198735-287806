@@ -23,8 +23,8 @@ public class DatosPrueba {
     Bonificacion b3= new Trabajador();
 
     //Datos prueba  usuarios  
-    Administrador a1= new Administrador("Admin1", "admin123", "1234567");
-    Administrador a2= new Administrador("Admin2", "admin456", "8765432");
+    Administrador a1= new Administrador("a", "1234567", "Administrador Prueba");
+    Administrador a2= new Administrador("a2", "8765432", "Segundo admin");
     Propietario p1= new Propietario("prop123", "1122334", "Propietario1",5000.0, 500.0, e1);
     
     //Datos prueba Categoria 

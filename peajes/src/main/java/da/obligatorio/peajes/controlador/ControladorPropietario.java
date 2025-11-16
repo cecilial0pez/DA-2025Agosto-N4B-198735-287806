@@ -63,8 +63,8 @@ public class ControladorPropietario implements Observador {
         throw new PeajeException("Sesión expirada o no iniciada");
     }
 
-     private Respuesta notificaciones(){
-        return  new Respuesta("notificaciones", NotificacionDTO.listaNotificacionesDto(Fachada.getInstancia().getNotificaciones()));
+     private Respuesta notificaciones(Propietario propietario){
+        return  new Respuesta("notificaciones", NotificacionDTO.listaNotificacionesDto(Fachada.getInstancia().getNotificaciones(propietario)));
     }
 
     @PostMapping("/infoProp")
@@ -119,7 +119,7 @@ public class ControladorPropietario implements Observador {
     @PostMapping("/notisProp")
     public List<Respuesta> notisProp(HttpSession sesionHttp) {
         try{
-            Propietario prop=propietarioEnSesion(sesionHttp)
+            Propietario prop=propietarioEnSesion(sesionHttp);
             List<NotificacionDTO> listaDto=new ArrayList<>();
             List<Notificacion> notis=prop.getNotificaciones();
             if(notis!=null){
@@ -133,7 +133,7 @@ public class ControladorPropietario implements Observador {
         }
     }
 
-    @PostMapping("/borrarNotisProp"){
+    @PostMapping("/borrarNotisProp")
     public List<Respuesta> borrarNotisProp(HttpSession sesionHttp) {
         try{
             Propietario prop=propietarioEnSesion(sesionHttp);
@@ -151,9 +151,10 @@ public class ControladorPropietario implements Observador {
    @Override
    public void actualizar(Object evento, Observable origen) {
     // TODO Auto-generated method stub
-    if(evento.equals(Fachada.Eventos.cambioListaNotificaciones)){
-            conexionNavegador.enviarJSON(Respuesta.lista(notificaciones()));
-        }
+   
+           // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'actualizar'");
+        
    }
 
 //    Curso normal:

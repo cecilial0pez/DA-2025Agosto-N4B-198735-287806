@@ -16,19 +16,6 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 public class ControladorLogin {
 
-    @PostMapping("/loginProp")
-    public List<Respuesta> loginPropietario(HttpSession sesionHttp,
-                                            @RequestParam String cedula,
-                                            @RequestParam String password) {
-        try {
-            Propietario prop = Fachada.getInstancia().loginPropietario(cedula, password);
-            sesionHttp.setAttribute("usuarioProp", prop);
-            return Respuesta.lista(new Respuesta("loginExitoso", "/monitor-actividad.html"));
-        } catch (PeajeException ex) {
-            return Respuesta.lista(new Respuesta("loginError", ex.getMessage()));
-        }
-    }
-
     @PostMapping("/loginAdm")
     public List<Respuesta> loginAdministrador(HttpSession sesionHttp,
                                               @RequestParam String cedula,
@@ -37,6 +24,19 @@ public class ControladorLogin {
             Administrador adm = Fachada.getInstancia().loginAdministrador(cedula, password);
             sesionHttp.setAttribute("usuarioAdm", adm);
             return Respuesta.lista(new Respuesta("loginExitoso", "/monitor-actividad.html"));
+        } catch (PeajeException ex) {
+            return Respuesta.lista(new Respuesta("loginError", ex.getMessage()));
+        }
+    }
+
+    @PostMapping("/loginProp")
+    public List<Respuesta> loginPropietario(HttpSession sesionHttp,
+                                            @RequestParam String cedula,
+                                            @RequestParam String password) {
+        try {
+            Propietario prop = Fachada.getInstancia().loginPropietario(cedula, password);
+            sesionHttp.setAttribute("usuarioProp", prop);
+            return Respuesta.lista(new Respuesta("loginExitoso", "/panel-propietario.html"));
         } catch (PeajeException ex) {
             return Respuesta.lista(new Respuesta("loginError", ex.getMessage()));
         }

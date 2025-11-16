@@ -3,102 +3,70 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Panel - Monitor de actividad</title>
+  <title>Monitor de actividad</title>
   <link rel="stylesheet" href="/css/menu.css" />
 </head>
-<body>
-  <aside class="sidebar" role="navigation" aria-label="Menú lateral">
+<body class="dash-body">
+  <aside class="dash-sidebar">
     <div class="sidebar-header">
-      <div class="logo">PEAJES</div>
-      <div class="admin-name" id="adminName">Cargando...</div>
+      <div class="logo">ADM</div>
+      <div class="sidebar-title">
+        <h1>Panel administrador</h1>
+        <p id="adminName" class="small">Cargando...</p>
+      </div>
     </div>
 
     <nav class="sidebar-nav">
-      <button class="nav-item" id="btnEmular">Emular Tránsito</button>
-      <button class="nav-item" id="btnBonificaciones">Asignar Bonificaciones</button>
-      <button class="nav-item" id="btnCambiarEstado">Cambiar estado de propietario</button>
+      <button class="nav-item" id="btnEmular">Emular tránsito</button>
+      <button class="nav-item" id="btnBonificaciones">Asignar bonificaciones</button>
+      <button class="nav-item" id="btnCambiarEstado">Cambiar estado</button>
     </nav>
 
-    <div class="sidebar-footer">
-      <button class="logout" id="btnLogout">Cerrar sesión</button>
-    </div>
+    <button class="logout" id="btnLogout">Cerrar sesión</button>
   </aside>
 
-  <main class="content" role="main">
-    <header class="content-header">
-      <h1>Monitor de actividad</h1>
-      <p class="lead">Panel administrativo</p>
+  <main class="dash-main">
+    <header class="main-header">
+      <h2>Monitor administrativo</h2>
+      <p class="muted">Control en tiempo real de la red de peajes</p>
     </header>
 
-    <section id="panel" class="panel">
-      <p>Bienvenido al panel. Seleccione una opción del menú.</p>
+    <section id="panel" class="main-panel">
+      <p>Seleccione una opción del menú para comenzar.</p>
     </section>
   </main>
 
   <script src="/js/utilesVista.js"></script>
   <script src="/js/vistaWeb.js"></script>
-  <script src="/js/sse.js"></script>
   <script>
-    (function(){
-      // Handler que la respuesta del servidor debe invocar:
-      window.mostrar_nombre = function(nombre) {
+    (function () {
+      document.addEventListener('DOMContentLoaded', function () {
+        submit('/menu/cargarMenu', '', 'POST');
+      });
+
+      window.mostrar_nombre = function (nombre) {
         document.getElementById('adminName').textContent = nombre || 'Administrador';
       };
 
-      window.mostrar_menuError = function(texto) {
-        const panel = document.getElementById('panel');
-        panel.innerHTML = '<p class="msg error">' + (texto || 'Error cargando menú') + '</p>';
+      window.mostrar_menuError = function (texto) {
+        document.getElementById('panel').innerHTML =
+          '<p class="msg error">' + (texto || 'Error cargando menú') + '</p>';
       };
 
-      // Agregar manejo de logout (backend puede devolver "logout" o "logoutAdmin")
-      window.mostrar_logout = function(ruta) {
-        const destino = ruta || '/login-admin.html';
-        document.getElementById('panel').innerHTML = '<p class="msg success">Sesión cerrada. Redirigiendo...</p>';
-        setTimeout(() => window.location.href = destino, 350);
+      window.mostrar_logoutAdmin = function (ruta) {
+        document.getElementById('panel').innerHTML =
+          '<p class="msg success">Sesión cerrada. Redirigiendo...</p>';
+        setTimeout(() => (window.location.href = ruta || '/login-admin.html'), 350);
       };
-      // alias por si el controlador devuelve 'logoutAdmin'
-      window.mostrar_logoutAdmin = window.mostrar_logout;
+      window.mostrar_logout = window.mostrar_logoutAdmin;
 
-      // Al cargar la vista solicitamos el nombre al endpoint /menu/cargarMenu
-      document.addEventListener('DOMContentLoaded', function(){
-        // usa la función submit definida en vistaWeb.js
-        if (typeof submit === 'function') {
-          submit('/menu/cargarMenu', '', 'POST');
-        } else {
-          // fallback: fetch directo y ejecutar mostrar_nombre
-          fetch('/menu/cargarMenu', { method: 'POST', credentials: 'same-origin' })
-            .then(r => r.ok ? r.json() : Promise.reject(r))
-            .then(data => {
-              if (Array.isArray(data) && data.length>0 && data[0].accion === 'nombre') {
-                window.mostrar_nombre(data[0].ruta || data[0].parametro || data[0].mensaje || data[0].ruta);
-              } else if (Array.isArray(data) && data.length>0 && data[0].accion === 'menuError') {
-                window.mostrar_menuError(data[0].ruta || data[0].parametro || data[0].mensaje);
-              } else {
-                console.warn('Respuesta inesperada cargarMenu', data);
-              }
-            }).catch(e => {
-              console.error('Error cargando menu', e);
-              window.mostrar_menuError('No se pudo contactar al servidor');
-            });
-        }
-
-        // logout button
-        document.getElementById('btnLogout').addEventListener('click', function(){
-          if (typeof submit === 'function') {
-            submit('/logoutAdmin', '', 'POST');
-          } else {
-            fetch('/logoutAdmin', { method: 'POST', credentials: 'same-origin' })
-              .then(r => r.ok ? r.json() : Promise.reject(r))
-              .then(data => {
-                if (Array.isArray(data) && data.length>0 && data[0].accion === 'logoutAdmin') {
-                  window.location.href = data[0].ruta || '/login-admin.html';
-                } else {
-                  alert('Error al cerrar sesión');
-                }
-              }).catch(()=> alert('Error de conexión'));
-          }
-        });
+      document.getElementById('btnLogout').addEventListener('click', function () {
+        submit('/logoutAdmin', '', 'POST');
       });
+
+      window.procesarErrorSubmit = function (status, texto) {
+        console.error('Error monitor:', status, texto);
+      };
     })();
   </script>
 </body>

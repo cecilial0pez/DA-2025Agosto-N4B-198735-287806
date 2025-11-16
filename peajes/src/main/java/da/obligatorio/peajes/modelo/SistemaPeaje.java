@@ -3,6 +3,7 @@ package da.obligatorio.peajes.modelo;
 import java.lang.reflect.Array;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SistemaPeaje {
     private ArrayList<Puesto> puestosPeaje = new ArrayList();
@@ -91,8 +92,11 @@ public class SistemaPeaje {
             transito.setTotalPagado(totalAPagar);
             //registrar transito en el propietario
             propietario.hacerRegistrarTransito(transito);
+            v.incrementarCantidadTransitos();
+            p.agregarTransito(transito);
         } 
      }
+     //linea 94 hacer cantidad de transitos por puesto
 
      public boolean SePuedeHacerTransito(Vehiculo v, Propietario prop, Puesto p, Tarifa t) throws PeajeException
      {
@@ -196,6 +200,13 @@ public class SistemaPeaje {
             propietario.getNotificaciones().clear();
         }
 
+    }
+
+    public List<Notificacion> getNotificaciones(Propietario propietario){
+        if(propietario != null) {
+            return propietario.getNotificaciones();
+        }
+        return new ArrayList<>();
     }
 
 }

@@ -3,7 +3,9 @@ package da.obligatorio.peajes.modelo;
 import observador.Observable;
 import observador.Observador;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -73,14 +75,25 @@ public class Fachada extends Observable {
     //     sPeaje.agregarEstado(e);
     // }
 
-    public void agregarTransito (Transito t){
-        sPeaje.agregarTransito(t);
+    public List<Notificacion> getNotificaciones(Propietario propietario){
+        return sPeaje.getNotificaciones(propietario);
     }
 
-   
+    public void agregarTransito (String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
+        sPeaje.agregarTransito(matricula, fechaHora, nombrePuesto);
+    }
 
-    // public void agregarNotificacion (Notificacion n){
-    //     sPeaje.agregarNotificacion(n);
+    public void borrarNotificacionesPropietario(Propietario propietario){
+        sPeaje.eliminarNotificaciones(propietario);
+    }
+
+    // public void AgregarAsignacionBonificacion(String nombrePuesto,String nombreBonificacion,String cedula ) throws PeajeException{
+    //     try {
+    //         sPeaje.AgregarAsignacionBonificacion(nombrePuesto, nombreBonificacion, cedula);
+    //         this.notificar(Eventos.cambioBonificaciones);
+    //     } catch (PeajeException e) {
+    //         throw new PeajeException(e.getMessage());
+    //     }
     // }
 
     // //Devuelve las notificaciones de cada propietario en el scope
