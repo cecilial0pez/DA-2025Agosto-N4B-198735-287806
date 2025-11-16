@@ -169,7 +169,17 @@ public class Propietario extends Usuario {
     }
 
     public void hacerRegistrarNotificacion(Notificacion notificacion) {
-        notificaciones.add(notificacion);
+       if (this.notificaciones==null){
+        this.notificaciones=new ArrayList<Notificacion>();
+       }
+       this.notificaciones.add(notificacion);
+    }
+
+    public void agregarVehiculo(Vehiculo vehiculo){
+        if (this.vehiculos == null) {
+            this.vehiculos = new ArrayList<Vehiculo>();
+        }
+        this.vehiculos.add(vehiculo);
     }
 
 }

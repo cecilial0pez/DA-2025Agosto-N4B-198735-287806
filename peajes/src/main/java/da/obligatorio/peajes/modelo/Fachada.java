@@ -31,6 +31,9 @@ public class Fachada extends Observable {
 
      public void agregarUsuario(Usuario u ) {
         sAcceso.agregarUsuario(u);
+        if( u instanceof Propietario) {
+            sPeaje.agregarPropietario((Propietario) u);
+        }
     }
   
     public Propietario loginPropietario(String ced, String pwd) throws PeajeException {

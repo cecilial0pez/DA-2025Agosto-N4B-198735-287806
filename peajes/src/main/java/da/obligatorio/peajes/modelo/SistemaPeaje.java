@@ -27,20 +27,34 @@ public class SistemaPeaje {
      }
 
     public void agregarPropietario(Propietario prop) {
+        if(this.propietarios==null){
+            this.propietarios=new ArrayList<>();
+        }
         propietarios.add(prop);
     }
 
     public void agregarCategoria(Categoria c) {
+        if(this.categorias==null){
+            this.categorias=new ArrayList<>();
+        }
         categorias.add(c);
     }
 
     public void agregarPuesto(Puesto p) {
+        if(this.puestosPeaje==null){
+            this.puestosPeaje=new ArrayList<>();
+        }
         puestosPeaje.add(p);
     }
 
   
     public void agregarVehiculo(Vehiculo v) {
+        if(this.vehiculos==null){
+            this.vehiculos=new ArrayList<>();
+        }
         vehiculos.add(v);
+       Propietario prop = v.getPropietario();
+       prop.agregarVehiculo(v);
     }  
 
 
