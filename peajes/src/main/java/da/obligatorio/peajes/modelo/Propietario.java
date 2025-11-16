@@ -128,21 +128,22 @@ public class Propietario extends Usuario {
         if (!this.estado.puedeLoguearse()) {
             throw new PeajeException("El propietario esta deshabilitado. No se pueden asignar bonificaciones");
         }
-        if (this.asignaciones == null)
-            this.asignaciones = new ArrayList<>();
+        if (this.asignaciones == null){
+            this.asignaciones = new ArrayList<>();}
         Asignacion a = new Asignacion(bonificacion, this, puesto);
         this.asignaciones.add(a); 
         registrarNotificacion("Se ha asignado la bonificacion " + bonificacion.getNombre() + " para el puesto " + puesto.getNombre());
-       
+        
     }
 
     public boolean puedeBonificarse(Puesto puesto) {
         if (puesto == null) {
             return false;
         }
-        if (asignaciones == null || asignaciones.isEmpty()) {
+        if(this.asignaciones == null || this.asignaciones.isEmpty()){
             return true;
         }
+        List<Asignacion> asignaciones = this.getAsignaciones();
         for (Asignacion asignacion : asignaciones) {
             if (asignacion != null && puesto.equals(asignacion.getPuesto())) {
                 return false;
@@ -162,6 +163,9 @@ public class Propietario extends Usuario {
     public void registrarNotificacion(String mensaje) throws PeajeException {
         Notificacion notificacion = new Notificacion(mensaje);
         notificacion.validar();
+        if(this.notificaciones==null){
+            this.notificaciones=new ArrayList<Notificacion>();
+        }
         if (notificaciones.contains(notificacion))
             throw new PeajeException("Ya existe la notificacion");
 

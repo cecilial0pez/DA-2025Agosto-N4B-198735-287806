@@ -26,5 +26,12 @@ public class NotificacionDTO {
         return notifiDtos;
     }
     
+    public String getFecha() {
+        return fecha;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
 
 }

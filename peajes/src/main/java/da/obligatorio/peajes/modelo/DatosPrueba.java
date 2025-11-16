@@ -64,6 +64,10 @@ public class DatosPrueba {
         fachada.agregarEstado(e3);
         fachada.agregarEstado(e4);
 
+        fachada.agregarBonificacion(b1);
+        fachada.agregarBonificacion(b2);
+        fachada.agregarBonificacion(b3);
+
         fachada.agregarUsuario(a1);
         fachada.agregarUsuario(a2);
         fachada.agregarUsuario(p1);

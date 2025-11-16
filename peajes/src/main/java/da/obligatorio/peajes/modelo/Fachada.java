@@ -74,9 +74,9 @@ public class Fachada extends Observable {
         }
     }
 
-    // public void agregarEstado (Estado e){
-    //     sPeaje.agregarEstado(e);
-    // }
+  public void agregarBonificacion(Bonificacion b){
+        sPeaje.agregarBonificacion(b);
+    }
 
     public List<Notificacion> getNotificaciones(Propietario propietario){
         return sPeaje.getNotificaciones(propietario);

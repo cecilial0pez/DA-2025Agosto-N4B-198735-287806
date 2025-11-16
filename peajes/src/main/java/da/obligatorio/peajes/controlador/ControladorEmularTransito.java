@@ -8,6 +8,8 @@ import observador.Observador;
 @RestController
 @Scope("session")
 public class ControladorEmularTransito implements Observador{
+    
+
 
     @Override
     public void actualizar(Object evento, Observable origen) {

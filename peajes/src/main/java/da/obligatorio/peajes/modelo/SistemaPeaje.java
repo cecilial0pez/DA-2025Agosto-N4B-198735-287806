@@ -47,6 +47,12 @@ public class SistemaPeaje {
         puestosPeaje.add(p);
     }
 
+    public void agregarBonificacion(Bonificacion b) {
+        if(this.bonificaciones==null){
+            this.bonificaciones=new ArrayList<>();
+        }
+        bonificaciones.add(b);
+    }
   
     public void agregarVehiculo(Vehiculo v) {
         if(this.vehiculos==null){
@@ -93,7 +99,7 @@ public class SistemaPeaje {
         if(SePuedeHacerTransito( v, propietario, p, t)){
             Transito transito=new Transito(v, fechaHora, p, t);
             //aplicar bonificacion
-            intentarBonificar (transito);
+            intentarBonificar (v,p,fechaHora);
             //calcular total pagado esto hay que cambairlo URGENTE 
             double montoBase= t.getMonto();
             double descuento=0.0;
@@ -193,16 +199,15 @@ public class SistemaPeaje {
         return elegida;
     }
 
-    private void intentarBonificar(Transito transito) throws PeajeException {
-        Propietario propietario = transito.getVehiculo().getPropietario();
-        Puesto puesto = transito.getPuesto();
+    private void intentarBonificar(Vehiculo vehiculo, Puesto puesto,Date fechayhora) throws PeajeException {
+        Propietario propietario = vehiculo.getPropietario();
         if (!propietario.puedeBonificarse(puesto)) {
             return;
         }
         Bonificacion bonif = seleccionarBonificacion(propietario,
-                                                     transito.getVehiculo(),
+                                                     vehiculo,
                                                      puesto,
-                                                     transito.getFechaHora());
+                                                     fechayhora);
         if (bonif != null) {
             
             propietario.asignarBonificacion(puesto, bonif);
