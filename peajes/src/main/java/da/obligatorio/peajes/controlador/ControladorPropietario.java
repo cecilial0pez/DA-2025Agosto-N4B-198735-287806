@@ -19,6 +19,8 @@ import da.obligatorio.peajes.dto.NotificacionDTO;
 import da.obligatorio.peajes.dto.PropietarioDTO;
 import da.obligatorio.peajes.dto.TransitoDTO;
 import da.obligatorio.peajes.dto.VehiculoDTO;
+import da.obligatorio.peajes.dto.AsignacionDTO;
+import da.obligatorio.peajes.modelo.Asignacion;
 import da.obligatorio.peajes.modelo.Fachada;
 import da.obligatorio.peajes.modelo.PeajeException;
 import da.obligatorio.peajes.modelo.Propietario;
@@ -113,6 +115,25 @@ public class ControladorPropietario implements Observador {
             return Respuesta.lista(new Respuesta("transitosProp", listaDto));
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("transitosPropError", e.getMessage()));
+        }
+    }
+
+        @PostMapping("/bonificacionesProp")
+    public List<Respuesta> bonificacionesProp(HttpSession sesionHttp) {
+        try {
+            Propietario prop = propietarioEnSesion(sesionHttp);
+
+            List<AsignacionDTO> listaDto = new ArrayList<>();
+            List<Asignacion> asignaciones = prop.getAsignaciones();
+            if (asignaciones != null) {
+                for (Asignacion a : asignaciones) {
+                    listaDto.add(new AsignacionDTO(a));
+                }
+            }
+
+            return Respuesta.lista(new Respuesta("bonificacionesProp", listaDto));
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("bonificacionesPropError", e.getMessage()));
         }
     }
 

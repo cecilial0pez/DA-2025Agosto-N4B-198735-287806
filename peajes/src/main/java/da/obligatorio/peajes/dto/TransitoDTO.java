@@ -11,6 +11,7 @@ public class TransitoDTO {
     private double montoBonificacion;
     private double montoPagado;
     private String fechayHora;
+ 
 
     public TransitoDTO(Transito transito){
         this.puesto= transito.getPuesto().getNombre();
@@ -21,8 +22,17 @@ public class TransitoDTO {
         this.montoBonificacion= 
         this.montoPagado= transito.getTotalPagado();
         this.fechayHora= transito.getFechaHora().toString();
+        
 
     }
 
+    public String getNombrePuesto() { return puesto; }
+    public String getMatricula() { return matricula; }
+    public String getNombreTarifa() { return Nombretarifa; }
+    public double getMontoTarifa() { return montoTarifa; }
+    public String getNombreBonificacion() { return nombreBonificacion; }
+    public double getMontoBonificacion() { return montoBonificacion; }
+    public double getTotalPagado() { return montoPagado; }
+    public String getFechaHora() { return fechayHora; }
 
 }

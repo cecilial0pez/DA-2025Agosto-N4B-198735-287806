@@ -1,7 +1,7 @@
 package da.obligatorio.peajes.modelo;
 
 import java.lang.reflect.Array;
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 

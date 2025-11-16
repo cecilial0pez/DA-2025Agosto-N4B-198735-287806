@@ -46,7 +46,8 @@ public class DatosPrueba {
     Puesto puesto3= new Puesto("Canelones", "Ruta 5 km 23");
     Puesto puesto4= new Puesto("Colonia", "Ruta 1 km 120");
 
-
+    //Datos prueba Transito
+   
     // Fechas para probar 
 
     Calendar cal = Calendar.getInstance();
@@ -108,8 +109,10 @@ public class DatosPrueba {
 
        
        
-
-        // fachada.agregarNotificacion(n1);
+//Datos prueba transito 
+       fachada.agregarTransito("ABC1234", new Date(), "Santa Lucia");
+    fachada.agregarTransito("DEF5678", new Date(), "Pando");
+    fachada.agregarTransito("GHI9012", new Date(), "Canelones");
 
        
     }
