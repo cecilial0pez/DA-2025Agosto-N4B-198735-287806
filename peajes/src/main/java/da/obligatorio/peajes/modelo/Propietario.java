@@ -55,6 +55,10 @@ public class Propietario extends Usuario {
     public List<Transito> getTransitos() {
         return transitos;
     }
+
+    public List<Asignacion> getAsignaciones() {
+        return asignaciones;
+    }
     public void setVehiculos(List<Vehiculo> vehiculos) {
         this.vehiculos = vehiculos;
     }
@@ -117,6 +121,7 @@ public class Propietario extends Usuario {
 
     }
 
+    //asigna la bonificacion y genera la notificacion 
     public void asignarBonificacion(Puesto puesto, Bonificacion bonificacion)throws PeajeException {
          if (bonificacion == null || puesto == null)
             return;
@@ -126,7 +131,9 @@ public class Propietario extends Usuario {
         if (this.asignaciones == null)
             this.asignaciones = new ArrayList<>();
         Asignacion a = new Asignacion(bonificacion, this, puesto);
-        this.asignaciones.add(a);
+        this.asignaciones.add(a); 
+        registrarNotificacion("Se ha asignado la bonificacion " + bonificacion.getNombre() + " para el puesto " + puesto.getNombre());
+       
     }
 
     public boolean puedeBonificarse(Puesto puesto) {
@@ -144,7 +151,7 @@ public class Propietario extends Usuario {
         return true;
     }
 
-    public void aplicarDescuento() {
+    public void aplicarDescuento(Transito transito) {
         // metodo para aplicar descuento a un propietario
     }
 

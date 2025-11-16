@@ -1,5 +1,8 @@
 package da.obligatorio.peajes.controlador;
 
-public class ControladorEmularTransito {
+
+@RestController
+@Scope("session")
+public class ControladorEmularTransito implements Observador{
 
 }

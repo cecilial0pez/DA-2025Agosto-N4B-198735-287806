@@ -11,8 +11,6 @@ public class SistemaPeaje {
     private ArrayList<Vehiculo> vehiculos = new ArrayList();
     private ArrayList<Propietario> propietarios = new ArrayList();
     private ArrayList<Bonificacion> bonificaciones = new ArrayList();
-    // private ArrayList<Notificacion> notificaciones = new ArrayList();//lo precisa
-    // tener solamente el propietario -prof
 
     public ArrayList<Categoria> getCategorias() {
         return categorias;
@@ -72,27 +70,47 @@ public class SistemaPeaje {
     }
 
     //ATENCION !!!!!!!!!!!1 este metodo recontra sirve terminalo!!!!!!!!!!
-    // public void agregarTransito(String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
-    //     Vehiculo v=buscarVehiculo(matricula);
-    //     Propietario propietario= v.getPropietario();
-    //     Puesto p= buscarPuesto(nombrePuesto);
-    //     Tarifa t= p.TarifaPorCategoria(v.getCategoria());
-    //     if(v != null && p != null && t != null){
-    //         if(propietario.puedeBonificarse(p)){
-    //             Transito transito= new Transito (v, fechaHora, p, t);
-    //     }else{
+     public void agregarTransito(String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
+       Vehiculo v=buscarVehiculo(matricula);
+        Propietario propietario= v.getPropietario();
+       Puesto p= buscarPuesto(nombrePuesto);
+        Tarifa t= p.TarifaPorCategoria(v.getCategoria());
+        if(SePuedeHacerTransito( v, propietario, p, t)){
+            Transito transito=new Transito(v, fechaHora, p, t);
+            //aplicar bonificacion
+            intentarBonificar (transito);
+            //calcular total pagado esto hay que cambairlo URGENTE 
+            double montoBase= t.getMonto();
+            double descuento=0.0;
+            Bonificacion bonifSeleccionada= seleccionarBonificacion(propietario, v, p, fechaHora);
+            if(bonifSeleccionada != null){
+                descuento= bonifSeleccionada.calcularBonificacion(propietario, v, p, fechaHora);
+                transito.setNombreBonificacion(bonifSeleccionada.getNombre());
+            }
+            double totalAPagar= montoBase - descuento;
+            transito.setTotalPagado(totalAPagar);
+            //registrar transito en el propietario
+            propietario.hacerRegistrarTransito(transito);
+        } 
+     }
 
-    //         t
-    //     }
-       
-       
-    // }
+     public boolean SePuedeHacerTransito(Vehiculo v, Propietario prop, Puesto p, Tarifa t) throws PeajeException
+     {
+       if(v==null){
+            throw new PeajeException("No existe vehiculo con esa matricula");
+        }else if(prop==null){
+            throw new PeajeException("No existe un propietario con esa cedula");
+        }else if(p==null){
+            throw new PeajeException("No existe un puesto con ese nombre");
+        } else if(t==null){
+            throw new PeajeException("No existe tarifa para esa categoria en ese puesto");
+        }else if(prop.getEstado().getNombre().equals("Suspendido")||prop.getEstado().getNombre().equals("Deshabilitado" )){
+            throw new PeajeException("El propietario no puede realizar transitos, ya que su estado es "+ prop.getEstado().getNombre());
+        }else{
+            return true;
+        }
+     }
 
-
-
-    // public void AgregarNotificacion(Notificacion n){
-    //     // notificaciones.add(n);
-    // }
 
     //Metodos de busqueda
      private Puesto buscarPuesto(String nombrePuesto) throws PeajeException {
@@ -139,7 +157,45 @@ public class SistemaPeaje {
         }
         throw new PeajeException ("No existe vehiculo con esa matricula");
     }
+ // Metodos Auxiliares
+    private Bonificacion seleccionarBonificacion(Propietario propietario,
+                                                 Vehiculo vehiculo,
+                                                 Puesto puesto,
+                                                 java.util.Date fecha) {
+        Bonificacion elegida = null;
+        double mejorMonto = 0.0;
 
+        for (Bonificacion bonif : bonificaciones) {
+            double monto = bonif.calcularBonificacion(propietario, vehiculo, puesto, fecha );
+            if (monto > mejorMonto) {
+                mejorMonto = monto;
+                elegida = bonif;
+            }
+        }
+        return elegida;
+    }
 
+    private void intentarBonificar(Transito transito) throws PeajeException {
+        Propietario propietario = transito.getVehiculo().getPropietario();
+        Puesto puesto = transito.getPuesto();
+        if (!propietario.puedeBonificarse(puesto)) {
+            return;
+        }
+        Bonificacion bonif = seleccionarBonificacion(propietario,
+                                                     transito.getVehiculo(),
+                                                     puesto,
+                                                     transito.getFechaHora());
+        if (bonif != null) {
+            
+            propietario.asignarBonificacion(puesto, bonif);
+        }
+    }
+
+    public void eliminarNotificaciones(Propietario propietario){
+        if(propietario != null) {
+            propietario.getNotificaciones().clear();
+        }
+
+    }
 
 }

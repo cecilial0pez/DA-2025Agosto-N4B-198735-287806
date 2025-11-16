@@ -24,6 +24,7 @@ import da.obligatorio.peajes.modelo.PeajeException;
 import da.obligatorio.peajes.modelo.Propietario;
 import da.obligatorio.peajes.modelo.Transito;
 import da.obligatorio.peajes.modelo.Vehiculo;
+import da.obligatorio.peajes.modelo.Notificacion;
 import jakarta.servlet.http.HttpSession;
 import observador.Observable;
 import observador.Observador;
