@@ -24,9 +24,9 @@ public class SistemaPeaje {
     public ArrayList<Bonificacion>getBonificaciones(){
         return bonificaciones;
     }
-
-    
-
+    public ArrayList<Propietario> getPropietarios() {
+        return propietarios;
+    }
     //Métodos para agregar datos. 
     public void agregarEstado(Estado e) {
      estados.add(e);
@@ -92,8 +92,11 @@ public class SistemaPeaje {
         }
     }
 
-
-    //ATerminar
+    //Falta arreglar. El saldo del propietario no pareceria estarse descontando. 
+    // A su vez, el metodo de bonificacion en lugar de devolver lo que hay 
+    //que pagar que devuelva el monto de descuento y ahi se lo paso a 
+    //transito y que transito mismo haga el calculo de cual es el precio final
+    //falta notificar el saldo minimo de alerta para el propietario 
      public Transito agregarTransito(String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
         Vehiculo v = buscarVehiculo(matricula);
         Propietario propietario = v.getPropietario();
@@ -117,7 +120,6 @@ public class SistemaPeaje {
         }
     }
      
-
      public boolean SePuedeHacerTransito(Vehiculo v, Propietario prop, Puesto p, Tarifa t) throws PeajeException
      {
        if(v==null){
@@ -135,38 +137,6 @@ public class SistemaPeaje {
         }
      }
 
-    //  public Transito agregarTransito(String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
-    //    Vehiculo v=buscarVehiculo(matricula);
-    //     Propietario propietario= v.getPropietario();
-    //    Puesto p= buscarPuesto(nombrePuesto);
-    //     Tarifa t= p.TarifaPorCategoria(v.getCategoria()); //repasar para defensa 
-    //     if(SePuedeHacerTransito( v, propietario, p, t)){
-    //         Transito transito=new Transito(v, fechaHora, p, t);
-    //         //aplicar bonificacion
-    //         intentarBonificar (v,p,fechaHora);
-    //         //calcular total pagado esto hay que cambairlo URGENTE 
-    //         double montoBase= t.getMonto(); //mandar a propietario que calcule total pagado
-    //         double descuento=0.0;
-    //         Bonificacion bonifSeleccionada= seleccionarBonificacion(propietario, v, p, fechaHora);
-    //         if(bonifSeleccionada != null){
-    //             descuento= bonifSeleccionada.calcularBonificacion(propietario, v, p, fechaHora);
-    //             //ACA ES DONDE CON EL MONTO DEL DESCUENTO SE LO MANDO AL PROPIETARIO PARA QUE 
-    //             // DESCUENTE SU SALFO Y SI NO TIENE PARA PAGAR SALGA UNA ALERTA DE SALDO INSUFICIENTE O MINIMO
-    //             transito.setNombreBonificacion(bonifSeleccionada.getNombre());
-    //         }
-    //         double totalAPagar= montoBase - descuento; //esta MAL asignado
-    //         transito.setTotalPagado(totalAPagar); //esta mal
-    //         //registrar transito en el propietario
-    //         propietario.hacerRegistrarTransito(transito);
-    //         v.incrementarCantidadTransitos();
-    //         p.agregarTransito(transito);
-    //         return transito;
-    //     }else{
-    //         return null;
-    //     } 
-        
-    //  }
- 
     //Metodos de busqueda
      private Puesto buscarPuesto(String nombrePuesto) throws PeajeException {
         for (Puesto p : puestosPeaje) {
@@ -212,7 +182,6 @@ public class SistemaPeaje {
         }
         throw new PeajeException ("No existe vehiculo con esa matricula");
     }
-
 
     public void eliminarNotificaciones(Propietario propietario){
         if(propietario != null) {
