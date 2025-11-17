@@ -15,20 +15,14 @@ public class Frecuente extends Bonificacion {
             Categoria categoria=vehiculo.getCategoria();
             Tarifa tarifa=puesto.TarifaPorCategoria(categoria);
             Double monto=tarifa.getMonto();
-            if(propietario.getTransitosPorDiaYPuesto(puesto, fecha)>=1){
+            if(vehiculo.cantidadTransitosPorDiaYPuesto(puesto, fecha)>=1){
                 double precioFinal=monto -(monto* this.getPorcentajeDescuento());
-            }else{
-                double precioFinal=monto;
-            }  
-            return precioFinal;
+                return precioFinal;
+            } 
+            return monto;
         } catch (Exception e) {
-            throw new PeajeException("Error al calcular bonificacion: Categoria no encontrada");
+            throw new PeajeException("Error al calcular bonificacion" + e.getMessage());
         }
     }
 
 }
- //     if (propietario.getTransitos() == null) return 0;
-    //    if(vehiculo.cantidadTransitosPorDiaYPuesto(puesto, fecha) >= 1){
-    //        return 0.50;
-    //    }
-    //     return 0.0;

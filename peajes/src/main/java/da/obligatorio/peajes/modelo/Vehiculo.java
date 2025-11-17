@@ -87,9 +87,12 @@ public class Vehiculo{
 		}
 		return ok;
 	}
-//DUDA : PASARLE AL PROPIETARIO O NO
+
     public int cantidadTransitosPorDiaYPuesto(Puesto puesto, Date fecha) {
         int contador = 0;
+        if(this.propietario.getTransitos() == null) {
+            return 0;
+        }
         for (Transito transito : propietario.getTransitos()) {
             if (transito.getPuesto().getNombre().equals(puesto.getNombre())) {
                 // Comparar solo la fecha (sin hora)

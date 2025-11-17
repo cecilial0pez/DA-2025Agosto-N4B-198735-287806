@@ -15,6 +15,7 @@ public class Transito {
     private Tarifa tarifa;
     private double totalPagado;
     private String nombreBonificacion;
+    private double montoBonificacion;
 
     public Transito(Vehiculo vehiculo, Date fechaHora, Puesto puesto, Tarifa tarifa) {
         this.vehiculo = vehiculo;
@@ -45,6 +46,14 @@ public class Transito {
         this.nombreBonificacion = nombreBonificacion;
     }
     
+    public void setMontoBonificacion(double montoBonificacion){
+        this.montoBonificacion=montoBonificacion;
+    }
+
+    public double getMontoBonificacion(){
+        return montoBonificacion;
+    }
+
     public void setTarifa(Tarifa tarifa) {
         this.tarifa = tarifa;
     }

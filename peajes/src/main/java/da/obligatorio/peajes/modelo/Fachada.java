@@ -68,6 +68,14 @@ public class Fachada extends Observable {
         sPeaje.agregarEstado(e);
     }
 
+    public void agregarAsignacion(String nombrePuesto, String nombreBonificacion, String cedula) throws PeajeException {       
+        try {
+            sPeaje.agregarAsignacion(nombrePuesto, nombreBonificacion, cedula);
+        } catch (PeajeException e) {
+            throw new PeajeException(e.getMessage());
+        }
+    }
+
    public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
         try {
             sPeaje.agregarTarifa(nombrePuesto, nombreCategoria, monto);

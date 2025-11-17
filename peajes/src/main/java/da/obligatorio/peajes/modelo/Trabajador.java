@@ -17,9 +17,12 @@ public class Trabajador extends Bonificacion {
         try {
             Categoria categoria = vehiculo.getCategoria();
             Tarifa tarifa = puesto.TarifaPorCategoria(categoria);
+            if(esDiaDeSemana(fecha)) { 
             Double monto = tarifa.getMonto();
             double precioFinal = monto - (monto * this.getPorcentajeDescuento());
             return precioFinal;
+            }
+            return tarifa.getMonto();
         } catch (Exception e) {
             throw new PeajeException("Error al calcular bonificacion: Categoria no encontrada");
         }

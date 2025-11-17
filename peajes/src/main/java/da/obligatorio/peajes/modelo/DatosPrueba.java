@@ -32,7 +32,7 @@ public class DatosPrueba {
     Categoria c3= new Categoria("Camion");
     Categoria c4= new Categoria("Bus");
 
-    // Datos prueba Vehiculos
+    // Datos prueba Vehiculos tring matricula, Categoria categoria, String modelo, String color, Propietario propietario
     Vehiculo v1= new Vehiculo("ABC1234", c1, "Toyota Corolla", "Rojo", p1);
     Vehiculo v2= new Vehiculo("DEF5678", c2, "Honda CBR500R", "Azul", p1);
     Vehiculo v3= new Vehiculo("GHI9012", c3, "Ford F-150", "Negro", p1);
@@ -103,6 +103,11 @@ public class DatosPrueba {
         fachada.agregarTarifa("Colonia", "Moto", 42.50);
         fachada.agregarTarifa("Colonia", "Camion", 170.00);
         fachada.agregarTarifa("Colonia", "Bus", 127.50); 
+
+        //Datos prueba Asignacion bonificaciones
+        fachada.agregarAsignacion("Santa Lucia", "Frecuente", "1122334");
+        fachada.agregarAsignacion("Pando", "Trabajador", "1122334");
+        fachada.agregarAsignacion("Colonia", "Exonerado", "1122334");
 
         //Datos prueba transito 
         fachada.agregarTransito("ABC1234", new Date(), "Santa Lucia");

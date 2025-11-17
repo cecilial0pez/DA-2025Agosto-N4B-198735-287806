@@ -118,6 +118,9 @@ public class Propietario extends Usuario {
         if (!this.estado.puedeLoguearse()) {
             throw new PeajeException("El propietario esta deshabilitado. No se pueden asignar bonificaciones");
         }
+        if(hayBonificacionEnPuesto(puesto)){
+            throw new PeajeException("Ya existe una bonificacion para ese puesto");
+        }
         if (this.asignaciones == null){
             this.asignaciones = new ArrayList<>();}
         Asignacion a = new Asignacion(bonificacion, this, puesto);
