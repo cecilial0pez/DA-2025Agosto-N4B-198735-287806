@@ -21,6 +21,12 @@ public class SistemaPeaje {
         return puestosPeaje;
     }
 
+    public ArrayList<Bonificacion>getBonificaciones(){
+        return bonificaciones;
+    }
+
+    
+
     //Métodos para agregar datos. 
     public void agregarEstado(Estado e) {
      estados.add(e);

@@ -29,7 +29,7 @@ public class Fachada extends Observable {
 
     //SISTEMA ACCESO
 
-     public void agregarUsuario(Usuario u ) {
+    public void agregarUsuario(Usuario u ) {
         sAcceso.agregarUsuario(u);
         if( u instanceof Propietario) {
             sPeaje.agregarPropietario((Propietario) u);
@@ -49,7 +49,9 @@ public class Fachada extends Observable {
     }
 
 
-    //Metodos para agregar datos al sistema peaje
+    //SISTEMA PEAJE
+
+    //Metodos para agregar datos al sistema 
     public void agregarCategoria(Categoria c){
         sPeaje.agregarCategoria(c);
     }
@@ -74,17 +76,19 @@ public class Fachada extends Observable {
         }
     }
 
-  public void agregarBonificacion(Bonificacion b){
+    public void agregarBonificacion(Bonificacion b){
         sPeaje.agregarBonificacion(b);
-    }
-
-    public List<Notificacion> getNotificaciones(Propietario propietario){
-        return sPeaje.getNotificaciones(propietario);
     }
 
     public Transito agregarTransito (String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
         return sPeaje.agregarTransito(matricula, fechaHora, nombrePuesto);
     }
+
+    //Getters que devuelven listas 
+    public List<Notificacion> getNotificaciones(Propietario propietario){
+        return sPeaje.getNotificaciones(propietario);
+    }
+
 
     public void borrarNotificacionesPropietario(Propietario propietario){
         sPeaje.eliminarNotificaciones(propietario);
@@ -93,6 +97,10 @@ public class Fachada extends Observable {
     public List<Puesto> getPuestosPeaje(){
         return sPeaje.getPuestosPeaje();
     }   
+
+    public List<Bonificacion> getBonificaciones(){
+        return sPeaje.getBonificaciones();
+    }
 
     public List<Tarifa> getTarifasPuesto(String nombrePuesto) throws PeajeException{
         return sPeaje.getTarifasPuesto(nombrePuesto);
@@ -107,9 +115,6 @@ public class Fachada extends Observable {
     //     }
     // }
 
-    // //Devuelve las notificaciones de cada propietario en el scope
-    // public ArrayList<Notificacion> getNotificaciones() {
-    //     return sPeaje.getNotificaciones();
-    // }
+    
 
 }
