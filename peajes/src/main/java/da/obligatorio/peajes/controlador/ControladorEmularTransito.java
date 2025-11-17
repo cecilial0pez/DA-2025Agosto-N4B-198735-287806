@@ -39,8 +39,7 @@ import observador.Observador;
 @Scope("session")
 public class ControladorEmularTransito implements Observador{
     private final ConexionNavegador conexionNavegador; 
-     private Transito transito;
-    
+     
     public ControladorEmularTransito(@Autowired ConexionNavegador conexionNavegador) {
         this.conexionNavegador = conexionNavegador;
     }
