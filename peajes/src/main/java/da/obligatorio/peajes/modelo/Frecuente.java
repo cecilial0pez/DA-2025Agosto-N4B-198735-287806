@@ -15,6 +15,7 @@ public class Frecuente extends Bonificacion {
 // cada vehículo) no tienen descuento
     @Override
     public double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto, Date fecha) {
+        if (propietario.getTransitos() == null) return 0;
        if(vehiculo.cantidadTransitosPorDiaYPuesto(puesto, fecha) >= 1){
            return 0.50;
        }

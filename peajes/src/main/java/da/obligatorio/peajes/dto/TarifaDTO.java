@@ -10,4 +10,12 @@ public class TarifaDTO {
         this.monto=(int) tarifa.getMonto();
         this.categoria=tarifa.getCategoria().getNombre();
     }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public int getMontoBase() {
+        return monto;
+    }
 }

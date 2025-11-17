@@ -2,6 +2,7 @@ package da.obligatorio.peajes.controlador;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,27 +44,18 @@ public class ControladorEmularTransito implements Observador{
     public ControladorEmularTransito(@Autowired ConexionNavegador conexionNavegador) {
         this.conexionNavegador = conexionNavegador;
     }
-    //actualiza las vistas a tiempo real ESTUDIAR DEFENSA 
-    @GetMapping(value = "/registrarSSE", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+
+
+    @GetMapping(value = "/emular/registrarSSE", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter registrarSSE() {
         conexionNavegador.conectarSSE();
-        return conexionNavegador.getConexionSSE(); 
-       
+        return conexionNavegador.getConexionSSE();
     }
 
-   private Administrador administradorEnSesion(HttpSession sesionHttp) throws PeajeException {
-        if (sesionHttp == null) throw new PeajeException("Sesión nula");
-        Object obj = sesionHttp.getAttribute("usuarioAdm");
-        if (obj instanceof Administrador adm) {
-            String ced = adm.getCedula();
-            if (ced != null && !ced.trim().isEmpty()) {
-                return adm; 
-            }
-            throw new PeajeException("Administrador en sesión inválido (cedula vacía)");
-        }
-        throw new PeajeException("Sesión expirada o no iniciada");
-    }
-
+    @PostMapping("/vistaConectada")
+	public List<Respuesta> inicializarVista() {
+		return puestos();
+	}
    
     private List<Respuesta> puestos() {
             List<NombreDTO> puestosDto = new ArrayList<NombreDTO>();
@@ -76,13 +68,12 @@ public class ControladorEmularTransito implements Observador{
            
     }
 
-   
-
-     @PostMapping("/tarifasPuesto")
-    public List<Respuesta> tarifasPuesto(@RequestParam String nombre) throws PeajeException {
+    @GetMapping("/tarifasPuesto")
+    public List<Respuesta> tarifasPuesto(@RequestParam int indPuesto) throws PeajeException {
         try{
+            Puesto puesto = Fachada.getInstancia().getPuestosPeaje().get(indPuesto);
             List<TarifaDTO> listaDto = new ArrayList<>();
-            List<Tarifa> tarifas = Fachada.getInstancia().getTarifasPuesto(nombre);
+            List<Tarifa> tarifas = Fachada.getInstancia().getTarifasPuesto(puesto.getNombre());
             if (tarifas != null) {
                 for (Tarifa t : tarifas) {
                     listaDto.add(new TarifaDTO(t));
@@ -94,48 +85,23 @@ public class ControladorEmularTransito implements Observador{
         }
     }
 
-    //lo que pasa es que : transito solo es 1 y el metodo agregar Transito es void y no devuelve el transito hay que arreglar 
     @PostMapping("/transitoEmulado")
-    public List<Respuesta> transitoEmulado(@RequestParam int posPuesto, @RequestParam String matricula, @RequestParam Date fecha) throws PeajeException {
+    public List<Respuesta> transitoEmulado(@RequestParam int posPuesto, @RequestParam String matricula, @RequestParam Long fechaHora) throws PeajeException {
         if(posPuesto < 0){
             throw new PeajeException("Seleccione un puesto");
         }
         Puesto puesto = Fachada.getInstancia().getPuestosPeaje().get(posPuesto);
-        tarifasPuesto(puesto.getNombre()); //aca llama al metodo qyue muestra tarifas 
-       Transito transito= Fachada.getInstancia().agregarTransito(matricula, fecha, puesto.getNombre()); //revisar
-        return Respuesta.lista(transito(transito));
+        Date fecha = new Date(fechaHora);
+        Transito transito= Fachada.getInstancia().agregarTransito(matricula, fecha, puesto.getNombre()); 
+        Propietario propietario=transito.getVehiculo().getPropietario();
+        TransitoDTO transitoDto = new TransitoDTO (transito,propietario);
+        List<TransitoDTO> listaDto = new ArrayList<>();
+        listaDto.add(transitoDto);
+        return Respuesta.lista( new Respuesta("transitoEmulado", listaDto));
     }
 
-    private Respuesta transito(Transito t){
-        return new Respuesta("transito",new TransitoDTO(t));
-    }
-       
-    //  @PostMapping("/crearContacto")
-    // public List<Respuesta> crearContacto(@RequestParam String nombre, @RequestParam String telefono,@RequestParam int posTipoContacto,@RequestParam int posTipoTelefono) throws AgendaException {
-        
-    //   
-    //    TipoContacto tc = tiposContacto.get(posTipoContacto);
-    //    
-    //    agenda.crearContacto(nombre, telefono, tc,tt);
-    //    return Respuesta.lista(agenda());
-    // }
-
-    // private Respuesta agenda(){
-    //     return new Respuesta("agenda",new AgendaDto(agenda));
-    // }
-    // private Respuesta tiposContacto(){
-
-    //     tiposContacto = new ArrayList<TipoContacto>(Fachada.getInstancia().getTiposContacto());
-
-    //     List<NombreDto> tiposDto = new ArrayList<NombreDto>();
-        
-    //     for(TipoContacto tc:tiposContacto){
-    //         tiposDto.add(new NombreDto(tc.getNombre()));
-    //     }
-    //     return new Respuesta("tiposContacto", tiposDto);
-    // }
-
-           
+  
+                  
     @Override
     public void actualizar(Object evento, Observable origen) {
         // TODO Auto-generated method stub

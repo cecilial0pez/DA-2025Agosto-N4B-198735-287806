@@ -3,31 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Panel Propietario</title>
+  <title>Panel del propietario</title>
   <link rel="stylesheet" href="/css/panel-propietario.css" />
 </head>
 <body class="dash-body">
-  <aside class="dash-sidebar">
-    <div class="sidebar-header">
-      <div class="logo">PR</div>
-      <div class="sidebar-title">
-        <h1>Panel del propietario</h1>
-        <p id="nombreProp" class="small">Cargando...</p>
+  <main class="dash-main sin-menu">
+    <header class="page-header">
+      <div class="page-header__identity">
+        <div class="logo">PR</div>
+        <div>
+          <h1>Panel propietario</h1>
+          <p id="nombreProp" class="small">Cargando información...</p>
+        </div>
       </div>
-    </div>
+      <button id="btnRefrescarTodo" class="ghost">Refrescar datos</button>
+    </header>
 
-    <nav class="sidebar-nav">
-      <button class="nav-item" id="btnRefrescarDatos">Actualizar datos</button>
-      <button class="nav-item" id="btnRefrescarVeh">Actualizar vehículos</button>
-      <button class="nav-item" id="btnRefrescarTransitos">Actualizar tránsitos</button>
-      <button class="nav-item" id="btnRefrescarNotis">Actualizar notificaciones</button>
-    </nav>
-
-    <button class="logout" id="btnLogoutProp">Cerrar sesión</button>
-  </aside>
-
-  <main class="dash-main">
-    <section class="main-panel" id="panel-datos">
+    <section class="main-panel destacado" id="panel-datos">
       <header class="panel-header">
         <h2>Resumen de cuenta</h2>
       </header>
@@ -36,7 +28,7 @@
       </div>
     </section>
 
-    <section class="main-panel" id="panel-bonificaciones">
+    <section class="main-panel">
       <header class="panel-header">
         <h2>Bonificaciones asignadas</h2>
       </header>
@@ -45,7 +37,7 @@
       </div>
     </section>
 
-    <section class="main-panel" id="panel-vehiculos">
+    <section class="main-panel">
       <header class="panel-header">
         <h2>Vehículos registrados</h2>
       </header>
@@ -54,7 +46,7 @@
       </div>
     </section>
 
-    <section class="main-panel" id="panel-transitos">
+    <section class="main-panel panel-wide">
       <header class="panel-header">
         <h2>Tránsitos realizados</h2>
       </header>
@@ -63,7 +55,7 @@
       </div>
     </section>
 
-    <section class="main-panel" id="panel-notificaciones">
+    <section class="main-panel">
       <header class="panel-header">
         <h2>Notificaciones del sistema</h2>
         <button class="ghost" id="btnBorrarNotis">Borrar notificaciones</button>
@@ -93,8 +85,7 @@
         vehiculos: '/vehiculosProp',
         transitos: '/transitosProp',
         notis: '/notisProp',
-        borrarNotis: '/borrarNotisProp',
-        logout: '/logoutProp'
+        borrarNotis: '/borrarNotisProp'
       };
 
       function renderTabla(destino, lista, vacio) {
@@ -115,26 +106,14 @@
 
       document.addEventListener('DOMContentLoaded', refrescarTodo);
 
-      document.getElementById('btnRefrescarDatos').addEventListener('click', () => {
-        submit(endpoints.info, '', 'POST');
-        submit(endpoints.bonificaciones, '', 'POST');
+      document.getElementById('btnRefrescarTodo').addEventListener('click', () => {
+        refrescarTodo();
       });
-      document.getElementById('btnRefrescarVeh').addEventListener('click', () => {
-        submit(endpoints.vehiculos, '', 'POST');
-      });
-      document.getElementById('btnRefrescarTransitos').addEventListener('click', () => {
-        submit(endpoints.transitos, '', 'POST');
-      });
-      document.getElementById('btnRefrescarNotis').addEventListener('click', () => {
-        submit(endpoints.notis, '', 'POST');
-      });
+
       document.getElementById('btnBorrarNotis').addEventListener('click', () => {
         estadoNotis.textContent = 'Procesando...';
         estadoNotis.className = 'msg';
         submit(endpoints.borrarNotis, '', 'POST');
-      });
-      document.getElementById('btnLogoutProp').addEventListener('click', () => {
-        submit(endpoints.logout, '', 'POST');
       });
 
       window.mostrar_infoProp = function (dto) {
@@ -182,7 +161,7 @@
       };
 
       window.mostrar_notisPropError = function (texto) {
-        notisEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudo cargar las notificaciones.') + '</p>';
+        notisEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudieron cargar las notificaciones.') + '</p>';
       };
 
       window.mostrar_borrarNotisProp = function (mensaje) {
@@ -194,11 +173,6 @@
       window.mostrar_borrarNotisPropError = function (texto) {
         estadoNotis.className = 'msg error';
         estadoNotis.textContent = texto || 'No hay notificaciones para borrar.';
-      };
-
-      window.mostrar_logoutProp = function (ruta) {
-        document.body.innerHTML = '<div class="fullscreen-msg">Cerrando sesión...</div>';
-        setTimeout(() => { window.location.href = ruta || '/login-prop.html'; }, 400);
       };
 
       window.procesarErrorSubmit = function (status, texto) {

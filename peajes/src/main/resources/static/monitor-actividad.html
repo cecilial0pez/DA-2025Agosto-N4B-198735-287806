@@ -39,35 +39,39 @@
   <script src="/js/utilesVista.js"></script>
   <script src="/js/vistaWeb.js"></script>
   <script>
-    (function () {
-      document.addEventListener('DOMContentLoaded', function () {
-        submit('/menu/cargarMenu', '', 'POST');
-      });
+    document.addEventListener('DOMContentLoaded', () => {
+      submit('/menu/cargarMenu', '', 'POST');
+      const btnEmular = document.getElementById('btnEmular');
+      if (btnEmular) {
+        btnEmular.addEventListener('click', () => {
+          window.location.href = '/emular-transito.html';
+        });
+      }
+    });
 
-      window.mostrar_nombre = function (nombre) {
-        document.getElementById('adminName').textContent = nombre || 'Administrador';
-      };
+    window.mostrar_nombre = function (nombre) {
+      document.getElementById('adminName').textContent = nombre || 'Administrador';
+    };
 
-      window.mostrar_menuError = function (texto) {
-        document.getElementById('panel').innerHTML =
-          '<p class="msg error">' + (texto || 'Error cargando menú') + '</p>';
-      };
+    window.mostrar_menuError = function (texto) {
+      document.getElementById('panel').innerHTML =
+        '<p class="msg error">' + (texto || 'Error cargando menú') + '</p>';
+    };
 
-      window.mostrar_logoutAdmin = function (ruta) {
-        document.getElementById('panel').innerHTML =
-          '<p class="msg success">Sesión cerrada. Redirigiendo...</p>';
-        setTimeout(() => (window.location.href = ruta || '/login-admin.html'), 350);
-      };
-      window.mostrar_logout = window.mostrar_logoutAdmin;
+    window.mostrar_logoutAdmin = function (ruta) {
+      document.getElementById('panel').innerHTML =
+        '<p class="msg success">Sesión cerrada. Redirigiendo...</p>';
+      setTimeout(() => (window.location.href = ruta || '/login-admin.html'), 350);
+    };
+    window.mostrar_logout = window.mostrar_logoutAdmin;
 
-      document.getElementById('btnLogout').addEventListener('click', function () {
-        submit('/logoutAdmin', '', 'POST');
-      });
+    document.getElementById('btnLogout').addEventListener('click', function () {
+      submit('/logoutAdmin', '', 'POST');
+    });
 
-      window.procesarErrorSubmit = function (status, texto) {
-        console.error('Error monitor:', status, texto);
-      };
-    })();
+    window.procesarErrorSubmit = function (status, texto) {
+      console.error('Error monitor:', status, texto);
+    };
   </script>
 </body>
 </html>

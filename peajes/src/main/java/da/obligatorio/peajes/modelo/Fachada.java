@@ -82,8 +82,8 @@ public class Fachada extends Observable {
         return sPeaje.getNotificaciones(propietario);
     }
 
-    public void agregarTransito (String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
-        sPeaje.agregarTransito(matricula, fechaHora, nombrePuesto);
+    public Transito agregarTransito (String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
+        return sPeaje.agregarTransito(matricula, fechaHora, nombrePuesto);
     }
 
     public void borrarNotificacionesPropietario(Propietario propietario){

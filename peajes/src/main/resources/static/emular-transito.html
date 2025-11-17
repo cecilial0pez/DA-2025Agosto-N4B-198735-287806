@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel administrador</title>
+  <link rel="stylesheet" href="/css/emular-transito.css" />
+</head>
+<body class="dash-body">
+  <aside class="dash-sidebar">
+    <div class="sidebar-header">
+      <div class="logo">ADM</div>
+      <div class="sidebar-title">
+        <h1>Panel administrador</h1>
+        <p id="adminName" class="small">Cargando...</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item" id="btnEmular">Emular tránsito</button>
+      <button class="nav-item" id="btnBonificaciones">Asignar bonificaciones</button>
+      <button class="nav-item" id="btnCambiarEstado">Cambiar estado</button>
+    </nav>
+
+    <section class="sidebar-section">
+      <h2>Estado SSE</h2>
+      <p id="estadoSSE" class="msg">Inicializando conexión...</p>
+    </section>
+
+    <button class="logout" id="btnLogout">Cerrar sesión</button>
+  </aside>
+
+  <main class="dash-main">
+    <section class="main-panel">
+      <header class="panel-header">
+        <h2>Datos del tránsito</h2>
+      </header>
+
+      <form id="formTransito" class="form-grid" novalidate>
+        <div class="campo">
+          <label for="selectPuesto">Puesto</label>
+          <select id="selectPuesto" name="posPuesto" required>
+            <option value="">Seleccione un puesto...</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="matricula">Matrícula</label>
+          <input id="matricula" name="matricula" type="text" placeholder="ABC1234" required />
+        </div>
+
+        <div class="campo">
+          <label for="fecha">Fecha y hora</label>
+          <input id="fecha" name="fecha" type="datetime-local" required />
+        </div>
+
+        <button type="submit" class="primary">Emular tránsito</button>
+      </form>
+
+      <div id="estadoTransito" class="msg" aria-live="polite"></div>
+    </section>
+
+    <section class="main-panel">
+      <header class="panel-header">
+        <h2>Tarifas del puesto</h2>
+      </header>
+      <div id="tablaTarifas" class="tabla-wrapper">
+        <p class="msg">Seleccione un puesto para ver las tarifas disponibles.</p>
+      </div>
+    </section>
+
+    <section class="main-panel panel-wide">
+      <header class="panel-header">
+        <h2>Resultado del último tránsito</h2>
+      </header>
+      <div id="tablaTransito" class="tabla-wrapper">
+        <p class="msg">Aún no se ha emulado ningún tránsito.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/utilesVista.js"></script>
+  <script src="/js/vistaWeb.js"></script>
+  <script src="/js/sse.js"></script>
+  <script>
+    (function () {
+      const selectPuesto = document.getElementById('selectPuesto');
+      const estadoTransito = document.getElementById('estadoTransito');
+      const tablaTarifas = document.getElementById('tablaTarifas');
+      const tablaTransito = document.getElementById('tablaTransito');
+      const estadoSSE = document.getElementById('estadoSSE');
+      const adminName = document.getElementById('adminName');
+
+      const ENDPOINTS = {
+        puestos: '/vistaConectada',
+        tarifas: (idx) => '/tarifasPuesto?indPuesto=' + idx,
+        transito: '/transitoEmulado',
+        sse: '/emular/registrarSSE'
+      };
+
+      function renderTabla(destino, lista, vacio) {
+        if (!Array.isArray(lista) || lista.length === 0) {
+          destino.innerHTML = '<p class="msg">' + vacio + '</p>';
+          return;
+        }
+        destino.innerHTML = crearTablaDesdeJson(lista);
+      }
+
+      function solicitarTarifas() {
+        const idx = selectPuesto.value;
+        if (idx === '') {
+          tablaTarifas.innerHTML = '<p class="msg">Seleccione un puesto para ver las tarifas disponibles.</p>';
+          return;
+        }
+        submit(ENDPOINTS.tarifas(idx), '', 'GET');
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        submit('/menu/cargarMenu', '', 'POST');
+        submit(ENDPOINTS.puestos, '', 'POST');
+      });
+
+      document.getElementById('btnEmular').addEventListener('click', () => {
+        window.location.href = '/emular-transito.html';
+      });
+      document.getElementById('btnBonificaciones').addEventListener('click', () => {
+        window.location.href = '/menu-bonificaciones.html';
+      });
+      document.getElementById('btnCambiarEstado').addEventListener('click', () => {
+        window.location.href = '/menu-cambiar-estado.html';
+      });
+      document.getElementById('btnLogout').addEventListener('click', () => {
+        submit('/logoutAdmin', '', 'POST');
+      });
+
+      selectPuesto.addEventListener('change', solicitarTarifas);
+
+      document.getElementById('formTransito').addEventListener('submit', function (e) {
+        e.preventDefault();
+        estadoTransito.textContent = 'Procesando...';
+        estadoTransito.className = 'msg';
+
+        const form = new FormData(e.currentTarget);
+        const fechaIso = form.get('fecha');
+        if (!fechaIso) {
+          estadoTransito.className = 'msg error';
+          estadoTransito.textContent = 'Ingrese fecha y hora.';
+          return;
+        }
+        const epoch = new Date(fechaIso).getTime();
+        if (Number.isNaN(epoch)) {
+          estadoTransito.className = 'msg error';
+          estadoTransito.textContent = 'Fecha inválida.';
+          return;
+        }
+        form.set('fechaHora', epoch.toString());
+        form.delete('fecha');
+
+        const params = new URLSearchParams(form).toString();
+        submit(ENDPOINTS.transito, params, 'POST');
+      });
+
+      window.mostrar_puestos = function (lista) {
+        selectPuesto.innerHTML = '<option value="">Seleccione un puesto...</option>';
+        if (Array.isArray(lista)) {
+          lista.forEach(function (item, idx) {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = item.nombre || ('Puesto #' + (idx + 1));
+            selectPuesto.appendChild(opt);
+          });
+        }
+        tablaTarifas.innerHTML = '<p class="msg">Seleccione un puesto para ver las tarifas disponibles.</p>';
+      };
+
+      window.mostrar_tarifas = function (lista) {
+        renderTabla(tablaTarifas, lista, 'El puesto no tiene tarifas cargadas.');
+      };
+
+      window.mostrar_tarifasError = function (texto) {
+        tablaTarifas.innerHTML = '<p class="msg error">' + (texto || 'No se pudieron obtener las tarifas.') + '</p>';
+      };
+
+      window.mostrar_transitoEmulado = function (lista) {
+        estadoTransito.className = 'msg success';
+        estadoTransito.textContent = 'Tránsito registrado correctamente.';
+        renderTabla(tablaTransito, lista, 'No se recibieron datos del tránsito.');
+      };
+
+      window.mostrar_transitoEmuladoError = function (texto) {
+        estadoTransito.className = 'msg error';
+        estadoTransito.textContent = texto || 'No se pudo registrar el tránsito.';
+      };
+
+      window.procesarErrorSubmit = function (status, texto) {
+        estadoTransito.className = 'msg error';
+        estadoTransito.textContent = 'Error de comunicación (' + status + ').';
+        console.error('Emular tránsito error:', status, texto);
+      };
+
+      function inicializarSSE() {
+        estadoSSE.textContent = 'Conectando...';
+        estadoSSE.className = 'msg';
+
+        if (window.SSEManager && typeof SSEManager.connect === 'function') {
+          SSEManager.connect(ENDPOINTS.sse, manejarEventoSSE, manejarEstadoSSE);
+        } else if (typeof conectarSSE === 'function') {
+          conectarSSE(ENDPOINTS.sse, manejarEventoSSE, manejarEstadoSSE);
+        } else {
+          estadoSSE.className = 'msg error';
+          estadoSSE.textContent = 'No se encontró el gestor SSE.';
+        }
+      }
+
+      function manejarEstadoSSE(estado) {
+        if (!estado) return;
+        estadoSSE.className = estado.connected ? 'msg success' : 'msg error';
+        estadoSSE.textContent = estado.message || (estado.connected ? 'Conectado.' : 'Desconectado.');
+      }
+
+      function manejarEventoSSE(evento) {
+        const data = (typeof evento === 'string') ? evento : (evento.data || JSON.stringify(evento));
+        console.info('Evento SSE:', data);
+      }
+
+      window.mostrar_nombre = function (nombre) {
+        adminName.textContent = nombre || 'Administrador';
+      };
+
+      window.mostrar_logoutAdmin = function (ruta) {
+        document.body.innerHTML = '<div class="fullscreen-msg">Sesión cerrada. Redirigiendo...</div>';
+        setTimeout(()=>window.location.href = ruta || '/login-admin.html', 400);
+      };
+      window.mostrar_logout = window.mostrar_logoutAdmin;
+
+      inicializarSSE();
+    })();
+  </script>
+</body>
+</html>

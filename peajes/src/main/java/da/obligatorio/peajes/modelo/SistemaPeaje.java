@@ -91,7 +91,7 @@ public class SistemaPeaje {
     }
 
     //ATENCION !!!!!!!!!!!1 este metodo recontra sirve terminalo!!!!!!!!!!
-     public void agregarTransito(String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
+     public Transito agregarTransito(String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
        Vehiculo v=buscarVehiculo(matricula);
         Propietario propietario= v.getPropietario();
        Puesto p= buscarPuesto(nombrePuesto);
@@ -116,7 +116,11 @@ public class SistemaPeaje {
             propietario.hacerRegistrarTransito(transito);
             v.incrementarCantidadTransitos();
             p.agregarTransito(transito);
+            return transito;
+        }else{
+            return null;
         } 
+        
      }
      //linea 94 hacer cantidad de transitos por puesto
 
