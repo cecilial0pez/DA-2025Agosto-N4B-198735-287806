@@ -10,29 +10,17 @@ public class Frecuente extends Bonificacion {
     }
 
     // Método específico con el contexto necesario para determinar si aplica
-    // bonificación frecuente.
+    // bonificación frecuente. Frecuentes: Tienen un 50% de descuento a partir del segundo transito realizado en el día
+// por un puesto determinado con el mismo vehículo. En el primer tránsito del día (con
+// cada vehículo) no tienen descuento
     @Override
     public double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto, Date fecha) {
-       
-        // // recorro transitos y cuento los previos
-        // int transitosPrevios = 0;
-        // for (int i = 0; i < transitos.size(); i++) {
-        //     Transito t = transitos.get(i);
-        //     String matTransito = t.getVehiculo().getMatricula();
-        //     String puestoTransito = t.getPuesto().getNombre();
-        //     Date fechaTransito = t.getFechaHora();
-        //     if (matActual.equalsIgnoreCase(matTransito) && puestoActual.equalsIgnoreCase(puestoTransito)
-        //             && fechaTransito.equals(fecha)) {
-        //         transitosPrevios++;
-        //     }
-        // }
-        double descuento = 0.50;
-        // Si existe al menos 1 tránsito previo en el mismo día/puesto/vehículo
-        // if (transitosPrevios >= 1) {
-        //     return descuento;
-        // }
-        return descuento;
+       if(vehiculo.cantidadTransitosPorDiaYPuesto(puesto, fecha) >= 1){
+           return 0.50;
+       }
+        return 0.0;
     }
     //desglosar metodo en diferentes clases
+    //si en MEJOR MONTO EN ASIGNAR BONIFICAION ES=0 BONIFICACION ES NULL 
 
 }

@@ -140,7 +140,7 @@ public class Propietario extends Usuario {
         if (puesto == null) {
             return false;
         }
-        if(this.asignaciones == null || this.asignaciones.isEmpty()){
+        if(this.asignaciones == null || this.asignaciones.isEmpty()){ //this equivale a este propietario
             return true;
         }
         List<Asignacion> asignaciones = this.getAsignaciones();

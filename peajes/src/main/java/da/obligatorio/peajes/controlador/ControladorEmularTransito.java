@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import da.obligatorio.peajes.ConexionNavegador;
 import da.obligatorio.peajes.Respuesta;
+import da.obligatorio.peajes.dto.NombreDTO;
 import da.obligatorio.peajes.dto.NotificacionDTO;
 import da.obligatorio.peajes.dto.PuestoDTO;
 import da.obligatorio.peajes.dto.TarifaDTO;
@@ -38,11 +39,12 @@ import observador.Observador;
 @Scope("session")
 public class ControladorEmularTransito implements Observador{
     private final ConexionNavegador conexionNavegador; 
+     private Transito transito;
     
     public ControladorEmularTransito(@Autowired ConexionNavegador conexionNavegador) {
         this.conexionNavegador = conexionNavegador;
     }
-
+    //actualiza las vistas a tiempo real ESTUDIAR DEFENSA 
     @GetMapping(value = "/registrarSSE", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter registrarSSE() {
         conexionNavegador.conectarSSE();
@@ -63,18 +65,19 @@ public class ControladorEmularTransito implements Observador{
         throw new PeajeException("Sesión expirada o no iniciada");
     }
 
-    @PostMapping("/puestos")
-    public List<Respuesta> puestos() {
-            List<PuestoDTO> listaDto = new ArrayList<>();
-            List<Puesto> puesto = Fachada.getInstancia().getPuestosPeaje();
-            if (puesto != null) {
-                for (Puesto p : puesto) {
-                    listaDto.add(new PuestoDTO(p));
-                }
+   
+    private List<Respuesta> puestos() {
+            List<NombreDTO> puestosDto = new ArrayList<NombreDTO>();
+            List<Puesto> puestos = Fachada.getInstancia().getPuestosPeaje();
+            for(Puesto p: puestos) {
+                puestosDto.add(new NombreDTO(p.getNombre()));
             }
 
-            return Respuesta.lista(new Respuesta("puestos", listaDto)); 
+            return Respuesta.lista(new Respuesta("puestos", puestosDto)); 
+           
     }
+
+   
 
      @PostMapping("/tarifasPuesto")
     public List<Respuesta> tarifasPuesto(@RequestParam String nombre) throws PeajeException {
@@ -92,21 +95,46 @@ public class ControladorEmularTransito implements Observador{
         }
     }
 
+    //lo que pasa es que : transito solo es 1 y el metodo agregar Transito es void y no devuelve el transito hay que arreglar 
     @PostMapping("/transitoEmulado")
-    public List<Respuesta> transitoEmulado(@RequestParam String nombrePuesto, @RequestParam String matricula, @RequestParam Date fecha) throws PeajeException {
-        try{
-            List<TransitoDTO> listaDto = new ArrayList<>();
-            List<Transito> transito = Fachada.getInstancia().agregarTransito(matricula, fecha, nombrePuesto);
-            if (transito != null) {
-                for (Transito t : transito) {
-                    listaDto.add(new TransitoDTO(t));
-                }
-            }
-            return Respuesta.lista(new Respuesta("tarifas", listaDto)); 
-        } catch (PeajeException e) {
-            return Respuesta.lista(new Respuesta("tarifasError", e.getMessage()));
+    public List<Respuesta> transitoEmulado(@RequestParam int posPuesto, @RequestParam String matricula, @RequestParam Date fecha) throws PeajeException {
+        if(posPuesto < 0){
+            throw new PeajeException("Seleccione un puesto");
         }
+        Puesto puesto = Fachada.getInstancia().getPuestosPeaje().get(posPuesto);
+        tarifasPuesto(puesto.getNombre()); //aca llama al metodo qyue muestra tarifas 
+       Transito transito= Fachada.getInstancia().agregarTransito(matricula, fecha, puesto.getNombre()); //revisar
+        return Respuesta.lista(transito(transito));
     }
+
+    private Respuesta transito(Transito t){
+        return new Respuesta("transito",new TransitoDTO(t));
+    }
+       
+    //  @PostMapping("/crearContacto")
+    // public List<Respuesta> crearContacto(@RequestParam String nombre, @RequestParam String telefono,@RequestParam int posTipoContacto,@RequestParam int posTipoTelefono) throws AgendaException {
+        
+    //   
+    //    TipoContacto tc = tiposContacto.get(posTipoContacto);
+    //    
+    //    agenda.crearContacto(nombre, telefono, tc,tt);
+    //    return Respuesta.lista(agenda());
+    // }
+
+    // private Respuesta agenda(){
+    //     return new Respuesta("agenda",new AgendaDto(agenda));
+    // }
+    // private Respuesta tiposContacto(){
+
+    //     tiposContacto = new ArrayList<TipoContacto>(Fachada.getInstancia().getTiposContacto());
+
+    //     List<NombreDto> tiposDto = new ArrayList<NombreDto>();
+        
+    //     for(TipoContacto tc:tiposContacto){
+    //         tiposDto.add(new NombreDto(tc.getNombre()));
+    //     }
+    //     return new Respuesta("tiposContacto", tiposDto);
+    // }
 
            
     @Override
@@ -115,35 +143,37 @@ public class ControladorEmularTransito implements Observador{
         throw new UnsupportedOperationException("Unimplemented method 'actualizar'");
     }
 
-//     ctrl k u para descomentar 
-//Curso normal:
-// 1) El sistema muestra la lista de puestos definidos. Información: Nombre del puesto.
-// 2) El administrador selecciona un puesto.
-// 3) El sistema muestra la tabla de tarifas del puesto seleccionado. Información: categoría y monto.
-// 4) El administrador ingresa un número de matrícula, la fecha del tránsito e indica que desea
-// emular un tránsito.
-// 5) El sistema registra un tránsito para el vehículo correspondiente a la matricula ingresada
-//  en la fecha y hora indicada y actualiza el saldo del propietario.
-//  El sistema registra una notificación al propietario:
-//  [Fecha y hora de la notificación] + “Pasaste por el puesto “ + número de puesto + “con
-//  el vehículo” + número de matrícula.
-//  Si el saldo del usuario es menor al valor de la alerta de saldo mínimo el sistema registra
-//  una notificación al propietario: [Fecha y hora de la notificación] + “Tu saldo actual es
-//  de $ “ + saldo actual + “ Te recomendamos hacer una recarga”;
-// 6) El sistema muestra el nombre del propietario del vehículo, su estado, la categoría del vehículo,
-// el nombre de la bonificación si corresponde, el costo del tránsito y el saldo del propietario
-//  luego del tránsito.
-// Cursos alternativos:
-// 5) No existe un vehículo registrado con la matricula ingresada. Mensaje: “No existe el
-//  vehículo”.
-//  El propietario no tiene saldo suficiente para abonar el tránsito. Mensaje: “Saldo
-//  insuficiente:” + el saldo actual del propietario.
-//  El propietario está en estado deshabilitado. Mensaje: “El propietario del vehículo está
-//  deshabilitado, no puede realizar tránsitos” y no se registra el tránsito.
-//  El propietario está en estado suspendido. Mensaje: “El propietario del vehículo está
-//  suspendido, no puede realizar tránsitos” y no se registra el transito
-//  El propietario está en estado penalizado. El transito se registra, pero no se aplican
-//  bonificaciones (si hubiera) y no se envía la notificación al propietario.
-
-
 }
+
+// //     ctrl k u para descomentar 
+// //Curso normal:
+// // 1) El sistema muestra la lista de puestos definidos. Información: Nombre del puesto.
+// // 2) El administrador selecciona un puesto.
+// // 3) El sistema muestra la tabla de tarifas del puesto seleccionado. Información: categoría y monto.
+// // 4) El administrador ingresa un número de matrícula, la fecha del tránsito e indica que desea
+// // emular un tránsito.
+// // 5) El sistema registra un tránsito para el vehículo correspondiente a la matricula ingresada
+// //  en la fecha y hora indicada y actualiza el saldo del propietario.
+// //  El sistema registra una notificación al propietario:
+// //  [Fecha y hora de la notificación] + “Pasaste por el puesto “ + número de puesto + “con
+// //  el vehículo” + número de matrícula.
+// //  Si el saldo del usuario es menor al valor de la alerta de saldo mínimo el sistema registra
+// //  una notificación al propietario: [Fecha y hora de la notificación] + “Tu saldo actual es
+// //  de $ “ + saldo actual + “ Te recomendamos hacer una recarga”;
+// // 6) El sistema muestra el nombre del propietario del vehículo, su estado, la categoría del vehículo,
+// // el nombre de la bonificación si corresponde, el costo del tránsito y el saldo del propietario
+// //  luego del tránsito.
+// // Cursos alternativos:
+// // 5) No existe un vehículo registrado con la matricula ingresada. Mensaje: “No existe el
+// //  vehículo”.
+// //  El propietario no tiene saldo suficiente para abonar el tránsito. Mensaje: “Saldo
+// //  insuficiente:” + el saldo actual del propietario.
+// //  El propietario está en estado deshabilitado. Mensaje: “El propietario del vehículo está
+// //  deshabilitado, no puede realizar tránsitos” y no se registra el tránsito.
+// //  El propietario está en estado suspendido. Mensaje: “El propietario del vehículo está
+// //  suspendido, no puede realizar tránsitos” y no se registra el transito
+// //  El propietario está en estado penalizado. El transito se registra, pero no se aplican
+// //  bonificaciones (si hubiera) y no se envía la notificación al propietario.
+
+
+// }

@@ -95,21 +95,23 @@ public class SistemaPeaje {
        Vehiculo v=buscarVehiculo(matricula);
         Propietario propietario= v.getPropietario();
        Puesto p= buscarPuesto(nombrePuesto);
-        Tarifa t= p.TarifaPorCategoria(v.getCategoria());
+        Tarifa t= p.TarifaPorCategoria(v.getCategoria()); //repasar para defensa 
         if(SePuedeHacerTransito( v, propietario, p, t)){
             Transito transito=new Transito(v, fechaHora, p, t);
             //aplicar bonificacion
             intentarBonificar (v,p,fechaHora);
             //calcular total pagado esto hay que cambairlo URGENTE 
-            double montoBase= t.getMonto();
+            double montoBase= t.getMonto(); //mandar a propietario que calcule total pagado
             double descuento=0.0;
             Bonificacion bonifSeleccionada= seleccionarBonificacion(propietario, v, p, fechaHora);
             if(bonifSeleccionada != null){
                 descuento= bonifSeleccionada.calcularBonificacion(propietario, v, p, fechaHora);
+                //ACA ES DONDE CON EL MONTO DEL DESCUENTO SE LO MANDO AL PROPIETARIO PARA QUE 
+                // DESCUENTE SU SALFO Y SI NO TIENE PARA PAGAR SALGA UNA ALERTA DE SALDO INSUFICIENTE O MINIMO
                 transito.setNombreBonificacion(bonifSeleccionada.getNombre());
             }
-            double totalAPagar= montoBase - descuento;
-            transito.setTotalPagado(totalAPagar);
+            double totalAPagar= montoBase - descuento; //esta MAL asignado
+            transito.setTotalPagado(totalAPagar); //esta mal
             //registrar transito en el propietario
             propietario.hacerRegistrarTransito(transito);
             v.incrementarCantidadTransitos();
@@ -187,7 +189,7 @@ public class SistemaPeaje {
                                                  Puesto puesto,
                                                  java.util.Date fecha) {
         Bonificacion elegida = null;
-        double mejorMonto = 0.0;
+        double mejorMonto = 0.0; //mejor monto de bonificacion 
 
         for (Bonificacion bonif : bonificaciones) {
             double monto = bonif.calcularBonificacion(propietario, vehiculo, puesto, fecha );
@@ -197,7 +199,7 @@ public class SistemaPeaje {
             }
         }
         return elegida;
-    }
+    } //repasar defensa 
 
     private void intentarBonificar(Vehiculo vehiculo, Puesto puesto,Date fechayhora) throws PeajeException {
         Propietario propietario = vehiculo.getPropietario();

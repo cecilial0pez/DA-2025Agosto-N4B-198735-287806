@@ -114,7 +114,7 @@ public class DatosPrueba {
        
        
 //Datos prueba transito 
-       fachada.agregarTransito("ABC1234", new Date(), "Santa Lucia");
+    fachada.agregarTransito("ABC1234", new Date(), "Santa Lucia");
     fachada.agregarTransito("DEF5678", new Date(), "Pando");
     fachada.agregarTransito("GHI9012", new Date(), "Canelones");
 

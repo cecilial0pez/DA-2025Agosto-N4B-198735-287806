@@ -1,4 +1,5 @@
 package da.obligatorio.peajes.modelo;
+import java.util.Date;
 
 public class Vehiculo{
     private String matricula;
@@ -86,4 +87,20 @@ public class Vehiculo{
 		}
 		return ok;
 	}
+//DUDA : PASARLE AL PROPIETARIO O NO
+    public int cantidadTransitosPorDiaYPuesto(Puesto puesto, Date fecha) {
+        int contador = 0;
+        for (Transito transito : propietario.getTransitos()) {
+            if (transito.getPuesto().getNombre().equals(puesto.getNombre())) {
+                // Comparar solo la fecha (sin hora)
+                Date fechaTransito = transito.getFechaHora();
+                if (fechaTransito.getYear() == fecha.getYear() &&
+                    fechaTransito.getMonth() == fecha.getMonth() &&
+                    fechaTransito.getDate() == fecha.getDate()) {
+                    contador++;
+                }
+            }
+        }
+        return contador;
+    }
 }
