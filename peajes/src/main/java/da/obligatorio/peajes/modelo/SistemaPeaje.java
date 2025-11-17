@@ -96,25 +96,22 @@ public class SistemaPeaje {
         }
     }
 
-    //ATENCION !!!!!!!!!!!1 este metodo recontra sirve terminalo!!!!!!!!!!
+    //ATerminar
      public Transito agregarTransito(String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
        Vehiculo v=buscarVehiculo(matricula);
         Propietario propietario= v.getPropietario();
         Puesto p= buscarPuesto(nombrePuesto);
-        Tarifa t= p.TarifaPorCategoria(v.getCategoria()); //repasar para defensa 
+        Tarifa t= p.TarifaPorCategoria(v.getCategoria()); 
         if(SePuedeHacerTransito( v, propietario, p, t)){
             Transito transito=new Transito(v, fechaHora, p, t);
-            //aplicar bonificacion
-            intentarBonificar (v,p,fechaHora);
-            Bonificacion bonifSeleccionada= seleccionarBonificacion(propietario, v, p, fechaHora);
-            if(bonifSeleccionada != null){
-                double montoPagar= bonifSeleccionada.calcularBonificacion(propietario, v, p, fechaHora);
-                transito.setNombreBonificacion(bonifSeleccionada.getNombre());
+           Bonificacion elegida= intentarBonificar (propietario, v, p, fechaHora);
+            if(elegida != null){
+                double montoPagar= elegida.calcularBonificacion(propietario, v, p, fechaHora);
+                transito.setNombreBonificacion(elegida.getNombre());
                 transito.setTotalPagado(montoPagar);
             }else{
-                
+                transito.setTotalPagado(t.getMonto());
             }
-            transito.setTotalPagado(totalAPagar); //esta mal
             //registrar transito en el propietario
             propietario.hacerRegistrarTransito(transito);
             v.incrementarCantidadTransitos();
@@ -122,10 +119,9 @@ public class SistemaPeaje {
             return transito;
         }else{
             return null;
-        } 
-        
+        }        
      }
-     //linea 94 hacer cantidad de transitos por puesto
+     
 
      public boolean SePuedeHacerTransito(Vehiculo v, Propietario prop, Puesto p, Tarifa t) throws PeajeException
      {
@@ -221,37 +217,19 @@ public class SistemaPeaje {
         }
         throw new PeajeException ("No existe vehiculo con esa matricula");
     }
- // Metodos Auxiliares
-    private Bonificacion seleccionarBonificacion(Propietario propietario,
-                                                 Vehiculo vehiculo,
-                                                 Puesto puesto,
-                                                 java.util.Date fecha) {
-        Bonificacion elegida = null;
-        double mejorMonto = 0.0; //mejor monto de bonificacion 
 
-        for (Bonificacion bonif : bonificaciones) {
-            double monto = bonif.calcularBonificacion(propietario, vehiculo, puesto, fecha );
-            if (monto > mejorMonto) {
-                mejorMonto = monto;
-                elegida = bonif;
-            }
+
+
+    // Metodos Auxiliares
+    private Bonificacion intentarBonificar(Propietario propietario, Vehiculo vehiculo, Puesto puesto,Date fechayhora) throws PeajeException {
+        Bonificacion elegida=null;
+       if(propietario.hayBonificacionEnPuesto(puesto)){
+            elegida=propietario.bonificacionporPuesto(puesto);
+           
+        }else{
+            elegida= seleccionarBonificacion(propietario, vehiculo, puesto, fechayhora);
         }
         return elegida;
-    } //repasar defensa 
-
-    private void intentarBonificar(Vehiculo vehiculo, Puesto puesto,Date fechayhora) throws PeajeException {
-        Propietario propietario = vehiculo.getPropietario();
-        if (!propietario.puedeBonificarse(puesto)) {
-            return;
-        }
-        Bonificacion bonif = seleccionarBonificacion(propietario,
-                                                     vehiculo,
-                                                     puesto,
-                                                     fechayhora);
-        if (bonif != null) {
-            
-            propietario.asignarBonificacion(puesto, bonif);
-        }
     }
 
     public void eliminarNotificaciones(Propietario propietario){

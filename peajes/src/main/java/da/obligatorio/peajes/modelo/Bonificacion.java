@@ -24,7 +24,7 @@ public abstract class Bonificacion {
         this.nombre = nombre;
     }
 
-    public abstract double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto,Date fecha);
+    public abstract double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto,Date fecha)throws PeajeException;
      
 
 }

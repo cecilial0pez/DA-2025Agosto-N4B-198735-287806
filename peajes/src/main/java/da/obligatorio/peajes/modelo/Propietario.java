@@ -66,10 +66,6 @@ public class Propietario extends Usuario {
     // Metodos agregados
     // agregar notificaciones, vehiculos y asignaciones
 
-    public boolean haySaldoMinimo() {
-        return this.saldo >= saldoMinimo;
-    }
-
     public double actualizarSaldo(double montoGastado) {
         return this.saldo - montoGastado;
     }
@@ -104,23 +100,17 @@ public class Propietario extends Usuario {
         return this.estado != null && this.estado.puedeLoguearse();
     }
 
-    // public void registrarTransito(Vehiculo vehiculo, Date fechaHora, Puesto puesto, double totalPagado) {
-    //     if (this.transitos == null) {
-    //         this.transitos = new ArrayList<Transito>();
-    //     }
-    //     Transito transito = new Transito(fechaHora, vehiculo, puesto, this, totalPagado);
-    //     hacerRegistrarTransito(transito);
 
-    // }
-
-    public void hacerRegistrarTransito(Transito transito) {
+    public void hacerRegistrarTransito(Transito transito) throws PeajeException {
         if (this.transitos == null) {
             this.transitos = new ArrayList<Transito>();
         }
+        actualizarSaldo(transito.getTotalPagado());
         this.transitos.add(transito);
-
+        registrarNotificacion("Pasaste por el puesto " + transito.getPuesto().getNombre() + " con el vehículo " + transito.getVehiculo().getMatricula());
     }
 
+  
     //asigna la bonificacion y genera la notificacion 
     public void asignarBonificacion(Puesto puesto, Bonificacion bonificacion)throws PeajeException {
          if (bonificacion == null || puesto == null)
@@ -137,29 +127,34 @@ public class Propietario extends Usuario {
         
     }
 
-    public boolean puedeBonificarse(Puesto puesto) {
+    public boolean hayBonificacionEnPuesto(Puesto puesto) {
         if (puesto == null) {
             return false;
         }
-        if(this.asignaciones == null || this.asignaciones.isEmpty()){ //this equivale a este propietario
-            return true;
+        if(this.asignaciones == null || this.asignaciones.isEmpty()){ 
+            return false;
         }
         List<Asignacion> asignaciones = this.getAsignaciones();
         for (Asignacion asignacion : asignaciones) {
-            if (asignacion != null && puesto.equals(asignacion.getPuesto())) {
-                return false;
+            if (asignacion != null && puesto.equals(asignacion.getPuesto())) {     
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
-    public void aplicarDescuento(double descuento) {
-        // metodo para aplicar descuento a un propietario
+    public Bonificacion bonificacionporPuesto(Puesto puesto){
+        List<Asignacion> asignaciones = this.getAsignaciones();
+        for (Asignacion asignacion : asignaciones) {
+            if (asignacion != null && puesto.equals(asignacion.getPuesto())) {     
+                Bonificacion bon=asignacion.getBonificacion();
+                return bon;
+            }
+        }
+        return null;
     }
 
-    public void hacerAplicarDescuento() {
-        // metodo para hacer la aplicacion de descuento a un propietario
-    }
+
 
     public void registrarNotificacion(String mensaje) throws PeajeException {
         Notificacion notificacion = new Notificacion(mensaje);

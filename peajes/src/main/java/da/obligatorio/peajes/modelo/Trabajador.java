@@ -13,21 +13,26 @@ public class Trabajador extends Bonificacion {
 
     
     @Override
-    public double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto, Date fecha) {
-        double descuento = 0.8;
-        if (propietario == null || vehiculo == null || puesto == null || fecha == null) {
-            return 0;
+    public double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto, Date fecha) throws PeajeException   {
+        try {
+            Categoria categoria = vehiculo.getCategoria();
+            Tarifa tarifa = puesto.TarifaPorCategoria(categoria);
+            Double monto = tarifa.getMonto();
+            double precioFinal = monto - (monto * this.getPorcentajeDescuento());
+            return precioFinal;
+        } catch (Exception e) {
+            throw new PeajeException("Error al calcular bonificacion: Categoria no encontrada");
         }
-        if (esDiaDeSemana(fecha)) {
-            return descuento;
-        }
-        return 0;
+        
     }
 
     /*
      * auxiliar
      * Date.toString() muestra hora según zona local;
      * Instant imprime siempre en UTC (la hora puede “moverse” según la zona).
+     *  if (esDiaDeSemana(fecha)) {
+            return descuento;
+        }
      */
     public boolean esDiaDeSemana(Date fecha) {
         DayOfWeek dia = fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getDayOfWeek();
