@@ -8,7 +8,7 @@ import java.time.ZoneId;
 public class Trabajador extends Bonificacion {
 
     public Trabajador() {
-        super("Trabajador");
+        super("Trabajador",0.8);
     }
 
     

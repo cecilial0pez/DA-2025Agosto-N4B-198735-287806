@@ -15,8 +15,7 @@ public class DatosPrueba {
     Estado e2= new Deshabilitado();
     Estado e3= new Suspendido();
     Estado e4= new Penalizado();
-
-    
+  
     //Datos prueba Bonificacion
     Bonificacion b1= new Frecuente() ;
     Bonificacion b2= new Exonerado();
@@ -46,18 +45,12 @@ public class DatosPrueba {
     Puesto puesto3= new Puesto("Canelones", "Ruta 5 km 23");
     Puesto puesto4= new Puesto("Colonia", "Ruta 1 km 120");
 
-    //Datos prueba Transito
-   
     // Fechas para probar 
 
     Calendar cal = Calendar.getInstance();
     cal.set(2025, Calendar.JUNE, 15, 10, 30, 0);
     Date fechaHora = cal.getTime();
-    //Datos prueba Transito
-    // Transito tr1= new Transito( v1, fechaHora, puesto1, 90.0);
-
-    //Datos prueba Notificacion
-    // Notificacion n1= new Notificacion("Transito registrado con exito");
+    
     //Agregar datos de prueba a la fachada
         fachada.agregarEstado(e1);
         fachada.agregarEstado(e2);
@@ -109,15 +102,12 @@ public class DatosPrueba {
         fachada.agregarTarifa("Colonia", "Automovil", 85.00);
         fachada.agregarTarifa("Colonia", "Moto", 42.50);
         fachada.agregarTarifa("Colonia", "Camion", 170.00);
-        fachada.agregarTarifa("Colonia", "Bus", 127.50);
+        fachada.agregarTarifa("Colonia", "Bus", 127.50); 
 
-       
-       
-//Datos prueba transito 
-    fachada.agregarTransito("ABC1234", new Date(), "Santa Lucia");
-    fachada.agregarTransito("DEF5678", new Date(), "Pando");
-    fachada.agregarTransito("GHI9012", new Date(), "Canelones");
-
-       
+        //Datos prueba transito 
+        fachada.agregarTransito("ABC1234", new Date(), "Santa Lucia");
+        fachada.agregarTransito("DEF5678", new Date(), "Pando");
+        fachada.agregarTransito("GHI9012", new Date(), "Canelones");
+  
     }
 }

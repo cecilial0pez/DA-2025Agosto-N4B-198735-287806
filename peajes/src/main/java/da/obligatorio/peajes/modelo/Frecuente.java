@@ -6,7 +6,7 @@ import java.util.List;
 public class Frecuente extends Bonificacion {
 
     public Frecuente() {
-        super("Frecuente");
+        super("Frecuente",0.5);
     }
 
     // Método específico con el contexto necesario para determinar si aplica

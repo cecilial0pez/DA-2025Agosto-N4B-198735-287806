@@ -67,7 +67,7 @@ public class Propietario extends Usuario {
     // agregar notificaciones, vehiculos y asignaciones
 
     public boolean haySaldoMinimo() {
-        return this.saldo >= 500;
+        return this.saldo >= saldoMinimo;
     }
 
     public double actualizarSaldo(double montoGastado) {
@@ -131,7 +131,8 @@ public class Propietario extends Usuario {
         if (this.asignaciones == null){
             this.asignaciones = new ArrayList<>();}
         Asignacion a = new Asignacion(bonificacion, this, puesto);
-        this.asignaciones.add(a); 
+        this.asignaciones.add(a);
+        
         registrarNotificacion("Se ha asignado la bonificacion " + bonificacion.getNombre() + " para el puesto " + puesto.getNombre());
         
     }
@@ -152,7 +153,7 @@ public class Propietario extends Usuario {
         return true;
     }
 
-    public void aplicarDescuento(Transito transito) {
+    public void aplicarDescuento(double descuento) {
         // metodo para aplicar descuento a un propietario
     }
 

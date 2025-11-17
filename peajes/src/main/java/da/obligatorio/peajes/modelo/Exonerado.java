@@ -5,7 +5,7 @@ import java.util.Date;
 public class Exonerado extends Bonificacion {
 
     public Exonerado() {
-        super("Exonerado");
+        super("Exonerado",1.0);
     }
 
     
