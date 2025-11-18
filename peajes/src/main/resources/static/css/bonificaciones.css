@@ -243,10 +243,6 @@ input:focus,select:focus{
   background:rgba(59,130,246,0.12);
 }
 
-.select-wrapper select{
-  width:100%;
-}
-
 .fullscreen-msg{
   min-height:100vh;
   display:flex;
@@ -270,4 +266,5 @@ input:focus,select:focus{
   .sidebar-header{flex-direction:column;align-items:flex-start;}
   .main-panel{padding:24px;}
   .form-grid{grid-template-columns:1fr;}
+  .ghost{width:100%;text-align:center;}
 }
