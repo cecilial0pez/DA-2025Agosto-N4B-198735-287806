@@ -118,5 +118,10 @@ public class Fachada extends Observable {
         return sPeaje.getAsignacionesPropietario(cedula);
     }
 
+    public List<Estado> getEstados(){
+        return sPeaje.getEstados();
+    }
+
+
 
 }

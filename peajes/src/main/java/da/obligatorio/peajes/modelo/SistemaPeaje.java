@@ -28,6 +28,10 @@ public class SistemaPeaje {
         return propietarios;
     }
 
+    public ArrayList<Estado> getEstados() {
+        return estados;
+    }
+
     public List<Asignacion> getAsignacionesPropietario(String cedula) throws PeajeException {
         Propietario propietarioAbuscar=buscarPropietario(cedula);
         return propietarioAbuscar.getAsignaciones();
