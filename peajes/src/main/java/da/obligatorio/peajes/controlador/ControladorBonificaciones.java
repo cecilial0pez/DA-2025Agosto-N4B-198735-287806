@@ -1,6 +1,7 @@
 package da.obligatorio.peajes.controlador;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +15,18 @@ import da.obligatorio.peajes.Respuesta;
 import da.obligatorio.peajes.dto.AsignacionDTO;
 import da.obligatorio.peajes.dto.NombreDTO;
 import da.obligatorio.peajes.dto.TarifaDTO;
+import da.obligatorio.peajes.dto.TransitoDTO;
 import da.obligatorio.peajes.modelo.Asignacion;
 import da.obligatorio.peajes.modelo.Bonificacion;
 import da.obligatorio.peajes.modelo.Fachada;
 import da.obligatorio.peajes.modelo.PeajeException;
+import da.obligatorio.peajes.modelo.Propietario;
 import da.obligatorio.peajes.modelo.Puesto;
 import da.obligatorio.peajes.modelo.Tarifa;
+import da.obligatorio.peajes.modelo.Transito;
 
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -61,20 +66,37 @@ public class ControladorBonificaciones {
     }
 
     @PostMapping("/asignacionesPropietario")
-    public List<Respuesta> asignacionesPropietario(@RequestBody String cedula) throws PeajeException {
-        List<AsignacionDTO> asignacionesDto = new ArrayList<AsignacionDTO>();
-        List<Asignacion> asignaciones = Fachada.getInstancia().getAsignacionesPropietario(cedula);
-         if (asignaciones != null) {
+    public List<Respuesta> asignacionesPropietario(@RequestBody String cedula) {
+        try {
+            List<AsignacionDTO> asignacionesDto = new ArrayList<>();
+            List<Asignacion> asignaciones = Fachada.getInstancia().getAsignacionesPropietario(cedula);
+            if (asignaciones != null) {
                 for (Asignacion a : asignaciones) {
-                    asignacionesDto.add(a);
+                    asignacionesDto.add(new AsignacionDTO(a));
                 }
             }
-            return Respuesta.lista(new Respuesta("asignacionesPropietario", asignacionesDto)); 
+            return Respuesta.lista(new Respuesta("asignacionesPropietario", asignacionesDto));
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("asignacionesPropietarioerror", e.getMessage()));
         }
     }
-    
+
+     @PostMapping("/asignarBonificacion")
+    public void asignarBonificacion(@RequestParam int posPuesto, @RequestParam int posBonificacion, @RequestParam String cedula) throws PeajeException {
+        if(posPuesto < 0){
+            throw new PeajeException("Debe especificar un puesto");
+        }
+         if(posBonificacion < 0){
+            throw new PeajeException("Debe especificar una bonificación");
+        }
+        Puesto puesto = Fachada.getInstancia().getPuestosPeaje().get(posPuesto);
+        Bonificacion bonificacion = Fachada.getInstancia().getBonificaciones().get(posBonificacion);
+        Fachada.getInstancia().agregarAsignacion(puesto.getNombre(), bonificacion.getNombre(),cedula);
+    }
+
+
+  
+}
 // Curso normal:
 // 1) El sistema muestra la lista de bonificaciones definidas. Información: Nombre de la
 // bonificación. hecho
@@ -101,4 +123,4 @@ public class ControladorBonificaciones {
 
 
 
- }
+
