@@ -85,22 +85,22 @@ public class Propietario extends Usuario {
     }
 
    
-    public void cambiarEstado(Estado estadoPropietario) throws PeajeException {
-        this.estado = estadoPropietario;
+    public void cambiarEstado(Estado nuevoEstado) throws PeajeException {
+        
         try{
-        if (estadoPropietario.getNombre().equals("Penalizado")) {
+        if (nuevoEstado.getNombre().equals("Penalizado")) {
             this.estado.penalizar();
             this.notificaciones.add(new Notificacion("Su estado ha cambiado a Penalizado."));
         }
-        if (estadoPropietario.getNombre().equals("Suspendido")) {
+        if (nuevoEstado.getNombre().equals("Suspendido")) {
             this.estado.suspender();
             this.notificaciones.add(new Notificacion("Su estado ha cambiado a Suspendido."));
         }
-        if(estadoPropietario.getNombre().equals("Habilitado")) {
+        if(nuevoEstado.getNombre().equals("Habilitado")) {
             this.estado.habilitar();
             this.notificaciones.add(new Notificacion("Su estado ha cambiado a Habilitado."));
         }
-        if(estadoPropietario.getNombre().equals("Deshabilitado")) {
+        if(nuevoEstado.getNombre().equals("Deshabilitado")) {
             this.estado.desHabilitar();
             this.notificaciones.add(new Notificacion("Su estado ha cambiado a Deshabilitado."));
         }

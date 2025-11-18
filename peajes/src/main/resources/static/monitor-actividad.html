@@ -53,6 +53,12 @@
           window.location.href = '/bonificaciones.html';
         });
       }
+      const btnCambiarEstado = document.getElementById('btnCambiarEstado');
+      if (btnCambiarEstado) {
+        btnCambiarEstado.addEventListener('click', () => {
+          window.location.href = '/cambiar-estado.html';
+        });
+      }
     });
 
     window.mostrar_nombre = function (nombre) {

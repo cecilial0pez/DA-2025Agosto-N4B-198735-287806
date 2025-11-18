@@ -1,63 +1,102 @@
-// package da.obligatorio.peajes.controlador;
+package da.obligatorio.peajes.controlador;
 
-// import java.util.ArrayList;
-// import java.util.Date;
-// import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-// import org.springframework.context.annotation.Scope;
-// import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.RequestParam;
-// import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.annotation.Scope;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-// import da.obligatorio.peajes.Respuesta;
-// import da.obligatorio.peajes.dto.AsignacionDTO;
-// import da.obligatorio.peajes.dto.NombreDTO;
-// import da.obligatorio.peajes.dto.PropietarioDTO;
-// import da.obligatorio.peajes.dto.TransitoDTO;
-// import da.obligatorio.peajes.modelo.Fachada;
-// import da.obligatorio.peajes.modelo.PeajeException;
-// import da.obligatorio.peajes.modelo.Propietario;
-// import da.obligatorio.peajes.modelo.Puesto;
-// import da.obligatorio.peajes.modelo.Transito;
-// import da.obligatorio.peajes.modelo.Asignacion;
-// import da.obligatorio.peajes.modelo.Estado;
+import da.obligatorio.peajes.Respuesta;
+import da.obligatorio.peajes.dto.AsignacionDTO;
+import da.obligatorio.peajes.dto.NombreDTO;
+import da.obligatorio.peajes.dto.PropietarioDTO;
+import da.obligatorio.peajes.dto.PropietarioEstadoDTO;
+import da.obligatorio.peajes.dto.TransitoDTO;
+import da.obligatorio.peajes.modelo.Fachada;
+import da.obligatorio.peajes.modelo.Habilitado;
+import da.obligatorio.peajes.modelo.PeajeException;
+import da.obligatorio.peajes.modelo.Penalizado;
+import da.obligatorio.peajes.modelo.Propietario;
+import da.obligatorio.peajes.modelo.Puesto;
+import da.obligatorio.peajes.modelo.Suspendido;
+import da.obligatorio.peajes.modelo.TipoEstado;
+import da.obligatorio.peajes.modelo.Transito;
+import da.obligatorio.peajes.modelo.Asignacion;
+import da.obligatorio.peajes.modelo.Deshabilitado;
+import da.obligatorio.peajes.modelo.Estado;
 
-// @RestController
-// @Scope("session")
-// public class ControladorCambiarEstado {
+@RestController
+@Scope("session")
+public class ControladorCambiarEstado {
 
-//    @PostMapping("/cambiarEstado/vistaConectada")
-//     public List<Respuesta> inicializarVista() {
-//         return Respuesta.lista(estados());
-//     }
+   @PostMapping("/cambiarEstado/vistaConectada")
+    public List<Respuesta> inicializarVista() {
+        return Respuesta.lista(estados());
+    }
 
-//     private Respuesta estados() {
-//         List<Estado> estados = Fachada.getInstancia().getEstados();
-//         List<NombreDTO>estadosDto = new ArrayList<NombreDTO>();
-//         for(Estado e: estados) {
-//              estadosDto.add(new NombreDTO(e.getNombre()));
-//         }
+    private Respuesta estados() {
+        List<TipoEstado> estados = Fachada.getInstancia().getTiposEstado();
+        List<NombreDTO>estadosDto = new ArrayList<NombreDTO>();
+        for(TipoEstado te: estados) {
+             estadosDto.add(new NombreDTO(te.getNombre()));
+        }
 
-//          return new Respuesta("estados", estadosDto);       
-//     }
+         return new Respuesta("estados", estadosDto);       
+    }
 
-//     @PostMapping("/estadoPropietario")
-//     public Respuesta estadoPropietario(@RequestParam String cedula) {
-//         try {
-//             Propietario propietario=Fachada.getInstancia().getPropietarioPorCedula(cedula);
+    @PostMapping("/estadoPropietario")
+    public List<Respuesta> estadoPropietario(@RequestParam String cedula) {
+      try{
+            Propietario propietario=Fachada.getInstancia().buscarPropietario(cedula);
+            List<PropietarioEstadoDTO> propietarioDto = new ArrayList<>();
+            PropietarioEstadoDTO dto = new PropietarioEstadoDTO(propietario);
+            propietarioDto.add(dto);
+           return Respuesta.lista( new Respuesta("propietarioDescripcion", propietarioDto));
+      }catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("propietarioEstadoError", e.getMessage()));
+        }
+    }
+    
 
-//             List<PropietarioDTO> propietarioDto = new ArrayList<>();
-//             PropietarioDTO dto = new PropietarioDTO(propietario);
-//             propietarioDto.add(dto);
-//             return new Respuesta("propietarioDescripcion", dto.descripcionCorta());
-//         } catch (PeajeException e) {
-//             return new Respuesta("propietarioerror", e.getMessage());
-//         }
-//     }
+    @PostMapping("/cambiarEstadoPropietario")
+    public Respuesta cambiarEstadoPropietario(@RequestParam String cedula, @RequestParam int posTipoEstado) {
+        try {
+            Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);
+            TipoEstado tipoEstado = Fachada.getInstancia().getTiposEstado().get(posTipoEstado);
+            
+            Estado nuevoEstado;
+            switch(tipoEstado.getNombre()) {
+                case "Habilitado": 
+                    nuevoEstado = new Habilitado(propietario);    
+                    break;
+                case "Deshabilitado": 
+                    nuevoEstado = new Deshabilitado(propietario);
+                    break;
+                case "Suspendido": 
+                    nuevoEstado = new Suspendido(propietario);
+                    break;
+                case "Penalizado": 
+                    nuevoEstado = new Penalizado(propietario);
+                    break;
+                default:
+                    throw new PeajeException("Estado no válido: " + tipoEstado.getNombre());
+            }
+            
+            Fachada.getInstancia().cambiarEstadoPropietario(propietario, nuevoEstado);
+            return new Respuesta("cambioEstadoExito", "El estado del propietario ha sido cambiado exitosamente.");
+        } catch (PeajeException e) {
+            return new Respuesta("cambioEstadoError", e.getMessage());
+        }
+    }
+
+   
 
 
 
-// }
+}
 
 //     Estados de propietarios - Información básica: nombre del estado.
 // Hasta el momento hay 4 estados de propietarios definidos en el sistema, aunque en el
@@ -82,7 +121,7 @@
 // Cursos alternativos:
 // 2) No se encuentra un propietario con la cedula especificada. Mensaje “no existe el propietario”
 // 5) El estado seleccionado es igual al actual. Mensaje “El propietario ya esta en estado “ +
-// nombre del estado actual. 
+// nombre del estado actual.
 
 
 

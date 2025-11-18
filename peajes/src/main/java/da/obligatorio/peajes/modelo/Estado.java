@@ -6,7 +6,6 @@ public abstract class Estado {
     private Propietario propietario;
 
     public Estado( String nombre,Propietario propietario ) {
-        
         this.nombre = nombre;
         this.propietario=propietario;
     }

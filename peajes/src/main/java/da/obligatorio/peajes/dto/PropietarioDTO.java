@@ -38,18 +38,5 @@ public class PropietarioDTO {
         this.saldo = propietario.getSaldo().intValue();
     }
 
-    public String descripcionCorta() {
-        String nom = nombre != null ? nombre : "";
-        String est = estado != null ? estado : "";
-        if (nom.isEmpty() && est.isEmpty()) {
-            return "";
-        }
-        if (nom.isEmpty()) {
-            return est;
-        }
-        if (est.isEmpty()) {
-            return nom;
-        }
-        return nom + " (" + est + ")";
-    }
+    
 }

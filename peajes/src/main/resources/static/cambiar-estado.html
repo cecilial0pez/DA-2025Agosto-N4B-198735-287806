@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cambiar estado de propietarios</title>
+  <link rel="stylesheet" href="/css/cambiar-estado.css" />
+</head>
+<body class="dash-body">
+  <aside class="dash-sidebar">
+    <div class="sidebar-header">
+      <div class="logo">ADM</div>
+      <div class="sidebar-title">
+        <h1>Panel administrador</h1>
+        <p id="adminName" class="small">Cargando...</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item" id="btnMonitor">Monitor de actividad</button>
+      <button class="nav-item" id="btnEmular">Emular tránsito</button>
+      <button class="nav-item" id="btnBonificaciones">Asignar bonificaciones</button>
+      <button class="nav-item active">Cambiar estado</button>
+    </nav>
+
+    <button class="logout" id="btnLogout">Cerrar sesión</button>
+  </aside>
+
+  <main class="dash-main">
+    <header class="main-header">
+      <h2>Cambiar estado de propietarios</h2>
+      <p class="muted">Gestioná el estado operativo mediante cédula de identidad</p>
+    </header>
+
+    <section class="main-panel">
+      <header class="panel-header">
+        <div>
+          <h3>Buscar propietario</h3>
+          <p class="muted small">Ingresá la cédula sin puntos ni guiones.</p>
+        </div>
+        <button class="ghost" id="btnRefrescar">Refrescar estados</button>
+      </header>
+      <form id="formBuscar" class="form-grid" autocomplete="off">
+        <label class="campo">
+          <span>Cédula</span>
+          <input type="text" id="cedula" name="cedula" required />
+        </label>
+        <button type="submit" class="primary">Buscar</button>
+      </form>
+      <p id="estadoBusqueda" class="msg" aria-live="polite">Esperando búsqueda…</p>
+    </section>
+
+    <section class="main-panel destacado">
+      <header class="panel-header">
+        <h3>Propietario seleccionado</h3>
+      </header>
+      <div id="infoPropietario" class="info-display">
+        <p class="msg">Sin propietario seleccionado.</p>
+      </div>
+    </section>
+
+    <section class="main-panel">
+      <header class="panel-header">
+        <h3>Cambio de estado</h3>
+      </header>
+      <form id="formCambiarEstado" class="form-grid">
+        <label class="campo">
+          <span>Nuevo estado</span>
+          <select id="selectEstado" name="posTipoEstado" required>
+            <option value="">Seleccione…</option>
+          </select>
+        </label>
+        <input type="hidden" id="cedulaSeleccionada" name="cedula" />
+        <button type="submit" class="primary" disabled>Cambiar estado</button>
+      </form>
+      <p id="estadoCambio" class="msg" aria-live="polite">Busque un propietario para habilitar el cambio.</p>
+    </section>
+  </main>
+
+  <script src="/js/utilesVista.js"></script>
+  <script src="/js/vistaWeb.js"></script>
+  <script>
+    let cedulaActual = null;
+    let estadoActual = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      submit('/cambiarEstado/vistaConectada', '', 'POST');
+
+      document.getElementById('btnMonitor').addEventListener('click', () => window.location.href = '/monitor-actividad.html');
+      document.getElementById('btnEmular').addEventListener('click', () => window.location.href = '/emular-transito.html');
+      document.getElementById('btnBonificaciones').addEventListener('click', () => window.location.href = '/bonificaciones.html');
+      document.getElementById('btnLogout').addEventListener('click', (ev) => {
+        ev.preventDefault();
+        submit('/logoutAdmin', '', 'POST');
+      });
+      document.getElementById('btnRefrescar').addEventListener('click', () => submit('/cambiarEstado/vistaConectada', '', 'POST'));
+
+      document.getElementById('formBuscar').addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        const cedula = document.getElementById('cedula').value.trim();
+        const lbl = document.getElementById('estadoBusqueda');
+
+        if (!cedula) {
+          lbl.className = 'msg error';
+          lbl.textContent = 'Ingrese la cédula a buscar.';
+          return;
+        }
+
+        cedulaActual = cedula;
+        document.getElementById('cedulaSeleccionada').value = cedula;
+        lbl.className = 'msg';
+        lbl.textContent = 'Buscando propietario...';
+
+        const params = new URLSearchParams({ cedula }).toString();
+        submit('/estadoPropietario', params, 'POST');
+      });
+
+      document.getElementById('formCambiarEstado').addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        const cedula = document.getElementById('cedulaSeleccionada').value;
+        const posTipoEstado = document.getElementById('selectEstado').value;
+        const estado = document.getElementById('estadoCambio');
+
+        if (!cedula) {
+          estado.className = 'msg error';
+          estado.textContent = 'Busque y seleccione un propietario primero.';
+          return;
+        }
+        if (posTipoEstado === '') {
+          estado.className = 'msg error';
+          estado.textContent = 'Seleccione el nuevo estado.';
+          return;
+        }
+
+        estado.className = 'msg';
+        estado.textContent = 'Cambiando estado...';
+
+        const params = new URLSearchParams({ cedula, posTipoEstado }).toString();
+        submit('/cambiarEstadoPropietario', params, 'POST');
+      });
+    });
+
+    window.mostrar_nombre = (nombre) => {
+      document.getElementById('adminName').textContent = nombre || 'Administrador';
+    };
+
+    window.mostrar_estados = (lista) => {
+      const select = document.getElementById('selectEstado');
+      select.innerHTML = '<option value="">Seleccione…</option>';
+
+      if (!Array.isArray(lista) || lista.length === 0) {
+        const lbl = document.getElementById('estadoCambio');
+        lbl.className = 'msg error';
+        lbl.textContent = 'No hay estados disponibles.';
+        return;
+      }
+
+      lista.forEach((item, index) => {
+        const opt = document.createElement('option');
+        opt.value = String(index);
+        opt.textContent = item.nombre;
+        select.appendChild(opt);
+      });
+
+      if (estadoActual) {
+        seleccionarPorTexto('selectEstado', estadoActual);
+      }
+    };
+
+    window.mostrar_estadosError = (mensaje) => {
+      const lbl = document.getElementById('estadoCambio');
+      lbl.className = 'msg error';
+      lbl.textContent = mensaje || 'No se pudieron cargar los estados disponibles.';
+    };
+
+    window.mostrar_propietarioDescripcion = (datos) => {
+      const descripcion = typeof datos === 'string'
+        ? datos
+        : datos && typeof datos === 'object'
+          ? `${datos.nombre ?? 'Sin nombre'} (${datos.estado ?? 'Sin estado'})`
+          : 'Sin información disponible';
+
+      const lblBusqueda = document.getElementById('estadoBusqueda');
+      const info = document.getElementById('infoPropietario');
+      const lblCambio = document.getElementById('estadoCambio');
+      const btn = document.querySelector('#formCambiarEstado button[type="submit"]');
+
+      lblBusqueda.className = 'msg success';
+      lblBusqueda.textContent = 'Propietario encontrado.';
+
+      info.innerHTML = `
+        <div class="propietario-info">
+          <span class="label">Propietario:</span>
+          <strong>${descripcion}</strong>
+        </div>
+      `;
+
+      estadoActual = extraerEstadoDesdeDescripcion(descripcion);
+      if (estadoActual) {
+        seleccionarPorTexto('selectEstado', estadoActual);
+      }
+
+      lblCambio.className = 'msg';
+      lblCambio.textContent = 'Seleccione el nuevo estado.';
+      btn.disabled = false;
+    };
+
+    window.mostrar_propietarioerror = (mensaje) => {
+      const lblBusqueda = document.getElementById('estadoBusqueda');
+      const info = document.getElementById('infoPropietario');
+      const lblCambio = document.getElementById('estadoCambio');
+      const btn = document.querySelector('#formCambiarEstado button[type="submit"]');
+
+      document.getElementById('cedulaSeleccionada').value = '';
+      cedulaActual = null;
+      estadoActual = null;
+      btn.disabled = true;
+
+      lblBusqueda.className = 'msg error';
+      lblBusqueda.textContent = mensaje || 'No existe el propietario.';
+
+      info.innerHTML = '<p class="msg error">No se encontró información del propietario.</p>';
+
+      lblCambio.className = 'msg error';
+      lblCambio.textContent = 'Busque un propietario válido para habilitar el cambio.';
+    };
+
+    window.mostrar_cambioEstadoExito = (mensaje) => {
+      const lbl = document.getElementById('estadoCambio');
+      lbl.className = 'msg success';
+      lbl.textContent = mensaje || 'El estado fue cambiado correctamente.';
+
+      if (cedulaActual) {
+        const params = new URLSearchParams({ cedula: cedulaActual }).toString();
+        submit('/estadoPropietario', params, 'POST');
+      }
+    };
+
+    window.mostrar_cambioEstadoError = (mensaje) => {
+      const lbl = document.getElementById('estadoCambio');
+      lbl.className = 'msg error';
+      lbl.textContent = mensaje || 'No se pudo cambiar el estado.';
+    };
+
+    window.mostrar_logoutAdmin = (ruta) => {
+      document.body.innerHTML = '<div class="fullscreen-msg">Sesión cerrada. Redirigiendo...</div>';
+      setTimeout(() => window.location.href = ruta || '/login-admin.html', 350);
+    };
+    window.mostrar_logout = window.mostrar_logoutAdmin;
+
+    window.procesarErrorSubmit = (status, texto) => {
+      console.error('Cambiar estado error:', status, texto);
+    };
+
+    window.primerSubmitFinalizado = () => {};
+
+    window.procesarRespuestaSubmit = (respuesta) => {
+      if (!respuesta || !respuesta.id) return false;
+      const handler = window['mostrar_' + respuesta.id];
+      if (typeof handler === 'function') {
+        handler(respuesta.parametro);
+        return true;
+      }
+      return false;
+    };
+
+    function extraerEstadoDesdeDescripcion(descripcion) {
+      if (!descripcion) return null;
+      const match = descripcion.match(/\(([^)]+)\)\s*$/);
+      return match ? match[1] : null;
+    }
+  </script>
+</body>
+</html>

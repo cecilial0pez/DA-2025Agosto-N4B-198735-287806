@@ -128,5 +128,16 @@ public class Fachada extends Observable {
     }
 
 
+    public List<TipoEstado> getTiposEstado(){
+        return sPeaje.getTiposEstado();
+    }
+
+    public Propietario buscarPropietario(String cedula) throws PeajeException { 
+        return sPeaje.buscarPropietario(cedula);
+    }
+
+    public void cambiarEstadoPropietario(Propietario propietario, Estado nombreEstado) throws PeajeException {
+        sPeaje.cambiarEstadoPropietario(propietario, nombreEstado);
+    }
 
 }

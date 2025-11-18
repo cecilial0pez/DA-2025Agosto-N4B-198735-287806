@@ -145,7 +145,10 @@ public class SistemaPeaje {
     public void agregarTipoEstado(String nombre){
         tiposEstado.add(new TipoEstado(nombre));
     }
-    
+
+    public void cambiarEstadoPropietario(Propietario propietario, Estado estado) throws PeajeException {
+     propietario.cambiarEstado(estado);
+    }
 
     //Metodos de busqueda
      private Puesto buscarPuesto(String nombrePuesto) throws PeajeException {
@@ -166,7 +169,7 @@ public class SistemaPeaje {
         throw new PeajeException("No existe una categoría con ese nombre ");
     }
 
-    private Propietario buscarPropietario(String cedula) throws PeajeException {
+   public Propietario buscarPropietario(String cedula) throws PeajeException {
         for (Propietario p : propietarios) {
             if (p.getCedula().equals(cedula)) {
                 return p;
@@ -216,4 +219,5 @@ public class SistemaPeaje {
         }
     }
 
+   
 }
