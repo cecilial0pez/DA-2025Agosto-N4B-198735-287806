@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.expression.spel.ast.Assign;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import da.obligatorio.peajes.ConexionNavegador;
 import da.obligatorio.peajes.Respuesta;
@@ -35,38 +36,36 @@ public class ControladorBonificaciones {
  
 
 //OBSERVA AL PROPIETARIO 
-    @PostMapping("/vistaConectada")
+    @PostMapping("/bonificaciones/vistaConectada")
     public List<Respuesta> inicializarVista() {
-        List<Respuesta> respuestas = new ArrayList<>();
-        respuestas.addAll(puestos());
-        respuestas.addAll(bonificaciones());
-        return respuestas;
+        return Respuesta.lista(puestos(),bonificaciones());
     }
 
-    private List<Respuesta> puestos() {
-        List<NombreDTO> puestosDto = new ArrayList<NombreDTO>();
+    private Respuesta puestos() {
+        
         List<Puesto> puestos = Fachada.getInstancia().getPuestosPeaje();
+        List<NombreDTO> puestosDto = new ArrayList<NombreDTO>();
         for(Puesto p: puestos) {
              puestosDto.add(new NombreDTO(p.getNombre()));
         }
 
-        return Respuesta.lista(new Respuesta("puestos", puestosDto)); 
+         return new Respuesta("puestos", puestosDto); 
            
     }
 
-    private List<Respuesta> bonificaciones() {
-        List<NombreDTO> bonificacionesDto = new ArrayList<NombreDTO>();
+    private Respuesta bonificaciones() {
         List<Bonificacion> bonificaciones = Fachada.getInstancia().getBonificaciones();
+        List<NombreDTO> bonificacionesDto = new ArrayList<NombreDTO>();
         for(Bonificacion b: bonificaciones) {
              bonificacionesDto.add(new NombreDTO(b.getNombre()));
         }
 
-        return Respuesta.lista(new Respuesta("bonificaciones", bonificacionesDto)); 
+        return new Respuesta("bonificaciones", bonificacionesDto); 
            
     }
 
     @PostMapping("/asignacionesPropietario")
-    public List<Respuesta> asignacionesPropietario(@RequestBody String cedula) {
+    public List<Respuesta> asignacionesPropietario(@RequestParam String cedula) {
         try {
             List<AsignacionDTO> asignacionesDto = new ArrayList<>();
             List<Asignacion> asignaciones = Fachada.getInstancia().getAsignacionesPropietario(cedula);
@@ -97,6 +96,8 @@ public class ControladorBonificaciones {
 
   
 }
+
+  
 // Curso normal:
 // 1) El sistema muestra la lista de bonificaciones definidas. Información: Nombre de la
 // bonificación. hecho

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Asignar bonificaciones</title>
+  <link rel="stylesheet" href="/css/bonificaciones.css" />
+</head>
+<body class="dash-body">
+  <aside class="dash-sidebar">
+    <div class="sidebar-header">
+      <div class="logo">ADM</div>
+      <div class="sidebar-title">
+        <h1>Panel administrador</h1>
+        <p id="adminName" class="small">Cargando...</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item" id="btnMonitor">Monitor de actividad</button>
+      <button class="nav-item" id="btnEmular">Emular tránsito</button>
+      <button class="nav-item active">Asignar bonificaciones</button>
+      <button class="nav-item" id="btnCambiarEstado">Cambiar estado</button>
+    </nav>
+
+    <button class="logout" id="btnLogout">Cerrar sesión</button>
+  </aside>
+
+  <main class="dash-main">
+    <header class="main-header">
+      <h2>Asignación de bonificaciones</h2>
+      <p class="muted">Gestioná bonificaciones por propietario y puesto</p>
+    </header>
+
+    <section class="main-panel">
+      <header class="panel-header">
+        <div>
+          <h3>Buscar propietario</h3>
+          <p class="muted small">Ingrese la cédula sin puntos ni guiones.</p>
+        </div>
+        <button class="ghost" id="btnRefrescar">Refrescar listas</button>
+      </header>
+      <form id="formBuscar" class="form-grid" autocomplete="off">
+        <label class="campo">
+          <span>Cédula</span>
+          <input type="text" id="cedula" name="cedula" required />
+        </label>
+        <button type="submit" class="primary">Buscar</button>
+      </form>
+      <p id="estadoBusqueda" class="msg" aria-live="polite">Esperando búsqueda…</p>
+    </section>
+
+    <section class="main-panel">
+      <header class="panel-header">
+        <h3>Bonificaciones disponibles</h3>
+      </header>
+      <div id="contenedorBonificaciones" class="select-wrapper">
+        <p class="msg">Cargando bonificaciones…</p>
+      </div>
+    </section>
+
+    <section class="main-panel">
+      <header class="panel-header">
+        <h3>Puestos disponibles</h3>
+      </header>
+      <div id="contenedorPuestos" class="select-wrapper">
+        <p class="msg">Cargando puestos…</p>
+      </div>
+    </section>
+
+    <section class="main-panel destacado">
+      <header class="panel-header">
+        <h3>Asignar a propietario</h3>
+      </header>
+      <form id="formAsignar" class="form-grid">
+        <label class="campo">
+          <span>Bonificación</span>
+          <select id="selectBonificacion" name="posBonificacion" required>
+            <option value="">Seleccione…</option>
+          </select>
+        </label>
+        <label class="campo">
+          <span>Puesto</span>
+          <select id="selectPuesto" name="posPuesto" required>
+            <option value="">Seleccione…</option>
+          </select>
+        </label>
+        <input type="hidden" id="cedulaSeleccionada" name="cedula" />
+        <button type="submit" class="primary" disabled>Asignar bonificación</button>
+      </form>
+      <p id="estadoAsignacion" class="msg" aria-live="polite">Seleccione un propietario para habilitar la asignación.</p>
+    </section>
+
+    <section class="main-panel panel-wide">
+      <header class="panel-header">
+        <h3>Bonificaciones asignadas</h3>
+      </header>
+      <div id="tablaAsignaciones" class="tabla-wrapper">
+        <p class="msg">Sin resultados.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/utilesVista.js"></script>
+  <script src="/js/vistaWeb.js"></script>
+  <script>
+    let cedulaActual = null;
+    urlIniciarVista = '/bonificaciones/vistaConectada';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      submit('/bonificaciones/vistaConectada', '', 'POST');
+      document.getElementById('btnMonitor').addEventListener('click', () => {
+        window.location.href = '/monitor-actividad.html';
+      });
+      document.getElementById('btnEmular').addEventListener('click', () => {
+        window.location.href = '/emular-transito.html';
+      });
+      document.getElementById('btnCambiarEstado').addEventListener('click', () => {
+        window.location.href = '/menu-cambiar-estado.html';
+      });
+      document.getElementById('btnLogout').addEventListener('click', () => {
+        submit('/logoutAdmin', '', 'POST');
+      });
+
+      document.getElementById('btnRefrescar').addEventListener('click', () => {
+        submit('/bonificaciones/vistaConectada', '', 'POST');
+      });
+
+      document.getElementById('formBuscar').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const cedula = document.getElementById('cedula').value.trim();
+        const estado = document.getElementById('estadoBusqueda');
+        if (!cedula) {
+          estado.className = 'msg error';
+          estado.textContent = 'Ingrese la cédula a buscar.';
+          return;
+        }
+        estado.className = 'msg';
+        estado.textContent = 'Buscando propietario...';
+        const params = new URLSearchParams({ cedula }).toString();
+        submit('/asignacionesPropietario', params, 'POST');
+      });
+
+      document.getElementById('formAsignar').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const estado = document.getElementById('estadoAsignacion');
+        const cedula = document.getElementById('cedulaSeleccionada').value;
+        const posBonificacion = document.getElementById('selectBonificacion').value;
+        const posPuesto = document.getElementById('selectPuesto').value;
+
+        if (!cedula) {
+          estado.className = 'msg error';
+          estado.textContent = 'Busque y seleccione un propietario primero.';
+          return;
+        }
+        if (posBonificacion === '' || posPuesto === '') {
+          estado.className = 'msg error';
+          estado.textContent = 'Seleccione bonificación y puesto.';
+          return;
+        }
+
+        estado.className = 'msg';
+        estado.textContent = 'Asignando...';
+        const params = new URLSearchParams({
+          posBonificacion,
+          posPuesto,
+          cedula
+        }).toString();
+        submit('/asignarBonificacion', params, 'POST');
+        setTimeout(() => {
+          if (cedulaActual) {
+            submit('/asignacionesPropietario', cedulaActual, 'POST');
+          }
+        }, 250);
+      });
+    });
+
+    window.mostrar_nombre = function (nombre) {
+      document.getElementById('adminName').textContent = nombre || 'Administrador';
+    };
+
+    window.mostrar_puestos = function (lista) {
+      const select = document.getElementById('selectPuesto');
+      const contenedor = document.getElementById('contenedorPuestos');
+      contenedor.innerHTML = '';
+      if (!Array.isArray(lista) || lista.length === 0) {
+        contenedor.innerHTML = '<p class="msg">No hay puestos disponibles.</p>';
+        select.innerHTML = '<option value="">Sin puestos</option>';
+        return;
+      }
+      select.innerHTML = '<option value="">Seleccione…</option>';
+      lista.forEach((item, index) => {
+        const opt = document.createElement('option');
+        opt.value = index;
+        opt.textContent = item.nombre;
+        select.appendChild(opt);
+      });
+      contenedor.appendChild(select);
+    };
+
+    window.mostrar_bonificaciones = function (lista) {
+      const select = document.getElementById('selectBonificacion');
+      const contenedor = document.getElementById('contenedorBonificaciones');
+      contenedor.innerHTML = '';
+      if (!Array.isArray(lista) || lista.length === 0) {
+        contenedor.innerHTML = '<p class="msg">No hay bonificaciones disponibles.</p>';
+        select.innerHTML = '<option value="">Sin bonificaciones</option>';
+        return;
+      }
+      select.innerHTML = '<option value="">Seleccione…</option>';
+      lista.forEach((item, index) => {
+        const opt = document.createElement('option');
+        opt.value = index;
+        opt.textContent = item.nombre;
+        select.appendChild(opt);
+      });
+      contenedor.appendChild(select);
+    };
+
+    window.mostrar_asignacionesPropietario = function (respuesta) {
+      const estadoBusqueda = document.getElementById('estadoBusqueda');
+      const tabla = document.getElementById('tablaAsignaciones');
+      const estadoAsignacion = document.getElementById('estadoAsignacion');
+      const formulario = document.getElementById('formAsignar');
+
+      estadoBusqueda.className = 'msg success';
+      estadoBusqueda.textContent = 'Propietario encontrado. Podés asignar bonificaciones.';
+
+      formulario.querySelector('button[type="submit"]').disabled = false;
+      document.getElementById('cedulaSeleccionada').value = cedulaActual;
+
+      if (Array.isArray(respuesta) && respuesta.length > 0) {
+        tabla.innerHTML = crearTablaDesdeJson(respuesta);
+      } else {
+        tabla.innerHTML = '<p class="msg">El propietario no tiene bonificaciones asignadas.</p>';
+      }
+
+      estadoAsignacion.className = 'msg';
+      estadoAsignacion.textContent = 'Seleccioná bonificación y puesto para asignar.';
+    };
+
+    window.mostrar_asignacionesPropietarioerror = function (mensaje) {
+      const estadoBusqueda = document.getElementById('estadoBusqueda');
+      const tabla = document.getElementById('tablaAsignaciones');
+      document.getElementById('formAsignar').querySelector('button[type="submit"]').disabled = true;
+      document.getElementById('cedulaSeleccionada').value = '';
+      tabla.innerHTML = '<p class="msg error">No hay datos para mostrar.</p>';
+      estadoBusqueda.className = 'msg error';
+      estadoBusqueda.textContent = mensaje || 'Propietario no encontrado.';
+    };
+
+    window.mostrar_logoutAdmin = function (ruta) {
+      document.body.innerHTML = '<div class="fullscreen-msg">Sesión cerrada. Redirigiendo...</div>';
+      setTimeout(() => (window.location.href = ruta || '/login-admin.html'), 350);
+    };
+    window.mostrar_logout = window.mostrar_logoutAdmin;
+
+    window.procesarErrorSubmit = function (status, texto) {
+      console.error('Bonificaciones error:', status, texto);
+    };
+
+    window.primerSubmitFinalizado = function () {
+      // Nada adicional
+    };
+
+    window.mostrar_respuestaGenerica = function (texto) {
+      document.getElementById('estadoAsignacion').className = 'msg success';
+      document.getElementById('estadoAsignacion').textContent = texto;
+    };
+
+    window.mostrar_asignacionError = function (texto) {
+      document.getElementById('estadoAsignacion').className = 'msg error';
+      document.getElementById('estadoAsignacion').textContent = texto;
+    };
+
+    window.mostrar_busquedaCedula = function (payload) {
+      if (!payload) return;
+      cedulaActual = payload.cedula;
+      document.getElementById('cedula').value = payload.cedula;
+      document.getElementById('cedulaSeleccionada').value = payload.cedula;
+      document.getElementById('estadoBusqueda').className = 'msg success';
+      document.getElementById('estadoBusqueda').textContent = `Propietario: ${payload.nombre || 'Sin nombre'} (${payload.estado || '-'})`;
+    };
+
+    window.mostrar_busquedaCedulaError = function (texto) {
+      document.getElementById('estadoBusqueda').className = 'msg error';
+      document.getElementById('estadoBusqueda').textContent = texto || 'No se pudo obtener la información del propietario.';
+    };
+
+    window.submitAsignaciones = function (cedula) {
+      if (!cedula) return;
+      cedulaActual = cedula;
+      submit('/asignacionesPropietario', cedula, 'POST');
+    };
+
+    window.mostrar_bonificacionesError = function (texto) {
+      const contenedor = document.getElementById('contenedorBonificaciones');
+      const select = document.getElementById('selectBonificacion');
+      select.innerHTML = '<option value="">Seleccione…</option>';
+      contenedor.innerHTML = '<p class="msg error">' + (texto || 'No se pudieron cargar las bonificaciones.') + '</p>';
+    };
+
+    window.mostrar_puestosError = function (texto) {
+      const contenedor = document.getElementById('contenedorPuestos');
+      const select = document.getElementById('selectPuesto');
+      select.innerHTML = '<option value="">Seleccione…</option>';
+      contenedor.innerHTML = '<p class="msg error">' + (texto || 'No se pudieron cargar los puestos.') + '</p>';
+    };
+
+    window.mostrar_asignarBonificacion = function (mensaje) {
+      const estado = document.getElementById('estadoAsignacion');
+      estado.className = 'msg success';
+      estado.textContent = mensaje || 'Bonificación asignada correctamente.';
+    };
+
+    window.mostrar_asignarBonificacionError = function (mensaje) {
+      const estado = document.getElementById('estadoAsignacion');
+      estado.className = 'msg error';
+      estado.textContent = mensaje || 'No se pudo asignar la bonificación.';
+    };
+
+    window.mostrar_asignacionesPropietarioVacio = function () {
+      document.getElementById('tablaAsignaciones').innerHTML = '<p class="msg">El propietario no tiene bonificaciones asignadas.</p>';
+    };
+
+    window.mostrar_bonificacionesPropietario = window.mostrar_asignacionesPropietario;
+    window.mostrar_bonificacionesPropietarioError = window.mostrar_asignacionesPropietarioerror;
+  </script>
+</body>
+</html>
