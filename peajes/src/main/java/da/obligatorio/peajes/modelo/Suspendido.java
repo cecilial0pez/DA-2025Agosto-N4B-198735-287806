@@ -8,7 +8,7 @@ public class Suspendido extends Estado {
      
      @Override
     public void habilitar() throws PeajeException {
-        getPropietario().setEstado(new Habilitado(getPropietario()));
+      getPropietario().cambiarEstado(new Habilitado(getPropietario()));
     }
 
     @Override

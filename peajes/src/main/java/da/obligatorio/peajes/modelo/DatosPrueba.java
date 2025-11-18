@@ -10,11 +10,12 @@ public class DatosPrueba {
         
     Fachada fachada = Fachada.getInstancia();
     
-    //Datos prueba Estado 
-    Estado e1= new Habilitado();
-    Estado e2= new Deshabilitado();
-    Estado e3= new Suspendido();
-    Estado e4= new Penalizado();
+    //Datos prueba Estado
+
+    fachada.agregarTipoEstado("Habilitado");
+    fachada.agregarTipoEstado("Deshabilitado");
+    fachada.agregarTipoEstado("Suspendido");
+    fachada.agregarTipoEstado("Penalizado");
   
     //Datos prueba Bonificacion
     Bonificacion b1= new Frecuente() ;
@@ -24,7 +25,7 @@ public class DatosPrueba {
     //Datos prueba  usuarios  
     Administrador a1= new Administrador("a", "1234567", "Administrador Prueba");
     Administrador a2= new Administrador("a2", "8765432", "Segundo admin");
-    Propietario p1= new Propietario("prop123", "1122334", "Propietario1",5000.0, 500.0, e1);
+    Propietario p1= new Propietario("prop123", "1122334", "Propietario1",5000.0, 500.0);
     
     //Datos prueba Categoria 
     Categoria c1= new Categoria("Automovil"); 
@@ -52,10 +53,6 @@ public class DatosPrueba {
     Date fechaHora = cal.getTime();
     
     //Agregar datos de prueba a la fachada
-        fachada.agregarEstado(e1);
-        fachada.agregarEstado(e2);
-        fachada.agregarEstado(e3);
-        fachada.agregarEstado(e4);
 
         fachada.agregarBonificacion(b1);
         fachada.agregarBonificacion(b2);

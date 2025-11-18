@@ -13,18 +13,18 @@ public class Propietario extends Usuario {
 
     private double saldo; 
     private double saldoMinimo ;
-    private Estado estado ;
+    private Estado estado = new Habilitado(this);
     // Listas
     private List<Vehiculo> vehiculos;
     private List<Asignacion> asignaciones;
     private List<Notificacion> notificaciones;
     private List<Transito> transitos;
 
-    public Propietario(String contrasenia, String cedula, String nombre, Double saldo,double saldoMinimo, Estado estado) {
+    public Propietario(String contrasenia, String cedula, String nombre, Double saldo,double saldoMinimo) {
         super(contrasenia, cedula, nombre);
         this.saldo = saldo;
         this.saldoMinimo = saldoMinimo;
-        this.estado = estado;
+      
     }
 
     //getters y setters 
@@ -85,32 +85,36 @@ public class Propietario extends Usuario {
     }
 
    
-    // public void cambiarEstado(Estado estadoPropietario) throws PeajeException {
-    //     this.estado = estadoPropietario;
-    //     // para cambiar el estado del propietario
+    public void cambiarEstado(Estado estadoPropietario) throws PeajeException {
+        this.estado = estadoPropietario;
+        try{
+        if (estadoPropietario.getNombre().equals("Penalizado")) {
+            this.estado.penalizar();
+            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Penalizado."));
+        }
+        if (estadoPropietario.getNombre().equals("Suspendido")) {
+            this.estado.suspender();
+            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Suspendido."));
+        }
+        if(estadoPropietario.getNombre().equals("Habilitado")) {
+            this.estado.habilitar();
+            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Habilitado."));
+        }
+        if(estadoPropietario.getNombre().equals("Deshabilitado")) {
+            this.estado.desHabilitar();
+            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Deshabilitado."));
+        }
+        }catch(Exception e){
+            throw new PeajeException("Error al cambiar el estado del propietario.");
+        }
 
-    //     if (estadoPropietario.getNombre().equals("Penalizado")) {
-    //         this.estado.penalizar();
-    //         this.notificaciones.add(new Notificacion("Su estado ha cambiado a Penalizado."));
-    //     }
-    //     if (estadoPropietario.getNombre().equals("Suspendido")) {
-    //         this.estado.suspender();
-    //         this.notificaciones.add(new Notificacion("Su estado ha cambiado a Suspendido."));
-    //     if(estadoPropietario.getNombre().equals("Habilitado")) {
-    //         this.estado.habilitar();
-    //         this.notificaciones.add(new Notificacion("Su estado ha cambiado a Habilitado."));
-    //     }
-    //     if(estadoPropietario.getNombre().equals("Deshabilitado")) {
-    //         this.estado.desHabilitar();
-    //         this.notificaciones.add(new Notificacion("Su estado ha cambiado a Deshabilitado."));
-    //     }}
-// otros métodos prof
+    }
+    
     public boolean puedeLoguearse() {
         // Delegar la lógica al objeto Estado (null-safe).
         return this.estado != null && this.estado.puedeLoguearse();
     }
 
-//ESTUDIAR PARA DEFENSA
     public void hacerRegistrarTransito(Transito transito) throws PeajeException {
         if (this.transitos == null) {
             this.transitos = new ArrayList<Transito>();
@@ -138,7 +142,6 @@ public class Propietario extends Usuario {
         
     }
 
-  
     //asigna la bonificacion y genera la notificacion 
     public void asignarBonificacion(Puesto puesto, Bonificacion bonificacion)throws PeajeException {
          if (bonificacion == null || puesto == null)
@@ -184,8 +187,6 @@ public class Propietario extends Usuario {
         }
         return null;
     }
-
-
 
     public void registrarNotificacion(String mensaje) throws PeajeException {
         Notificacion notificacion = new Notificacion(mensaje);

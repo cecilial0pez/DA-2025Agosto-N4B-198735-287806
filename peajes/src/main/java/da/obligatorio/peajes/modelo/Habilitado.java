@@ -14,12 +14,12 @@ public class Habilitado extends Estado {
 
     @Override
     public void desHabilitar() throws PeajeException {
-        getPropietario().setEstado(new Deshabilitado(getPropietario()));
+       getPropietario().cambiarEstado(new Deshabilitado(getPropietario()));
     }
 
     @Override
     public void penalizar() throws PeajeException {
-         getPropietario().setEstado(new Penalizado(getPropietario()));
+         getPropietario().cambiarEstado(new Penalizado(getPropietario()));
     }
 
     @Override
@@ -29,7 +29,7 @@ public class Habilitado extends Estado {
 
     @Override
      public void suspender() throws PeajeException {
-        getPropietario().setEstado(new Suspendido(getPropietario()));
+        getPropietario().cambiarEstado(new Suspendido(getPropietario()));
      }
 
 }

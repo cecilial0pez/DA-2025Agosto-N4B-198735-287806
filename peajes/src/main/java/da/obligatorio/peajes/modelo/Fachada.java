@@ -92,6 +92,11 @@ public class Fachada extends Observable {
         return sPeaje.agregarTransito(matricula, fechaHora, nombrePuesto);
     }
 
+    public void agregarTipoEstado(String nombre) {
+        sPeaje.agregarTipoEstado(nombre);
+    }
+
+
     //Getters que devuelven listas 
     public List<Notificacion> getNotificaciones(Propietario propietario){
         return sPeaje.getNotificaciones(propietario);

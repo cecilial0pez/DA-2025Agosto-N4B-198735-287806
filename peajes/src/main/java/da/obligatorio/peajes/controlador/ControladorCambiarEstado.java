@@ -1,63 +1,63 @@
-package da.obligatorio.peajes.controlador;
+// package da.obligatorio.peajes.controlador;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+// import java.util.ArrayList;
+// import java.util.Date;
+// import java.util.List;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+// import org.springframework.context.annotation.Scope;
+// import org.springframework.web.bind.annotation.PostMapping;
+// import org.springframework.web.bind.annotation.RequestParam;
+// import org.springframework.web.bind.annotation.RestController;
 
-import da.obligatorio.peajes.Respuesta;
-import da.obligatorio.peajes.dto.AsignacionDTO;
-import da.obligatorio.peajes.dto.NombreDTO;
-import da.obligatorio.peajes.dto.PropietarioDTO;
-import da.obligatorio.peajes.dto.TransitoDTO;
-import da.obligatorio.peajes.modelo.Fachada;
-import da.obligatorio.peajes.modelo.PeajeException;
-import da.obligatorio.peajes.modelo.Propietario;
-import da.obligatorio.peajes.modelo.Puesto;
-import da.obligatorio.peajes.modelo.Transito;
-import da.obligatorio.peajes.modelo.Asignacion;
-import da.obligatorio.peajes.modelo.Estado;
+// import da.obligatorio.peajes.Respuesta;
+// import da.obligatorio.peajes.dto.AsignacionDTO;
+// import da.obligatorio.peajes.dto.NombreDTO;
+// import da.obligatorio.peajes.dto.PropietarioDTO;
+// import da.obligatorio.peajes.dto.TransitoDTO;
+// import da.obligatorio.peajes.modelo.Fachada;
+// import da.obligatorio.peajes.modelo.PeajeException;
+// import da.obligatorio.peajes.modelo.Propietario;
+// import da.obligatorio.peajes.modelo.Puesto;
+// import da.obligatorio.peajes.modelo.Transito;
+// import da.obligatorio.peajes.modelo.Asignacion;
+// import da.obligatorio.peajes.modelo.Estado;
 
-@RestController
-@Scope("session")
-public class ControladorCambiarEstado {
+// @RestController
+// @Scope("session")
+// public class ControladorCambiarEstado {
 
-   @PostMapping("/cambiarEstado/vistaConectada")
-    public List<Respuesta> inicializarVista() {
-        return Respuesta.lista(estados());
-    }
+//    @PostMapping("/cambiarEstado/vistaConectada")
+//     public List<Respuesta> inicializarVista() {
+//         return Respuesta.lista(estados());
+//     }
 
-    private Respuesta estados() {
-        List<Estado> estados = Fachada.getInstancia().getEstados();
-        List<NombreDTO>estadosDto = new ArrayList<NombreDTO>();
-        for(Estado e: estados) {
-             estadosDto.add(new NombreDTO(e.getNombre()));
-        }
+//     private Respuesta estados() {
+//         List<Estado> estados = Fachada.getInstancia().getEstados();
+//         List<NombreDTO>estadosDto = new ArrayList<NombreDTO>();
+//         for(Estado e: estados) {
+//              estadosDto.add(new NombreDTO(e.getNombre()));
+//         }
 
-         return new Respuesta("estados", estadosDto);       
-    }
+//          return new Respuesta("estados", estadosDto);       
+//     }
 
-    @PostMapping("/estadoPropietario")
-    public Respuesta estadoPropietario(@RequestParam String cedula) {
-        try {
-            Propietario propietario=Fachada.getInstancia().getPropietarioPorCedula(cedula);
+//     @PostMapping("/estadoPropietario")
+//     public Respuesta estadoPropietario(@RequestParam String cedula) {
+//         try {
+//             Propietario propietario=Fachada.getInstancia().getPropietarioPorCedula(cedula);
 
-            List<PropietarioDTO> propietarioDto = new ArrayList<>();
-            PropietarioDTO dto = new PropietarioDTO(propietario);
-            propietarioDto.add(dto);
-            return new Respuesta("propietarioDescripcion", dto.descripcionCorta());
-        } catch (PeajeException e) {
-            return new Respuesta("propietarioerror", e.getMessage());
-        }
-    }
-
-
+//             List<PropietarioDTO> propietarioDto = new ArrayList<>();
+//             PropietarioDTO dto = new PropietarioDTO(propietario);
+//             propietarioDto.add(dto);
+//             return new Respuesta("propietarioDescripcion", dto.descripcionCorta());
+//         } catch (PeajeException e) {
+//             return new Respuesta("propietarioerror", e.getMessage());
+//         }
+//     }
 
 
+
+// }
 
 //     Estados de propietarios - Información básica: nombre del estado.
 // Hasta el momento hay 4 estados de propietarios definidos en el sistema, aunque en el
@@ -86,4 +86,4 @@ public class ControladorCambiarEstado {
 
 
 
-}
+

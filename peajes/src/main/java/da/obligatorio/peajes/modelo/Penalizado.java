@@ -7,7 +7,7 @@ public class Penalizado extends Estado {
 
     @Override
     public void habilitar() throws PeajeException {
-        getPropietario().setEstado(new Habilitado(getPropietario()));
+        getPropietario().cambiarEstado(new Habilitado(getPropietario()));
     }
 
     @Override
@@ -22,7 +22,7 @@ public class Penalizado extends Estado {
 
     @Override
     public void suspender() throws PeajeException {
-        getPropietario().setEstado(new Suspendido(getPropietario()));
+       getPropietario().cambiarEstado(new Suspendido(getPropietario()));
      }
     
 }

@@ -12,6 +12,7 @@ public class SistemaPeaje {
     private ArrayList<Vehiculo> vehiculos = new ArrayList();
     private ArrayList<Propietario> propietarios = new ArrayList();
     private ArrayList<Bonificacion> bonificaciones = new ArrayList();
+    private ArrayList<TipoEstado> tiposEstado = new ArrayList();
 
     public ArrayList<Categoria> getCategorias() {
         return categorias;
@@ -30,6 +31,10 @@ public class SistemaPeaje {
 
     public ArrayList<Estado> getEstados() {
         return estados;
+    }
+
+    public ArrayList<TipoEstado> getTiposEstado() {
+        return tiposEstado;
     }
 
     public List<Asignacion> getAsignacionesPropietario(String cedula) throws PeajeException {
@@ -136,6 +141,11 @@ public class SistemaPeaje {
             return true;
         }
      }
+
+    public void agregarTipoEstado(String nombre){
+        tiposEstado.add(new TipoEstado(nombre));
+    }
+    
 
     //Metodos de busqueda
      private Puesto buscarPuesto(String nombrePuesto) throws PeajeException {
