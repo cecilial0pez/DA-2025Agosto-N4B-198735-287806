@@ -114,15 +114,9 @@ public class Fachada extends Observable {
         return sPeaje.getTarifasPuesto(nombrePuesto);
     }
 
-    // public void AgregarAsignacionBonificacion(String nombrePuesto,String nombreBonificacion,String cedula ) throws PeajeException{
-    //     try {
-    //         sPeaje.AgregarAsignacionBonificacion(nombrePuesto, nombreBonificacion, cedula);
-    //         this.notificar(Eventos.cambioBonificaciones);
-    //     } catch (PeajeException e) {
-    //         throw new PeajeException(e.getMessage());
-    //     }
-    // }
+    public List<Asignacion> getAsignacionesPropietario(String cedula) throws PeajeException {
+        return sPeaje.getAsignacionesPropietario(cedula);
+    }
 
-    
 
 }

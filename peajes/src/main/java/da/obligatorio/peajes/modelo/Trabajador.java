@@ -14,17 +14,13 @@ public class Trabajador extends Bonificacion {
     
     @Override
     public double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto, Date fecha) throws PeajeException   {
-        try {
-            Categoria categoria = vehiculo.getCategoria();
-            Tarifa tarifa = puesto.TarifaPorCategoria(categoria);
+        try { 
             if(esDiaDeSemana(fecha)) { 
-            Double monto = tarifa.getMonto();
-            double precioFinal = monto - (monto * this.getPorcentajeDescuento());
-            return precioFinal;
+                return this.getPorcentajeDescuento();
             }
-            return tarifa.getMonto();
+            return 0.0;
         } catch (Exception e) {
-            throw new PeajeException("Error al calcular bonificacion: Categoria no encontrada");
+            throw new PeajeException("Error al calcular bonificacion");
         }
         
     }

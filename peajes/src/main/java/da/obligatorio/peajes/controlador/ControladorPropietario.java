@@ -38,19 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @Scope("session")
 public class ControladorPropietario implements Observador {
-    private final ConexionNavegador conexionNavegador; 
-
-    public ControladorPropietario(@Autowired ConexionNavegador conexionNavegador) {
-        this.conexionNavegador = conexionNavegador;
-    }
-
-    @GetMapping(value = "/registrarSSE", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter registrarSSE() {
-        conexionNavegador.conectarSSE();
-        return conexionNavegador.getConexionSSE(); 
-       
-    }
-
+    
     //con esto se que propietario esta conectado
    private Propietario propietarioEnSesion(HttpSession sesionHttp) throws PeajeException {
         if (sesionHttp == null) throw new PeajeException("Sesión nula");

@@ -11,7 +11,7 @@ public class Exonerado extends Bonificacion {
     
     @Override
     public double calcularBonificacion(Propietario propietario, Vehiculo vehiculo, Puesto puesto, Date fecha)throws PeajeException   {
-       return 0;
+       return this.getPorcentajeDescuento();
     }
 
 }

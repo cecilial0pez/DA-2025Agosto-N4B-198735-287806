@@ -26,7 +26,7 @@ import jakarta.servlet.http.HttpSession;
 @Scope("session")
 public class ControladorMenu {
 
-
+//UNICO LUGAR DONDE VA SSE 
    private final ConexionNavegador conexionNavegador; 
     
     public ControladorMenu(@Autowired ConexionNavegador conexionNavegador) {

@@ -39,18 +39,7 @@ import observador.Observador;
 @RestController
 @Scope("session")
 public class ControladorEmularTransito implements Observador{
-    private final ConexionNavegador conexionNavegador; 
-     
-    public ControladorEmularTransito(@Autowired ConexionNavegador conexionNavegador) {
-        this.conexionNavegador = conexionNavegador;
-    }
-
-
-    @GetMapping(value = "/emular/registrarSSE", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter registrarSSE() {
-        conexionNavegador.conectarSSE();
-        return conexionNavegador.getConexionSSE();
-    }
+   //OBSERVA AL PROPIETARIO Y EL CAMBIIO EN SUS LISTAS 
 
     @PostMapping("/vistaConectada")
 	public List<Respuesta> inicializarVista() {

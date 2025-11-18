@@ -77,6 +77,7 @@ public class Transito {
     //Metodos agregados
     public double calcularTotalAPagar(double tarifa, double descuento){
         return tarifa - (tarifa * descuento);
+        //no puedo fijar el total pagado aca porque necesito el propietario para ver su bonificacion
     }
 
     public boolean VerificarFecha (LocalDateTime fecha){

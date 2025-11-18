@@ -65,9 +65,19 @@ public class Propietario extends Usuario {
 
     // Metodos agregados
     // agregar notificaciones, vehiculos y asignaciones
+//Si el saldo del usuario es menor al valor de la alerta de saldo mínimo el sistema registra
+ //una notificación al propietario: [Fecha y hora de la notificación] + “Tu saldo actual es
+ //de $ “ + saldo actual + “ Te recomendamos hacer una recarga”;
+    public boolean haySaldoSuficiente(double totalPagar) {
+    if(this.saldo - totalPagar <= this.saldoMinimo){
+    return false;
+    }
+        return true;
+    }
 
     public double actualizarSaldo(double montoGastado) {
-        return this.saldo - montoGastado;
+        this.saldo -= montoGastado;
+        return this.saldo;
     }
 
     public void eliminarNotificaciones() {
@@ -100,14 +110,32 @@ public class Propietario extends Usuario {
         return this.estado != null && this.estado.puedeLoguearse();
     }
 
-
+//ESTUDIAR PARA DEFENSA
     public void hacerRegistrarTransito(Transito transito) throws PeajeException {
         if (this.transitos == null) {
             this.transitos = new ArrayList<Transito>();
         }
-        actualizarSaldo(transito.getTotalPagado());
-        this.transitos.add(transito);
-        registrarNotificacion("Pasaste por el puesto " + transito.getPuesto().getNombre() + " con el vehículo " + transito.getVehiculo().getMatricula());
+        Puesto puesto = transito.getPuesto();
+        if( hayBonificacionEnPuesto(puesto)){
+            Bonificacion bonif = bonificacionporPuesto(puesto);
+            transito.setNombreBonificacion(bonif.getNombre());
+            Double porcentajeDescuento= bonif.getPorcentajeDescuento();
+            Double aApagar=transito.calcularTotalAPagar(transito.getTarifa().getMonto(), porcentajeDescuento);
+            transito.setTotalPagado(aApagar);
+        }else{
+            transito.setTotalPagado(transito.getTarifa().getMonto());
+        }
+//getTotalPagado
+        if(haySaldoSuficiente(transito.getTotalPagado())==false){
+            registrarNotificacion("Tu saldo actual es de $ " + this.saldo + " Te recomendamos hacer una recarga");
+            throw new PeajeException("Saldo insuficiente para realizar el transito. Saldo actual: " + this.saldo);
+        }else{
+            actualizarSaldo(transito.getTotalPagado());
+            this.transitos.add(transito);
+            
+            registrarNotificacion("Pasaste por el puesto " + transito.getPuesto().getNombre() + " con el vehículo " + transito.getVehiculo().getMatricula());
+        }     
+        
     }
 
   

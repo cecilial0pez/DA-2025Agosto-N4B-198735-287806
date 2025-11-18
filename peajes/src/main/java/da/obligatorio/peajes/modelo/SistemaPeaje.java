@@ -27,6 +27,13 @@ public class SistemaPeaje {
     public ArrayList<Propietario> getPropietarios() {
         return propietarios;
     }
+
+    public List<Asignacion> getAsignacionesPropietario(String cedula) throws PeajeException {
+        Propietario propietarioAbuscar=buscarPropietario(cedula);
+        return propietarioAbuscar.getAsignaciones();
+    }
+   
+   
     //Métodos para agregar datos. 
     public void agregarEstado(Estado e) {
      estados.add(e);
@@ -92,11 +99,7 @@ public class SistemaPeaje {
         }
     }
 
-    //Falta arreglar. El saldo del propietario no pareceria estarse descontando. 
-    // A su vez, el metodo de bonificacion en lugar de devolver lo que hay 
-    //que pagar que devuelva el monto de descuento y ahi se lo paso a 
-    //transito y que transito mismo haga el calculo de cual es el precio final
-    //falta notificar el saldo minimo de alerta para el propietario 
+    //Falta arreglar vistas 
      public Transito agregarTransito(String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
         Vehiculo v = buscarVehiculo(matricula);
         Propietario propietario = v.getPropietario();
@@ -104,13 +107,6 @@ public class SistemaPeaje {
         Tarifa t = p.TarifaPorCategoria(v.getCategoria());
         if (SePuedeHacerTransito(v, propietario, p, t)) {
             Transito transito = new Transito(v, fechaHora, p, t);
-            double totalPagado = t.getMonto();
-                if (propietario.hayBonificacionEnPuesto(p)) {
-                    Bonificacion bonifAsignada = propietario.bonificacionporPuesto(p);
-                    transito.setNombreBonificacion(bonifAsignada.getNombre());
-                    totalPagado = bonifAsignada.calcularBonificacion(propietario, v, p, fechaHora);
-                }
-            transito.setTotalPagado(totalPagado);
             propietario.hacerRegistrarTransito(transito);
             v.incrementarCantidadTransitos();
             p.agregarTransito(transito);
