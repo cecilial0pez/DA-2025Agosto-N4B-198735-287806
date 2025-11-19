@@ -8,7 +8,7 @@ public class Deshabilitado extends Estado {
 
     @Override
     public void habilitar() throws PeajeException {
-        getPropietario().cambiarEstado(new Habilitado(getPropietario()));
+          getPropietario().aplicarCambioDirecto(new Habilitado(getPropietario()));
     }
 
     @Override
@@ -18,11 +18,12 @@ public class Deshabilitado extends Estado {
 
     @Override
     public void penalizar() throws PeajeException {
-        throw new PeajeException("No se puede penalizar, ya está deshabilitado");
+        getPropietario().aplicarCambioDirecto(new Penalizado(getPropietario()));
     }
+    
 
     @Override
     public void suspender() throws PeajeException {
-        throw new PeajeException("No se puede suspender, ya está deshabilitado");
+        getPropietario().aplicarCambioDirecto(new Suspendido(getPropietario()));
     }
 }

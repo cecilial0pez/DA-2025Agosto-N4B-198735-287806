@@ -7,12 +7,12 @@ public class Penalizado extends Estado {
 
     @Override
     public void habilitar() throws PeajeException {
-        getPropietario().cambiarEstado(new Habilitado(getPropietario()));
+        getPropietario().aplicarCambioDirecto(new Habilitado(getPropietario()));
     }
 
     @Override
     public void desHabilitar() throws PeajeException {
-        throw new PeajeException("No se puede deshabilitar un propietario penalizado.");
+      getPropietario().aplicarCambioDirecto(new Deshabilitado(getPropietario()));
     }
 
     @Override

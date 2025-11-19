@@ -71,7 +71,7 @@
           </select>
         </label>
         <input type="hidden" id="cedulaSeleccionada" name="cedula" />
-        <button type="submit" class="primary" disabled>Cambiar estado</button>
+        <button type="submit" class="primary" >Cambiar estado</button>
       </form>
       <p id="estadoCambio" class="msg" aria-live="polite">Busque un propietario para habilitar el cambio.</p>
     </section>
@@ -173,119 +173,78 @@
       lbl.textContent = mensaje || 'No se pudieron cargar los estados disponibles.';
     };
 
-    window.mostrar_propietarioDescripcion = (datos) => {
-      const descripcion = typeof datos === 'string'
-        ? datos
-        : datos && typeof datos === 'object'
-          ? `${datos.nombre ?? 'Sin nombre'} (${datos.estado ?? 'Sin estado'})`
-          : 'Sin información disponible';
+    const renderPropietario = (dto, mensaje) => {
+      const descripcion = `${dto.nombre ?? 'Sin nombre'} (${dto.estado ?? 'Sin estado'})`;
 
-      const lblBusqueda = document.getElementById('estadoBusqueda');
-      const info = document.getElementById('infoPropietario');
-      const lblCambio = document.getElementById('estadoCambio');
-      const btn = document.querySelector('#formCambiarEstado button[type="submit"]');
+      document.getElementById('estadoBusqueda').className = 'msg success';
+      document.getElementById('estadoBusqueda').textContent = mensaje;
 
-      lblBusqueda.className = 'msg success';
-      lblBusqueda.textContent = 'Propietario encontrado.';
-
-      info.innerHTML = `
+      document.getElementById('infoPropietario').innerHTML = `
         <div class="propietario-info">
           <span class="label">Propietario:</span>
           <strong>${descripcion}</strong>
         </div>
       `;
 
-      estadoActual = extraerEstadoDesdeDescripcion(descripcion);
+      estadoActual = dto.estado ?? null;
       if (estadoActual) {
         seleccionarPorTexto('selectEstado', estadoActual);
       }
-
-      lblCambio.className = 'msg';
-      lblCambio.textContent = 'Seleccione el nuevo estado.';
-      btn.disabled = false;
     };
 
-    window.mostrar_propietarioerror = (mensaje) => {
-      const lblBusqueda = document.getElementById('estadoBusqueda');
-      const info = document.getElementById('infoPropietario');
-      const lblCambio = document.getElementById('estadoCambio');
-      const btn = document.querySelector('#formCambiarEstado button[type="submit"]');
-
-      document.getElementById('cedulaSeleccionada').value = '';
-      cedulaActual = null;
-      estadoActual = null;
-      btn.disabled = true;
-
-      lblBusqueda.className = 'msg error';
-      lblBusqueda.textContent = mensaje || 'No existe el propietario.';
-
-      info.innerHTML = '<p class="msg error">No se encontró información del propietario.</p>';
-
-      lblCambio.className = 'msg error';
-      lblCambio.textContent = 'Busque un propietario válido para habilitar el cambio.';
+    window.mostrar_propietarioDescripcion = (dato) => {
+      const dto = typeof dato === 'string'
+        ? { nombre: dato.split('(')[0].trim(), estado: extraerEstadoDesdeDescripcion(dato) }
+        : dato ?? {};
+      renderPropietario(dto, 'Propietario encontrado.');
+      document.getElementById('estadoCambio').className = 'msg';
+      document.getElementById('estadoCambio').textContent = 'Seleccione el nuevo estado.';
     };
-
-    window.mostrar_cambioEstadoExito = (mensaje) => {
-      const lbl = document.getElementById('estadoCambio');
-      lbl.className = 'msg success';
-      lbl.textContent = mensaje || 'El estado fue cambiado correctamente.';
-
-      if (cedulaActual) {
-        const params = new URLSearchParams({ cedula: cedulaActual }).toString();
-        submit('/estadoPropietario', params, 'POST');
-      }
-    };
-
-    window.mostrar_cambioEstadoError = (mensaje) => {
-      const lbl = document.getElementById('estadoCambio');
-      lbl.className = 'msg error';
-      lbl.textContent = mensaje || 'No se pudo cambiar el estado.';
-    };
-
-    window.mostrar_logoutAdmin = (ruta) => {
-      document.body.innerHTML = '<div class="fullscreen-msg">Sesión cerrada. Redirigiendo...</div>';
-      setTimeout(() => window.location.href = ruta || '/login-admin.html', 350);
-    };
-    window.mostrar_logout = window.mostrar_logoutAdmin;
-
-    window.procesarErrorSubmit = (status, texto) => {
-      console.error('Cambiar estado error:', status, texto);
-    };
-
-    window.primerSubmitFinalizado = () => {};
-
-    window.procesarRespuestaSubmit = (respuesta) => {
-      if (!respuesta || !respuesta.id) return false;
-      const handler = window['mostrar_' + respuesta.id];
-      if (typeof handler === 'function') {
-        handler(respuesta.parametro);
-        return true;
-      }
-      return false;
-    };
-
-    function extraerEstadoDesdeDescripcion(descripcion) {
-      if (!descripcion) return null;
-      const match = descripcion.match(/\(([^)]+)\)\s*$/);
-      return match ? match[1] : null;
-    }
 
     window.mostrar_propietarioEstado = (lista) => {
       if (!Array.isArray(lista) || lista.length === 0) {
         window.mostrar_propietarioerror('No se encontró información del propietario.');
         return;
       }
+      renderPropietario(lista[0] ?? {}, 'Estado actualizado.');
+      document.getElementById('estadoCambio').className = 'msg success';
+      document.getElementById('estadoCambio').textContent = 'El estado ha sido modificado exitosamente.';
+    };
 
-      const dto = lista[0] || {};
-      const descripcion = `${dto.nombre ?? 'Sin nombre'} (${dto.estado ?? 'Sin estado'})`;
+    window.mostrar_cambioEstadoExito = (mensaje) => {
+      const lbl = document.getElementById('estadoCambio');
+      lbl.className = 'msg success';
+      lbl.textContent = mensaje ?? 'El estado fue cambiado correctamente.';
 
-      window.mostrar_propietarioDescripcion(descripcion);
+      const select = document.getElementById('selectEstado');
+      const opcion = select.options[select.selectedIndex];
+      const nuevoEstado = opcion ? opcion.textContent : estadoActual;
+      const nombreActual = document.querySelector('#infoPropietario strong')
+        ?.textContent.split('(')[0].trim() ?? 'Propietario';
 
-      estadoActual = dto.estado || null;
-      if (estadoActual) {
-        seleccionarPorTexto('selectEstado', estadoActual);
+      renderPropietario(
+        { nombre: nombreActual, estado: nuevoEstado },
+        'Propietario encontrado.'
+      );
+
+      if (cedulaActual) {
+        submit('/estadoPropietario', new URLSearchParams({ cedula: cedulaActual }).toString(), 'POST');
       }
     };
+
+    window.mostrar_propietarioerror = (mensaje) => {
+      document.getElementById('estadoBusqueda').className = 'msg error';
+      document.getElementById('estadoBusqueda').textContent = mensaje ?? 'No existe el propietario.';
+      document.getElementById('infoPropietario').innerHTML = '<p class="msg error">No se encontró información del propietario.</p>';
+      document.getElementById('estadoCambio').className = 'msg error';
+      document.getElementById('estadoCambio').textContent = 'Busque un propietario válido para habilitar el cambio.';
+      estadoActual = null;
+    };
+
+    function extraerEstadoDesdeDescripcion(descripcion) {
+      const match = descripcion.match(/\(([^)]+)\)/);
+      return match ? match[1] : null;
+    }
   </script>
 </body>
 </html>

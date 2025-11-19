@@ -58,10 +58,15 @@ public class ControladorCambiarEstado implements Observador{
          return new Respuesta("estados", estadosDto);       
     }
 
+    private String cedulaActual;
+
     @PostMapping("/estadoPropietario")
     public List<Respuesta> estadoPropietario(@RequestParam String cedula) {
         try {
+            this.cedulaActual = cedula; // Guardar cédula
             Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);
+            propietario.agregarObservador(this); // Registrar observador
+            
             List<PropietarioEstadoDTO> propietarioDto = new ArrayList<>();
             PropietarioEstadoDTO estadoDto = new PropietarioEstadoDTO(propietario);
             propietarioDto.add(estadoDto);
@@ -69,19 +74,20 @@ public class ControladorCambiarEstado implements Observador{
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("propietarioEstadoError", e.getMessage()));
         }
-            
     }
     
 
     @PostMapping("/cambiarEstadoPropietario")
-    public Respuesta cambiarEstadoPropietario(@RequestParam String cedula, @RequestParam int posTipoEstado) {
+    public List<Respuesta> cambiarEstadoPropietario(@RequestParam String cedula,
+                                                    @RequestParam int posTipoEstado) {
         try {
             Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);
             TipoEstado tipoEstado = Fachada.getInstancia().getTiposEstado().get(posTipoEstado);
 
             if (propietario.getEstado().getNombre().equals(tipoEstado.getNombre())) {
-                return new Respuesta("cambioEstadoError",
-                        "El propietario ya está en estado " + tipoEstado.getNombre() + ".");
+                return Respuesta.lista(new Respuesta(
+                        "cambioEstadoError",
+                        "El propietario ya está en estado " + tipoEstado.getNombre() + "."));
             }
 
             Estado nuevoEstado;
@@ -103,17 +109,39 @@ public class ControladorCambiarEstado implements Observador{
             }
 
             propietario.cambiarEstado(nuevoEstado);
-            return new Respuesta("cambioEstadoExito",
-                    "El estado del propietario ha sido cambiado a " + tipoEstado.getNombre() + ".");
+
+            return Respuesta.lista(new Respuesta(
+                "cambioEstadoExito",
+                "El estado del propietario ha sido cambiado a " + tipoEstado.getNombre() + "."));
         } catch (PeajeException e) {
-            return new Respuesta("cambioEstadoError", e.getMessage());
+            return Respuesta.lista(new Respuesta("cambioEstadoError", e.getMessage()));
         }
     }
 
     @Override
     public void actualizar(Object evento, Observable origen) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'actualizar'");
+        if (cedulaActual == null) return;
+
+        if (evento instanceof Propietario.Eventos) {
+            Propietario.Eventos ev = (Propietario.Eventos) evento;
+            
+            if (ev == Propietario.Eventos.cambioEstado) {
+                try {
+                    Propietario propietario = Fachada.getInstancia().buscarPropietario(cedulaActual);
+                    List<PropietarioEstadoDTO> propietarioDto = new ArrayList<>();
+                    PropietarioEstadoDTO estadoDto = new PropietarioEstadoDTO(propietario);
+                    propietarioDto.add(estadoDto);
+                    
+                    conexionNavegador.enviarJSON(Respuesta.lista(
+                        new Respuesta("propietarioEstado", propietarioDto)
+                    ));
+                } catch (PeajeException e) {
+                    conexionNavegador.enviarJSON(Respuesta.lista(
+                        new Respuesta("propietarioEstadoError", e.getMessage())
+                    ));
+                }
+            }
+        }
     }
 
    
