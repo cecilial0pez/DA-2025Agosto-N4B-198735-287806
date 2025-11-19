@@ -269,6 +269,23 @@
       const match = descripcion.match(/\(([^)]+)\)\s*$/);
       return match ? match[1] : null;
     }
+
+    window.mostrar_propietarioEstado = (lista) => {
+      if (!Array.isArray(lista) || lista.length === 0) {
+        window.mostrar_propietarioerror('No se encontró información del propietario.');
+        return;
+      }
+
+      const dto = lista[0] || {};
+      const descripcion = `${dto.nombre ?? 'Sin nombre'} (${dto.estado ?? 'Sin estado'})`;
+
+      window.mostrar_propietarioDescripcion(descripcion);
+
+      estadoActual = dto.estado || null;
+      if (estadoActual) {
+        seleccionarPorTexto('selectEstado', estadoActual);
+      }
+    };
   </script>
 </body>
 </html>

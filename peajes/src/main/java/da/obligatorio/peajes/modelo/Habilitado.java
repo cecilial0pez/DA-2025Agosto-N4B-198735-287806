@@ -14,22 +14,22 @@ public class Habilitado extends Estado {
 
     @Override
     public void desHabilitar() throws PeajeException {
-       getPropietario().cambiarEstado(new Deshabilitado(getPropietario()));
+        getPropietario().aplicarCambioDirecto(new Deshabilitado(getPropietario()));
+    }
+
+    @Override
+    public void suspender() throws PeajeException {
+        getPropietario().aplicarCambioDirecto(new Suspendido(getPropietario()));
     }
 
     @Override
     public void penalizar() throws PeajeException {
-         getPropietario().cambiarEstado(new Penalizado(getPropietario()));
+        getPropietario().aplicarCambioDirecto(new Penalizado(getPropietario()));
     }
 
     @Override
     public boolean puedeLoguearse() {
         return true;
     }
-
-    @Override
-     public void suspender() throws PeajeException {
-        getPropietario().cambiarEstado(new Suspendido(getPropietario()));
-     }
 
 }

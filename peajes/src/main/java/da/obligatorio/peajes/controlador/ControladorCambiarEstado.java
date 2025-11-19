@@ -49,13 +49,13 @@ public class ControladorCambiarEstado {
 
     @PostMapping("/estadoPropietario")
     public List<Respuesta> estadoPropietario(@RequestParam String cedula) {
-      try{
-            Propietario propietario=Fachada.getInstancia().buscarPropietario(cedula);
+        try {
+            Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);
             List<PropietarioEstadoDTO> propietarioDto = new ArrayList<>();
-            PropietarioEstadoDTO dto = new PropietarioEstadoDTO(propietario);
-            propietarioDto.add(dto);
-           return Respuesta.lista( new Respuesta("propietarioDescripcion", propietarioDto));
-      }catch (PeajeException e) {
+            PropietarioEstadoDTO estadoDto = new PropietarioEstadoDTO(propietario);
+            propietarioDto.add(estadoDto);
+            return Respuesta.lista(new Respuesta("propietarioEstado", propietarioDto)); 
+        } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("propietarioEstadoError", e.getMessage()));
         }
     }
@@ -66,27 +66,33 @@ public class ControladorCambiarEstado {
         try {
             Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);
             TipoEstado tipoEstado = Fachada.getInstancia().getTiposEstado().get(posTipoEstado);
-            
+
+            if (propietario.getEstado().getNombre().equals(tipoEstado.getNombre())) {
+                return new Respuesta("cambioEstadoError",
+                        "El propietario ya está en estado " + tipoEstado.getNombre() + ".");
+            }
+
             Estado nuevoEstado;
-            switch(tipoEstado.getNombre()) {
-                case "Habilitado": 
-                    nuevoEstado = new Habilitado(propietario);    
+            switch (tipoEstado.getNombre()) {
+                case "Habilitado":
+                    nuevoEstado = new Habilitado(propietario);
                     break;
-                case "Deshabilitado": 
+                case "Deshabilitado":
                     nuevoEstado = new Deshabilitado(propietario);
                     break;
-                case "Suspendido": 
+                case "Suspendido":
                     nuevoEstado = new Suspendido(propietario);
                     break;
-                case "Penalizado": 
+                case "Penalizado":
                     nuevoEstado = new Penalizado(propietario);
                     break;
                 default:
                     throw new PeajeException("Estado no válido: " + tipoEstado.getNombre());
             }
-            
-            Fachada.getInstancia().cambiarEstadoPropietario(propietario, nuevoEstado);
-            return new Respuesta("cambioEstadoExito", "El estado del propietario ha sido cambiado exitosamente.");
+
+            propietario.cambiarEstado(nuevoEstado);
+            return new Respuesta("cambioEstadoExito",
+                    "El estado del propietario ha sido cambiado a " + tipoEstado.getNombre() + ".");
         } catch (PeajeException e) {
             return new Respuesta("cambioEstadoError", e.getMessage());
         }
@@ -122,6 +128,21 @@ public class ControladorCambiarEstado {
 // 2) No se encuentra un propietario con la cedula especificada. Mensaje “no existe el propietario”
 // 5) El estado seleccionado es igual al actual. Mensaje “El propietario ya esta en estado “ +
 // nombre del estado actual.
+
+
+//   @PostMapping("/estadoPropietario")
+//     public List<Respuesta> estadoPropietario(@RequestParam String cedula) {
+//       try{
+//             Propietario propietario=Fachada.getInstancia().buscarPropietario(cedula);
+//             List<PropietarioEstadoDTO> propietarioDto = new ArrayList<>();
+//             PropietarioEstadoDTO dto = new PropietarioEstadoDTO(propietario);
+//             propietarioDto.add(dto);
+//            return Respuesta.lista( new Respuesta("propietarioDescripcion", propietarioDto));
+//       }catch (PeajeException e) {
+//             return Respuesta.lista(new Respuesta("propietarioEstadoError", e.getMessage()));
+//         }
+//     }
+
 
 
 

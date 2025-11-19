@@ -87,37 +87,49 @@ public class Propietario extends Usuario {
         this.notificaciones.clear();
     }
 
-    /**
-     * @param nuevoEstado
-     * @throws PeajeException
-     */
+    void aplicarCambioDirecto(Estado nuevoEstado) throws PeajeException {
+        if (nuevoEstado == null) {
+            throw new PeajeException("El nuevo estado no puede ser nulo.");
+        }
+        if (this.estado != null && this.estado.getNombre().equals(nuevoEstado.getNombre())) {
+            throw new PeajeException("El estado es el mismo que el actual: " + this.estado.getNombre());
+        }
+
+        this.estado = nuevoEstado;
+
+        Notificacion notificacion = new Notificacion(
+                "Se ha cambiado tu estado en el sistema. Tu estado actual es " + nuevoEstado.getNombre());
+        notificacion.validar();
+        hacerRegistrarNotificacion(notificacion);
+    }
+
+    
     public void cambiarEstado(Estado nuevoEstado) throws PeajeException {
 
         if (nuevoEstado == null) {
             throw new PeajeException("El nuevo estado no puede ser nulo.");
         }
-        if (this.estado.getNombre().equals(nuevoEstado.getNombre())) {// curso alternativo 5)
-            throw new PeajeException("El estado es el mismo que el actual." + this.estado.getNombre());
+        if (this.estado.getNombre().equals(nuevoEstado.getNombre())) {
+            throw new PeajeException("El estado es el mismo que el actual: " + this.estado.getNombre());
         }
-        try {
 
-            if (nuevoEstado.getNombre().equals("Penalizado")) {
+        String nombreDestino = nuevoEstado.getNombre();
+
+        switch (nombreDestino) {
+            case "Penalizado":
                 this.estado.penalizar();
-            }
-            if (nuevoEstado.getNombre().equals("Suspendido")) {
+                break;
+            case "Suspendido":
                 this.estado.suspender();
-            }
-            if (nuevoEstado.getNombre().equals("Habilitado")) {
+                break;
+            case "Habilitado":
                 this.estado.habilitar();
-            }
-            if (nuevoEstado.getNombre().equals("Deshabilitado")) {
+                break;
+            case "Deshabilitado":
                 this.estado.desHabilitar();
-            } // para no repetir codigo
-            this.notificaciones.add(new Notificacion(
-                    "Se ha cambiado tu estado en el sistema. Tu estado actual es " + nuevoEstado.getNombre()));
-
-        } catch (Exception e) {
-            throw new PeajeException("Error al cambiar el estado del propietario.");
+                break;
+            default:
+                throw new PeajeException("Estado no soportado: " + nombreDestino);
         }
     }
 
