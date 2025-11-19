@@ -60,17 +60,21 @@ public class ControladorCambiarEstado implements Observador{
 
     private String cedulaActual;
 
+    private List<Respuesta> crearEstadoPropietario(String cedula) throws PeajeException {
+        Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);
+        PropietarioEstadoDTO dto = new PropietarioEstadoDTO(propietario);
+        List<PropietarioEstadoDTO> lista = new ArrayList<>();
+        lista.add(dto);
+        return Respuesta.lista(new Respuesta("propietarioEstado", lista));
+    }
+
     @PostMapping("/estadoPropietario")
     public List<Respuesta> estadoPropietario(@RequestParam String cedula) {
         try {
-            this.cedulaActual = cedula; // Guardar cédula
+            this.cedulaActual = cedula;
             Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);
-            propietario.agregarObservador(this); // Registrar observador
-            
-            List<PropietarioEstadoDTO> propietarioDto = new ArrayList<>();
-            PropietarioEstadoDTO estadoDto = new PropietarioEstadoDTO(propietario);
-            propietarioDto.add(estadoDto);
-            return Respuesta.lista(new Respuesta("propietarioEstado", propietarioDto)); 
+            propietario.agregarObservador(this);
+            return crearEstadoPropietario(cedula);
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("propietarioEstadoError", e.getMessage()));
         }
@@ -121,32 +125,16 @@ public class ControladorCambiarEstado implements Observador{
     @Override
     public void actualizar(Object evento, Observable origen) {
         if (cedulaActual == null) return;
-
-        if (evento instanceof Propietario.Eventos) {
-            Propietario.Eventos ev = (Propietario.Eventos) evento;
-            
-            if (ev == Propietario.Eventos.cambioEstado) {
-                try {
-                    Propietario propietario = Fachada.getInstancia().buscarPropietario(cedulaActual);
-                    List<PropietarioEstadoDTO> propietarioDto = new ArrayList<>();
-                    PropietarioEstadoDTO estadoDto = new PropietarioEstadoDTO(propietario);
-                    propietarioDto.add(estadoDto);
-                    
-                    conexionNavegador.enviarJSON(Respuesta.lista(
-                        new Respuesta("propietarioEstado", propietarioDto)
-                    ));
-                } catch (PeajeException e) {
-                    conexionNavegador.enviarJSON(Respuesta.lista(
-                        new Respuesta("propietarioEstadoError", e.getMessage())
-                    ));
-                }
+        if (evento instanceof Propietario.Eventos ev && ev == Propietario.Eventos.cambioEstado) {
+            try {
+                conexionNavegador.enviarJSON(crearEstadoPropietario(cedulaActual));
+            } catch (PeajeException e) {
+                conexionNavegador.enviarJSON(Respuesta.lista(
+                    new Respuesta("propietarioEstadoError", e.getMessage())
+                ));
             }
         }
     }
-
-   
-
-
 
 }
 
@@ -176,18 +164,7 @@ public class ControladorCambiarEstado implements Observador{
 // nombre del estado actual.
 
 
-//   @PostMapping("/estadoPropietario")
-//     public List<Respuesta> estadoPropietario(@RequestParam String cedula) {
-//       try{
-//             Propietario propietario=Fachada.getInstancia().buscarPropietario(cedula);
-//             List<PropietarioEstadoDTO> propietarioDto = new ArrayList<>();
-//             PropietarioEstadoDTO dto = new PropietarioEstadoDTO(propietario);
-//             propietarioDto.add(dto);
-//            return Respuesta.lista( new Respuesta("propietarioDescripcion", propietarioDto));
-//       }catch (PeajeException e) {
-//             return Respuesta.lista(new Respuesta("propietarioEstadoError", e.getMessage()));
-//         }
-//     }
+
 
 
 
