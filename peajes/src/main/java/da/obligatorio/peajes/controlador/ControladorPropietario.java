@@ -38,6 +38,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @Scope("session")
 public class ControladorPropietario implements Observador {
+
+    private final ConexionNavegador conexionNavegador; 
+    
+
+    public ControladorPropietario(@Autowired ConexionNavegador conexionNavegador) {
+        this.conexionNavegador = conexionNavegador;
+    }
     
     //con esto se que propietario esta conectado
    private Propietario propietarioEnSesion(HttpSession sesionHttp) throws PeajeException {
@@ -166,6 +173,26 @@ public class ControladorPropietario implements Observador {
         
    }
 
+//     @Override
+//     public void actualizar(Object evento, Observable origen) {
+        
+
+//             Propietario propietario = fachada.buscarPropietario(cedulaSesion);
+
+//             List<Respuesta> respuestas = new ArrayList<>();
+
+//             respuestas.add(new Respuesta("infoProp", new PropietarioDTO(propietario)));
+
+//             respuestas.add(new Respuesta("bonificaciones", obtenerBonificaciones(propietario)));
+//             respuestas.add(new Respuesta("vehiculos", obtenerVehiculosRegistrados(propietario, cedulaSesion)));
+//             respuestas.add(new Respuesta("transitos", obtenerTransitosRealizados(cedulaSesion)));
+//             respuestas.add(new Respuesta("notificaciones", obtenerNotificacionesPropietario(propietario)));
+//             respuestas.add(new Respuesta("exito", "Datos actualizados"));
+
+//             conexionNavegador.enviarJSON(respuestas);
+//     }
+// } 
+
 //    Curso normal:
 // 1) El sistema muestra:
 // • Nombre completo del propietario
@@ -187,12 +214,7 @@ public class ControladorPropietario implements Observador {
 // notificaciones para borrar”
 
 
-    //  @Override
-    //  public void actualizar(Object evento, Observable origen) {
-    //     if(evento.equals(Agenda.Eventos.cambioListaContactos) || evento.equals(Agenda.Eventos.cambioEstado)){
-    //         conexionNavegador.enviarJSON(Respuesta.lista(agenda()));
-    //     }
-
+ 
 
     
 

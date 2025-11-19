@@ -33,13 +33,12 @@ import da.obligatorio.peajes.modelo.Tarifa;
 import da.obligatorio.peajes.modelo.Vehiculo;
 import da.obligatorio.peajes.modelo.Transito;
 import jakarta.servlet.http.HttpSession;
-import observador.Observable;
-import observador.Observador;
+
 
 @RestController
 @Scope("session")
-public class ControladorEmularTransito implements Observador{
-   //OBSERVA AL PROPIETARIO Y EL CAMBIIO EN SUS LISTAS 
+public class ControladorEmularTransito {
+   
 
     @PostMapping("/vistaConectada")
 	public List<Respuesta> inicializarVista() {
@@ -91,11 +90,7 @@ public class ControladorEmularTransito implements Observador{
 
   
                   
-    @Override
-    public void actualizar(Object evento, Observable origen) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'actualizar'");
-    }
+  
 
 }
 

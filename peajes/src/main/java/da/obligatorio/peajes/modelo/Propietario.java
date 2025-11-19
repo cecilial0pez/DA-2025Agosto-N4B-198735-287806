@@ -8,8 +8,13 @@ import da.obligatorio.peajes.modelo.Transito;
 import da.obligatorio.peajes.modelo.Notificacion;
 import java.sql.Date;
 import java.time.LocalDateTime;
+import observador.Observable;
 
-public class Propietario extends Usuario {
+
+public class Propietario extends Usuario  {
+    
+    private Observable observable = new Observable();
+     public enum Eventos{cambioListaTransitos,cambioEstado, cambioListaNotificaciones, cambioListaAsignaciones, cambioSaldo};
 
     private double saldo;
     private double saldoMinimo;
@@ -24,7 +29,6 @@ public class Propietario extends Usuario {
         super(contrasenia, cedula, nombre);
         this.saldo = saldo;
         this.saldoMinimo = saldoMinimo;
-
     }
 
     // getters y setters
@@ -80,11 +84,15 @@ public class Propietario extends Usuario {
 
     public double actualizarSaldo(double montoGastado) {
         this.saldo -= montoGastado;
+        observable.avisar(Eventos.cambioSaldo);
+        Fachada.getInstancia().avisar(Eventos.cambioSaldo);
         return this.saldo;
     }
 
     public void eliminarNotificaciones() {
         this.notificaciones.clear();
+        observable.avisar(Eventos.cambioListaNotificaciones);
+        Fachada.getInstancia().avisar(Eventos.cambioListaNotificaciones);
     }
 
     void aplicarCambioDirecto(Estado nuevoEstado) throws PeajeException {
@@ -94,13 +102,13 @@ public class Propietario extends Usuario {
         if (this.estado != null && this.estado.getNombre().equals(nuevoEstado.getNombre())) {
             throw new PeajeException("El estado es el mismo que el actual: " + this.estado.getNombre());
         }
-
         this.estado = nuevoEstado;
-
         Notificacion notificacion = new Notificacion(
                 "Se ha cambiado tu estado en el sistema. Tu estado actual es " + nuevoEstado.getNombre());
         notificacion.validar();
         hacerRegistrarNotificacion(notificacion);
+        observable.avisar(Eventos.cambioEstado);
+        Fachada.getInstancia().avisar(Eventos.cambioEstado);
     }
 
     
@@ -169,7 +177,8 @@ public class Propietario extends Usuario {
         } else {
             actualizarSaldo(transito.getTotalPagado());
             this.transitos.add(transito);
-
+            observable.avisar(Eventos.cambioListaTransitos);
+             Fachada.getInstancia().avisar(Eventos.cambioListaTransitos);
             registrarNotificacion("Pasaste por el puesto " + transito.getPuesto().getNombre() + " con el vehículo "
                     + transito.getVehiculo().getMatricula());
         }
@@ -194,6 +203,8 @@ public class Propietario extends Usuario {
 
         registrarNotificacion(
                 "Se ha asignado la bonificacion " + bonificacion.getNombre() + " para el puesto " + puesto.getNombre());
+        observable.avisar(Eventos.cambioListaAsignaciones);
+        Fachada.getInstancia().avisar(Eventos.cambioListaAsignaciones);
 
     }
 
@@ -234,6 +245,7 @@ public class Propietario extends Usuario {
             throw new PeajeException("Ya existe la notificacion");
 
         hacerRegistrarNotificacion(notificacion);
+        
     }
 
     public void hacerRegistrarNotificacion(Notificacion notificacion) {
@@ -241,6 +253,8 @@ public class Propietario extends Usuario {
             this.notificaciones = new ArrayList<Notificacion>();
         }
         this.notificaciones.add(notificacion);
+        observable.avisar(Eventos.cambioListaNotificaciones);
+        Fachada.getInstancia().avisar(Eventos.cambioListaNotificaciones);
     }
 
     public void agregarVehiculo(Vehiculo vehiculo) {
@@ -249,5 +263,15 @@ public class Propietario extends Usuario {
         }
         this.vehiculos.add(vehiculo);
     }
+
+     public void agregarObservador(observador.Observador obs) {
+         observable.agregarObservador(obs); 
+    }
+
+    public void quitarObservador(observador.Observador obs) {
+         observable.quitarObservador(obs); 
+    }
+
+   
 
 }

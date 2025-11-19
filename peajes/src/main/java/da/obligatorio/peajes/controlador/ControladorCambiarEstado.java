@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import da.obligatorio.peajes.ConexionNavegador;
 import da.obligatorio.peajes.Respuesta;
 import da.obligatorio.peajes.dto.AsignacionDTO;
 import da.obligatorio.peajes.dto.NombreDTO;
@@ -27,10 +29,19 @@ import da.obligatorio.peajes.modelo.Transito;
 import da.obligatorio.peajes.modelo.Asignacion;
 import da.obligatorio.peajes.modelo.Deshabilitado;
 import da.obligatorio.peajes.modelo.Estado;
+import observador.Observable;
+import observador.Observador;
+
 
 @RestController
 @Scope("session")
-public class ControladorCambiarEstado {
+public class ControladorCambiarEstado implements Observador{
+ private final ConexionNavegador conexionNavegador; 
+    
+
+    public ControladorCambiarEstado(@Autowired ConexionNavegador conexionNavegador) {
+        this.conexionNavegador = conexionNavegador;
+    }
 
    @PostMapping("/cambiarEstado/vistaConectada")
     public List<Respuesta> inicializarVista() {
@@ -97,6 +108,12 @@ public class ControladorCambiarEstado {
         } catch (PeajeException e) {
             return new Respuesta("cambioEstadoError", e.getMessage());
         }
+    }
+
+    @Override
+    public void actualizar(Object evento, Observable origen) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'actualizar'");
     }
 
    
