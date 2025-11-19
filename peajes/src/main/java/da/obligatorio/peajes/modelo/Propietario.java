@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 
 public class Propietario extends Usuario {
 
-    private double saldo; 
-    private double saldoMinimo ;
+    private double saldo;
+    private double saldoMinimo;
     private Estado estado = new Habilitado(this);
     // Listas
     private List<Vehiculo> vehiculos;
@@ -20,14 +20,14 @@ public class Propietario extends Usuario {
     private List<Notificacion> notificaciones;
     private List<Transito> transitos;
 
-    public Propietario(String contrasenia, String cedula, String nombre, Double saldo,double saldoMinimo) {
+    public Propietario(String contrasenia, String cedula, String nombre, Double saldo, double saldoMinimo) {
         super(contrasenia, cedula, nombre);
         this.saldo = saldo;
         this.saldoMinimo = saldoMinimo;
-      
+
     }
 
-    //getters y setters 
+    // getters y setters
     public Double getSaldo() {
         return saldo;
     }
@@ -59,19 +59,22 @@ public class Propietario extends Usuario {
     public List<Asignacion> getAsignaciones() {
         return asignaciones;
     }
+
     public void setVehiculos(List<Vehiculo> vehiculos) {
         this.vehiculos = vehiculos;
     }
 
     // Metodos agregados
     // agregar notificaciones, vehiculos y asignaciones
-//Si el saldo del usuario es menor al valor de la alerta de saldo mínimo el sistema registra
- //una notificación al propietario: [Fecha y hora de la notificación] + “Tu saldo actual es
- //de $ “ + saldo actual + “ Te recomendamos hacer una recarga”;
+    // Si el saldo del usuario es menor al valor de la alerta de saldo mínimo el
+    // sistema registra
+    // una notificación al propietario: [Fecha y hora de la notificación] + “Tu
+    // saldo actual es
+    // de $ “ + saldo actual + “ Te recomendamos hacer una recarga”;
     public boolean haySaldoSuficiente(double totalPagar) {
-    if(this.saldo - totalPagar <= this.saldoMinimo){
-    return false;
-    }
+        if (this.saldo - totalPagar <= this.saldoMinimo) {
+            return false;
+        }
         return true;
     }
 
@@ -84,32 +87,50 @@ public class Propietario extends Usuario {
         this.notificaciones.clear();
     }
 
-   
+    /**
+     * @param nuevoEstado
+     * @throws PeajeException
+     */
     public void cambiarEstado(Estado nuevoEstado) throws PeajeException {
-        
-        try{
-        if (nuevoEstado.getNombre().equals("Penalizado")) {
-            this.estado.penalizar();
-            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Penalizado."));
+
+        if (nuevoEstado == null) {
+            throw new PeajeException("El nuevo estado no puede ser nulo.");
         }
-        if (nuevoEstado.getNombre().equals("Suspendido")) {
-            this.estado.suspender();
-            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Suspendido."));
+        if (this.estado.getNombre().equals(nuevoEstado.getNombre())) {// curso alternativo 5)
+            throw new PeajeException("El estado es el mismo que el actual." + this.estado.getNombre());
         }
-        if(nuevoEstado.getNombre().equals("Habilitado")) {
-            this.estado.habilitar();
-            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Habilitado."));
-        }
-        if(nuevoEstado.getNombre().equals("Deshabilitado")) {
-            this.estado.desHabilitar();
-            this.notificaciones.add(new Notificacion("Su estado ha cambiado a Deshabilitado."));
-        }
-        }catch(Exception e){
+        try {
+
+            if (nuevoEstado.getNombre().equals("Penalizado")) {
+                this.estado.penalizar();
+            }
+            if (nuevoEstado.getNombre().equals("Suspendido")) {
+                this.estado.suspender();
+            }
+            if (nuevoEstado.getNombre().equals("Habilitado")) {
+                this.estado.habilitar();
+            }
+            if (nuevoEstado.getNombre().equals("Deshabilitado")) {
+                this.estado.desHabilitar();
+            } // para no repetir codigo
+            this.notificaciones.add(new Notificacion(
+                    "Se ha cambiado tu estado en el sistema. Tu estado actual es " + nuevoEstado.getNombre()));
+
+        } catch (Exception e) {
             throw new PeajeException("Error al cambiar el estado del propietario.");
         }
-
     }
-    
+
+    /**
+     * El sistema cambia el estado del propietario y registra una notificación al
+     * propietario:
+     * [Fecha y hora de la notificación] + “Se ha cambiado tu estado en el sistema.
+     * Tu estado actual * es “ + nombre del estado actual. (Esta notificación
+     * siempre se registra, sin
+     * importar si el estado
+     * * actual o el anterior permiten registrar notificaciones)
+     */
+
     public boolean puedeLoguearse() {
         // Delegar la lógica al objeto Estado (null-safe).
         return this.estado != null && this.estado.puedeLoguearse();
@@ -120,68 +141,71 @@ public class Propietario extends Usuario {
             this.transitos = new ArrayList<Transito>();
         }
         Puesto puesto = transito.getPuesto();
-        if( hayBonificacionEnPuesto(puesto)){
+        if (hayBonificacionEnPuesto(puesto)) {
             Bonificacion bonif = bonificacionporPuesto(puesto);
             transito.setNombreBonificacion(bonif.getNombre());
-            Double porcentajeDescuento= bonif.getPorcentajeDescuento();
-            Double aApagar=transito.calcularTotalAPagar(transito.getTarifa().getMonto(), porcentajeDescuento);
+            Double porcentajeDescuento = bonif.getPorcentajeDescuento();
+            Double aApagar = transito.calcularTotalAPagar(transito.getTarifa().getMonto(), porcentajeDescuento);
             transito.setTotalPagado(aApagar);
-        }else{
+        } else {
             transito.setTotalPagado(transito.getTarifa().getMonto());
         }
-//getTotalPagado
-        if(haySaldoSuficiente(transito.getTotalPagado())==false){
+        // getTotalPagado
+        if (haySaldoSuficiente(transito.getTotalPagado()) == false) {
             registrarNotificacion("Tu saldo actual es de $ " + this.saldo + " Te recomendamos hacer una recarga");
             throw new PeajeException("Saldo insuficiente para realizar el transito. Saldo actual: " + this.saldo);
-        }else{
+        } else {
             actualizarSaldo(transito.getTotalPagado());
             this.transitos.add(transito);
-            
-            registrarNotificacion("Pasaste por el puesto " + transito.getPuesto().getNombre() + " con el vehículo " + transito.getVehiculo().getMatricula());
-        }     
-        
+
+            registrarNotificacion("Pasaste por el puesto " + transito.getPuesto().getNombre() + " con el vehículo "
+                    + transito.getVehiculo().getMatricula());
+        }
+
     }
 
-    //asigna la bonificacion y genera la notificacion 
-    public void asignarBonificacion(Puesto puesto, Bonificacion bonificacion)throws PeajeException {
-         if (bonificacion == null || puesto == null)
+    // asigna la bonificacion y genera la notificacion
+    public void asignarBonificacion(Puesto puesto, Bonificacion bonificacion) throws PeajeException {
+        if (bonificacion == null || puesto == null)
             return;
         if (!this.estado.puedeLoguearse()) {
             throw new PeajeException("El propietario esta deshabilitado. No se pueden asignar bonificaciones");
         }
-        if(hayBonificacionEnPuesto(puesto)){
+        if (hayBonificacionEnPuesto(puesto)) {
             throw new PeajeException("Ya existe una bonificacion para ese puesto");
         }
-        if (this.asignaciones == null){
-            this.asignaciones = new ArrayList<>();}
+        if (this.asignaciones == null) {
+            this.asignaciones = new ArrayList<>();
+        }
         Asignacion a = new Asignacion(bonificacion, this, puesto);
         this.asignaciones.add(a);
-        
-        registrarNotificacion("Se ha asignado la bonificacion " + bonificacion.getNombre() + " para el puesto " + puesto.getNombre());
-        
+
+        registrarNotificacion(
+                "Se ha asignado la bonificacion " + bonificacion.getNombre() + " para el puesto " + puesto.getNombre());
+
     }
 
     public boolean hayBonificacionEnPuesto(Puesto puesto) {
         if (puesto == null) {
             return false;
         }
-        if(this.asignaciones == null || this.asignaciones.isEmpty()){ 
+        if (this.asignaciones == null || this.asignaciones.isEmpty()) {
             return false;
         }
         List<Asignacion> asignaciones = this.getAsignaciones();
         for (Asignacion asignacion : asignaciones) {
-            if (asignacion != null && puesto.equals(asignacion.getPuesto())) {     
+            if (asignacion != null && puesto.equals(asignacion.getPuesto())) {
                 return true;
             }
         }
         return false;
     }
 
-    public Bonificacion bonificacionporPuesto(Puesto puesto){
+    public Bonificacion bonificacionporPuesto(Puesto puesto) {
         List<Asignacion> asignaciones = this.getAsignaciones();
         for (Asignacion asignacion : asignaciones) {
-            if (asignacion != null && puesto.equals(asignacion.getPuesto())) {     
-                Bonificacion bon=asignacion.getBonificacion();
+            if (asignacion != null && puesto.equals(asignacion.getPuesto())) {
+                Bonificacion bon = asignacion.getBonificacion();
                 return bon;
             }
         }
@@ -191,8 +215,8 @@ public class Propietario extends Usuario {
     public void registrarNotificacion(String mensaje) throws PeajeException {
         Notificacion notificacion = new Notificacion(mensaje);
         notificacion.validar();
-        if(this.notificaciones==null){
-            this.notificaciones=new ArrayList<Notificacion>();
+        if (this.notificaciones == null) {
+            this.notificaciones = new ArrayList<Notificacion>();
         }
         if (notificaciones.contains(notificacion))
             throw new PeajeException("Ya existe la notificacion");
@@ -201,13 +225,13 @@ public class Propietario extends Usuario {
     }
 
     public void hacerRegistrarNotificacion(Notificacion notificacion) {
-       if (this.notificaciones==null){
-        this.notificaciones=new ArrayList<Notificacion>();
-       }
-       this.notificaciones.add(notificacion);
+        if (this.notificaciones == null) {
+            this.notificaciones = new ArrayList<Notificacion>();
+        }
+        this.notificaciones.add(notificacion);
     }
 
-    public void agregarVehiculo(Vehiculo vehiculo){
+    public void agregarVehiculo(Vehiculo vehiculo) {
         if (this.vehiculos == null) {
             this.vehiculos = new ArrayList<Vehiculo>();
         }
@@ -215,4 +239,3 @@ public class Propietario extends Usuario {
     }
 
 }
-
