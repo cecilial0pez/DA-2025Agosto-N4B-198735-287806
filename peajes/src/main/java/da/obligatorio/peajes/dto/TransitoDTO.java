@@ -15,20 +15,18 @@ public class TransitoDTO {
     private String nombrePropietario;
     private String estadoPropietario;
     private String categoria;
-    private double saldoPropietario;
- 
-
+    private double saldopropietario;
+  
     public TransitoDTO(Transito transito){
         this.puesto= transito.getPuesto().getNombre();
         this.matricula= transito.getVehiculo().getMatricula();
         this.Nombretarifa= transito.getTarifa().getCategoria().getNombre();
         this.montoTarifa=transito.getTarifa().getMonto();
         this.nombreBonificacion= transito.getNombreBonificacion();
-        // this.montoBonificacion= transito.getMontoBonificacion();
+         this.montoBonificacion= transito.getMontoBonificacion();
         this.montoPagado= transito.getTotalPagado();
         this.fechayHora= transito.getFechaHora().toString();
-        
-
+   
     }
 
     public TransitoDTO(Transito transito, Propietario propietario){
@@ -37,7 +35,7 @@ public class TransitoDTO {
         this.categoria= transito.getVehiculo().getCategoria().getNombre();
         this.nombreBonificacion= transito.getNombreBonificacion();
         this.montoPagado= transito.getTotalPagado();
-        this.saldoPropietario= propietario.getSaldo();
+        this.saldopropietario;
     }
 
 
@@ -52,6 +50,7 @@ public class TransitoDTO {
     public String getNombrePropietario() { return nombrePropietario; }
     public String getEstadoPropietario() { return estadoPropietario; }
     public String getCategoria() { return categoria; }
-    public double getSaldoPropietario() { return saldoPropietario; }
+    public double getSaldoPropietario(){return saldopropietario;}
+    
 
 }

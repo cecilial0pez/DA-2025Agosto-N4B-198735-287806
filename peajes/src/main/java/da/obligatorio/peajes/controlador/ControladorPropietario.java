@@ -1,6 +1,7 @@
 package da.obligatorio.peajes.controlador;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -102,11 +103,11 @@ public class ControladorPropietario implements Observador {
             List<TransitoDTO> listaDto = new ArrayList<>();
             List<Transito> transitos = prop.getTransitos();
             if (transitos != null) {
-                for (Transito t : transitos) {
+              transitos.sort(Comparator.comparing(Transito::getFechaHora).reversed());
+                for (Transito t : transitos) {             
                     listaDto.add(new TransitoDTO(t));
                 }
             }
-
             return Respuesta.lista(new Respuesta("transitosProp", listaDto));
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("transitosPropError", e.getMessage()));
@@ -139,6 +140,7 @@ public class ControladorPropietario implements Observador {
             List<NotificacionDTO> listaDto=new ArrayList<>();
             List<Notificacion> notis=prop.getNotificaciones();
             if(notis!=null){
+                notis.sort(Comparator.comparing(Notificacion::getFechaHoraEnvio).reversed());
                 for(Notificacion n:notis){
                     listaDto.add(new NotificacionDTO(n));
                 }
@@ -195,16 +197,10 @@ public class ControladorPropietario implements Observador {
 
 //    Curso normal:
 // 1) El sistema muestra:
-// • Nombre completo del propietario
-// • Estado
-// • Saldo actual
-// • Tabla con las bonificaciones asignadas- Información: Nombre de la bonificación, puesto,
-// fecha de asignada.
-// • Tabla de vehículos registrados – Información: Número de matrícula, modelo, color, cantidad
-// de tránsitos realizados y monto total gastado en sus tránsitos.
-// • Tabla de tránsitos realizados ordenados por fecha/hora descendente – Información:
-// Nombre del puesto, número de matrícula, nombre de la tarifa, monto de la tarifa, nombre de la
-// bonificación, monto de la bonificación, monto pagado, fecha y hora.
+// 
+// 
+// • Tabla de vehículos registrados – monto total gastado en sus tránsitos.
+// • Tabla de tránsitos realizados  – Información: monto de la bonificación, 
 // • Tabla de notificaciones del sistema ordenados por fecha/hora descendente. Información:
 // Fecha y hora, mensaje
 // 2) Opcionalmente el propietario indica que desea borrar las notificaciones recibidas.

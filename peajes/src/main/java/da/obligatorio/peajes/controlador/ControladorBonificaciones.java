@@ -34,8 +34,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Scope("session")
 public class ControladorBonificaciones {
  
-
-//OBSERVA AL PROPIETARIO 
     @PostMapping("/bonificaciones/vistaConectada")
     public List<Respuesta> inicializarVista() {
         return Respuesta.lista(puestos(),bonificaciones());
