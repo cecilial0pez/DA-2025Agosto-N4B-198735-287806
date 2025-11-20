@@ -74,18 +74,20 @@ public class ControladorEmularTransito {
     }
 
     @PostMapping("/transitoEmulado")
-    public List<Respuesta> transitoEmulado(@RequestParam int posPuesto, @RequestParam String matricula, @RequestParam Long fechaHora) throws PeajeException {
-        if(posPuesto < 0){
-            throw new PeajeException("Seleccione un puesto");
+    public List<Respuesta> transitoEmulado(@RequestParam int posPuesto, @RequestParam String matricula, @RequestParam Long fechaHora) {
+        try {
+            if (posPuesto < 0) {
+                throw new PeajeException("Seleccione un puesto");
+            }
+            Puesto puesto = Fachada.getInstancia().getPuestosPeaje().get(posPuesto);
+            Date fecha = new Date(fechaHora);
+            Transito transito = Fachada.getInstancia().agregarTransito(matricula, fecha, puesto.getNombre());
+            Propietario propietario = transito.getVehiculo().getPropietario();
+            TransitoDTO dto = new TransitoDTO(transito, propietario);
+            return Respuesta.lista(new Respuesta("transitoEmulado", List.of(dto)));
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("transitoEmuladoError", e.getMessage()));
         }
-        Puesto puesto = Fachada.getInstancia().getPuestosPeaje().get(posPuesto);
-        Date fecha = new Date(fechaHora);
-        Transito transito= Fachada.getInstancia().agregarTransito(matricula, fecha, puesto.getNombre()); 
-        Propietario propietario=transito.getVehiculo().getPropietario();
-        TransitoDTO transitoDto = new TransitoDTO (transito,propietario);
-        List<TransitoDTO> listaDto = new ArrayList<>();
-        listaDto.add(transitoDto);
-        return Respuesta.lista( new Respuesta("transitoEmulado", listaDto));
     }
 
   
@@ -110,10 +112,6 @@ public class ControladorEmularTransito {
 // //  El propietario está en estado deshabilitado. Mensaje: “El propietario del vehículo está
 // //  deshabilitado, no puede realizar tránsitos” y no se registra el tránsito.
 
-// //  El propietario está en estado suspendido. Mensaje: “El propietario del vehículo está
-// //  suspendido, no puede realizar tránsitos” y no se registra el transito
+
 // //  El propietario está en estado penalizado. El transito se registra, pero no se aplican
 // //  bonificaciones (si hubiera) y no se envía la notificación al propietario.
-
-
-// }
