@@ -15,11 +15,7 @@ public class TransitoPanelPropietarioDTO {
     private double montoBonificacion;
     private double montoPagado;
     private String fechayHora;
-    private String nombrePropietario;
-    private String estadoPropietario;
-    private String categoria;
 
-  
     public TransitoPanelPropietarioDTO(Transito transito){
         this.puesto= transito.getPuesto().getNombre();
         this.matricula= transito.getVehiculo().getMatricula();
@@ -32,11 +28,10 @@ public class TransitoPanelPropietarioDTO {
    
     }
 
-
-    public String getNombrePuesto() { return puesto }
+    public String getNombrePuesto() { return puesto;}
     public String getMatricula(){return matricula;}
-    public String getMontoTarifa(){return montoTarifa;}
-    public String getMontoBonificacion(){return montoBonificacion; }
+    public double getMontoTarifa(){return montoTarifa;}
+    public double getMontoBonificacion(){return montoBonificacion; }
     public String getNombreBonificacion(){return nombreBonificacion;}
     public String getNombreTarifa(){return Nombretarifa;}
     public double getTotalPagado(){return montoPagado;}

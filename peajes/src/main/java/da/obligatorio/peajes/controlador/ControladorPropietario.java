@@ -18,7 +18,7 @@ import da.obligatorio.peajes.ConexionNavegador;
 import da.obligatorio.peajes.Respuesta;
 import da.obligatorio.peajes.dto.NotificacionDTO;
 import da.obligatorio.peajes.dto.PropietarioDTO;
-import da.obligatorio.peajes.dto.TransitoDTO;
+import da.obligatorio.peajes.dto.TransitoPanelPropietarioDTO;
 import da.obligatorio.peajes.dto.VehiculoDTO;
 import da.obligatorio.peajes.dto.AsignacionDTO;
 import da.obligatorio.peajes.modelo.Asignacion;
@@ -194,25 +194,6 @@ public class ControladorPropietario implements Observador {
 //             conexionNavegador.enviarJSON(respuestas);
 //     }
 // } 
-
-//    Curso normal:
-// 1) El sistema muestra:
-// 
-// 
-// • Tabla de vehículos registrados – monto total gastado en sus tránsitos.
-// • Tabla de tránsitos realizados  – Información: monto de la bonificación, 
-// • Tabla de notificaciones del sistema ordenados por fecha/hora descendente. Información:
-// Fecha y hora, mensaje
-// 2) Opcionalmente el propietario indica que desea borrar las notificaciones recibidas.
-//  El sistema borra todas las notificaciones del propietario.
-// Cursos alternativos:
-// 2) En caso de que el propietario no tenga notificaciones se muestra mensaje “No hay
-// notificaciones para borrar”
-
-
- 
-
-    
 
 
 }

@@ -96,29 +96,20 @@ public class ControladorEmularTransito {
 
 // //     ctrl k u para descomentar 
 // //Curso normal:
-// // 1) El sistema muestra la lista de puestos definidos. Información: Nombre del puesto.
-// // 2) El administrador selecciona un puesto.
-// // 3) El sistema muestra la tabla de tarifas del puesto seleccionado. Información: categoría y monto.
-// // 4) El administrador ingresa un número de matrícula, la fecha del tránsito e indica que desea
-// // emular un tránsito.
-// // 5) El sistema registra un tránsito para el vehículo correspondiente a la matricula ingresada
-// //  en la fecha y hora indicada y actualiza el saldo del propietario.
-// //  El sistema registra una notificación al propietario:
-// //  [Fecha y hora de la notificación] + “Pasaste por el puesto “ + número de puesto + “con
-// //  el vehículo” + número de matrícula.
+
 // //  Si el saldo del usuario es menor al valor de la alerta de saldo mínimo el sistema registra
 // //  una notificación al propietario: [Fecha y hora de la notificación] + “Tu saldo actual es
 // //  de $ “ + saldo actual + “ Te recomendamos hacer una recarga”;
-// // 6) El sistema muestra el nombre del propietario del vehículo, su estado, la categoría del vehículo,
-// // el nombre de la bonificación si corresponde, el costo del tránsito y el saldo del propietario
-// //  luego del tránsito.
+
 // // Cursos alternativos:
 // // 5) No existe un vehículo registrado con la matricula ingresada. Mensaje: “No existe el
 // //  vehículo”.
 // //  El propietario no tiene saldo suficiente para abonar el tránsito. Mensaje: “Saldo
 // //  insuficiente:” + el saldo actual del propietario.
+
 // //  El propietario está en estado deshabilitado. Mensaje: “El propietario del vehículo está
 // //  deshabilitado, no puede realizar tránsitos” y no se registra el tránsito.
+
 // //  El propietario está en estado suspendido. Mensaje: “El propietario del vehículo está
 // //  suspendido, no puede realizar tránsitos” y no se registra el transito
 // //  El propietario está en estado penalizado. El transito se registra, pero no se aplican

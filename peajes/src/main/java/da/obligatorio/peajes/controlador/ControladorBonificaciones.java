@@ -74,21 +74,31 @@ public class ControladorBonificaciones {
             }
             return Respuesta.lista(new Respuesta("asignacionesPropietario", asignacionesDto));
         } catch (PeajeException e) {
-            return Respuesta.lista(new Respuesta("asignacionesPropietarioerror", e.getMessage()));
+            return Respuesta.lista(new Respuesta("asignacionBonificacionError", e.getMessage()));
         }
     }
 
      @PostMapping("/asignarBonificacion")
-    public void asignarBonificacion(@RequestParam int posPuesto, @RequestParam int posBonificacion, @RequestParam String cedula) throws PeajeException {
-        if(posPuesto < 0){
-            throw new PeajeException("Debe especificar un puesto");
+    public List<Respuesta> asignarBonificacion(@RequestParam int posPuesto,
+                                               @RequestParam int posBonificacion,
+                                               @RequestParam String cedula) {
+        try {
+            if (posPuesto < 0) {
+                throw new PeajeException("Debe especificar un puesto");
+            }
+            if (posBonificacion < 0) {
+                throw new PeajeException("Debe especificar una bonificación");
+            }
+
+            Puesto puesto = Fachada.getInstancia().getPuestosPeaje().get(posPuesto);
+            Bonificacion bonificacion = Fachada.getInstancia().getBonificaciones().get(posBonificacion);
+            Fachada.getInstancia().agregarAsignacion(puesto.getNombre(), bonificacion.getNombre(), cedula);
+
+            return Respuesta.lista(new Respuesta("asignacionBonificacionExito",
+                    "La bonificación fue asignada correctamente."));
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("asignacionBonificacionError", e.getMessage()));
         }
-         if(posBonificacion < 0){
-            throw new PeajeException("Debe especificar una bonificación");
-        }
-        Puesto puesto = Fachada.getInstancia().getPuestosPeaje().get(posPuesto);
-        Bonificacion bonificacion = Fachada.getInstancia().getBonificaciones().get(posBonificacion);
-        Fachada.getInstancia().agregarAsignacion(puesto.getNombre(), bonificacion.getNombre(),cedula);
     }
 
 
@@ -97,27 +107,14 @@ public class ControladorBonificaciones {
 
   
 // Curso normal:
-// 1) El sistema muestra la lista de bonificaciones definidas. Información: Nombre de la
-// bonificación. hecho
-// 2) El sistema muestra la lista de puestos definidos. Información: Nombre del puesto. hecho
-// 3) El administrador ingresa una cedula de identidad de un propietario e indica que desea
-//  buscarlo.
-// 4) El sistema muestra el nombre completo del propietario, su estado y las bonificaciones que
-// tiene asignadas. Información: Nombre de la bonificación - nombre del puesto al que está
-// asignada.
-// 5) Opcionalmente el administrador selecciona una bonificación de la lista de bonificaciones
-// definidas, selecciona un puesto, e indica que desea asignar la bonificación al propietario.
-// 6) El sistema asigna la bonificación al propietario para el puesto seleccionado y registra la fecha
-// y hora de asignada.
-//
+
 // Cursos alternativos:
-// 4) No se encuentra un propietario con la cedula especificada. Mensaje “no existe el propietario”
+
 // 6) No hay una bonificación seleccionada. Mensaje “Debe especificar una bonificación”
 //  No hay un puesto seleccionado. Mensaje “Debe especificar un puesto”
-//  El propietario ya tiene una bonificación para el puesto seleccionado. Mensaje “Ya tiene
-//  una bonificación asignada para ese puesto”.
+
 //  El propietario está deshabilitado. Mensaje “El propietario esta deshabilitado. No se pueden
-// asignar bonificaciones”.
+// asignar bonificaciones".
 
 
 
