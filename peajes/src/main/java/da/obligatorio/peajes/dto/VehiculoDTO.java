@@ -7,7 +7,7 @@ public class VehiculoDTO {
     private String modelo;
     private String color;
     private int cantidadTransitos;
-    private int montoTotalGastado;
+    private double montoTotalGastado;
     // Información: Número de matrícula, modelo, color, cantidad
 // de tránsitos realizados y monto total gastado en sus tránsitos.
 
@@ -23,7 +23,7 @@ public class VehiculoDTO {
         return cantidadTransitos;
     }
 
-    public int getMontoTotalGastado() {
+    public double getMontoTotalGastado() {
         return montoTotalGastado;
     }
 

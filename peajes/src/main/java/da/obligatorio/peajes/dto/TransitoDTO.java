@@ -30,12 +30,14 @@ public class TransitoDTO {
     }
 
     public TransitoDTO(Transito transito, Propietario propietario){
+        this.montoTarifa=transito.getTarifa().getMonto();
         this.nombrePropietario= propietario.getNombre();
         this.estadoPropietario= propietario.getEstado().getNombre();
         this.categoria= transito.getVehiculo().getCategoria().getNombre();
         this.nombreBonificacion= transito.getNombreBonificacion();
+        this.montoBonificacion= transito.getMontoBonificacion();
         this.montoPagado= transito.getTotalPagado();
-        this.saldopropietario;
+        this.saldopropietario= propietario.getSaldo();
     }
 
 

@@ -76,7 +76,12 @@ public class Transito {
 
     //Metodos agregados
     public double calcularTotalAPagar(double tarifa, double descuento){
-        return tarifa - (tarifa * descuento);
+       double montobonificado= tarifa * descuento;
+       this.setMontoBonificacion(montobonificado);
+       double total = tarifa - montobonificado;
+        this.vehiculo.incrementarMontoTotalGastado(total);
+        return total;
+    
         //no puedo fijar el total pagado aca porque necesito el propietario para ver su bonificacion
     }
 
