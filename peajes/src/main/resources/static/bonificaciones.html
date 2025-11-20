@@ -68,7 +68,7 @@
           </select>
         </label>
         <input type="hidden" id="cedulaSeleccionada" name="cedula" />
-        <button type="submit" class="primary" disabled>Asignar bonificación</button>
+        <button type="submit" class="primary">Asignar bonificación</button>
       </form>
       <p id="estadoAsignacion" class="msg" aria-live="polite">Seleccione un propietario para habilitar la asignación.</p>
     </section>
@@ -136,13 +136,13 @@
       document.getElementById('formAsignar').addEventListener('submit', (e) => {
         e.preventDefault();
         const estado = document.getElementById('estadoAsignacion');
-        const cedula = document.getElementById('cedulaSeleccionada').value;
+        const cedula = document.getElementById('cedula').value.trim();
         const posBonificacion = document.getElementById('selectBonificacion').value;
         const posPuesto = document.getElementById('selectPuesto').value;
 
         if (!cedula) {
           estado.className = 'msg error';
-          estado.textContent = 'Busque y seleccione un propietario primero.';
+          estado.textContent = 'Ingrese la cédula del propietario.';
           return;
         }
         if (posBonificacion === '' || posPuesto === '') {
@@ -153,18 +153,9 @@
 
         estado.className = 'msg';
         estado.textContent = 'Asignando...';
-        const params = new URLSearchParams({
-          posBonificacion,
-          posPuesto,
-          cedula
-        }).toString();
-        submit('/asignarBonificacion', params, 'POST');
-        setTimeout(() => {
-          if (cedulaActual) {
-            const refresh = new URLSearchParams({ cedula: cedulaActual }).toString();
-            submit('/asignacionesPropietario', refresh, 'POST');
-          }
-        }, 250);
+        submit('/asignarBonificacion',
+               new URLSearchParams({ posBonificacion, posPuesto, cedula }).toString(),
+               'POST');
       });
     });
 
@@ -225,14 +216,9 @@
     window.mostrar_asignacionesPropietario = function (lista) {
       const estadoBusqueda = document.getElementById('estadoBusqueda');
       const tabla = document.getElementById('tablaAsignaciones');
-      const estadoAsignacion = document.getElementById('estadoAsignacion');
-      const botonAsignar = document.querySelector('#formAsignar button[type="submit"]');
 
       estadoBusqueda.className = 'msg success';
       estadoBusqueda.textContent = 'Propietario encontrado. Podés asignar bonificaciones.';
-      estadoAsignacion.className = 'msg';
-      estadoAsignacion.textContent = '';
-      botonAsignar.disabled = false;
 
       if (Array.isArray(lista) && lista.length > 0) {
         tabla.innerHTML = crearTablaDesdeJson(lista);
@@ -256,7 +242,7 @@
       tabla.innerHTML = '<p class="msg error">No hay datos para mostrar.</p>';
     };
 
-    window.mostrar_asignacionBonificacion = function (mensaje) {
+    window.mostrar_asignacionBonificacionExito = function (mensaje) {
       const estado = document.getElementById('estadoAsignacion');
       estado.className = 'msg success';
       estado.textContent = mensaje || 'Bonificación asignada correctamente.';
@@ -289,6 +275,42 @@
       const params = new URLSearchParams({ cedula }).toString();
       submit('/asignacionesPropietario', params, 'POST');
     };
+
+    window.mostrar_cedulaPropietarioSeleccionada = (cedula) => {
+      const input = document.getElementById('cedula');
+      if (!input) return;
+      input.value = cedula ?? '';
+      if (input.value) {
+        submit('/asignacionesPropietario',
+               new URLSearchParams({ cedula: input.value }).toString(),
+               'POST');
+      }
+    };
+
+    const btnAsignar = document.querySelector('#formAsignar button[type="submit"]');
+    const selectPuestos = document.getElementById('selectPuesto');
+    const selectBonificaciones = document.getElementById('selectBonificacion');
+
+    if (btnAsignar) {
+      btnAsignar.addEventListener('click', () => {
+        const cedula = (document.getElementById('cedula').value || '').trim();
+        if (!cedula) {
+          mostrarMensaje('Debe especificar la cédula del propietario.', true);
+          return;
+        }
+
+        const posPuesto = selectPuestos.selectedIndex;
+        const posBonificacion = selectBonificaciones.selectedIndex;
+
+        submit('/asignarBonificacion',
+               new URLSearchParams({
+                 posPuesto,
+                 posBonificacion,
+                 cedula
+               }).toString(),
+               'POST');
+      });
+    }
   </script>
 </body>
 </html>

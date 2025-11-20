@@ -28,15 +28,39 @@ import da.obligatorio.peajes.modelo.Transito;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 
 @RestController
 @Scope("session")
 public class ControladorBonificaciones {
- 
+
+    private String cedulaActual;
+    private List<AsignacionDTO> asignacionesActuales = new ArrayList<>();
+
     @PostMapping("/bonificaciones/vistaConectada")
     public List<Respuesta> inicializarVista() {
-        return Respuesta.lista(puestos(),bonificaciones());
+        List<Respuesta> paquete = new ArrayList<>();
+        paquete.add(puestos());
+        paquete.add(bonificaciones());
+        if (cedulaActual != null) {
+            paquete.add(new Respuesta("asignacionesPropietario", asignacionesActuales));
+            paquete.add(new Respuesta("cedulaPropietarioSeleccionada", cedulaActual));
+        }
+        return paquete;
+    }
+
+    @RequestMapping(value = "/bonificaciones/vistaConectada")
+    public List<Respuesta> vistaConectada() {
+        List<Respuesta> paquete = new ArrayList<>();
+        paquete.add(puestos());
+        paquete.add(bonificaciones());
+        if (cedulaActual != null) {
+            paquete.add(new Respuesta("cedulaPropietarioSeleccionada", cedulaActual));
+            paquete.add(new Respuesta("asignacionesPropietario", asignacionesActuales));
+        }
+        return paquete;
     }
 
     private Respuesta puestos() {
@@ -65,20 +89,17 @@ public class ControladorBonificaciones {
     @PostMapping("/asignacionesPropietario")
     public List<Respuesta> asignacionesPropietario(@RequestParam String cedula) {
         try {
-            List<AsignacionDTO> asignacionesDto = new ArrayList<>();
-            List<Asignacion> asignaciones = Fachada.getInstancia().getAsignacionesPropietario(cedula);
-            if (asignaciones != null) {
-                for (Asignacion a : asignaciones) {
-                    asignacionesDto.add(new AsignacionDTO(a));
-                }
-            }
-            return Respuesta.lista(new Respuesta("asignacionesPropietario", asignacionesDto));
+            this.cedulaActual = cedula;
+            this.asignacionesActuales = construirAsignaciones(cedula);
+            return Respuesta.lista(
+                new Respuesta("asignacionesPropietario", asignacionesActuales)
+            );
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("asignacionBonificacionError", e.getMessage()));
         }
     }
 
-     @PostMapping("/asignarBonificacion")
+    @PostMapping("/asignarBonificacion")
     public List<Respuesta> asignarBonificacion(@RequestParam int posPuesto,
                                                @RequestParam int posBonificacion,
                                                @RequestParam String cedula) {
@@ -94,11 +115,27 @@ public class ControladorBonificaciones {
             Bonificacion bonificacion = Fachada.getInstancia().getBonificaciones().get(posBonificacion);
             Fachada.getInstancia().agregarAsignacion(puesto.getNombre(), bonificacion.getNombre(), cedula);
 
-            return Respuesta.lista(new Respuesta("asignacionBonificacionExito",
-                    "La bonificación fue asignada correctamente."));
+            this.cedulaActual = cedula;
+            this.asignacionesActuales = construirAsignaciones(cedula);
+
+            return Respuesta.lista(
+                new Respuesta("asignacionBonificacionExito", "La bonificación fue asignada correctamente."),
+                new Respuesta("asignacionesPropietario", asignacionesActuales)
+            );
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("asignacionBonificacionError", e.getMessage()));
         }
+    }
+
+    private List<AsignacionDTO> construirAsignaciones(String cedula) throws PeajeException {
+        List<AsignacionDTO> asignacionesDto = new ArrayList<>();
+        List<Asignacion> asignaciones = Fachada.getInstancia().getAsignacionesPropietario(cedula);
+        if (asignaciones != null) {
+            for (Asignacion a : asignaciones) {
+                asignacionesDto.add(new AsignacionDTO(a));
+            }
+        }
+        return asignacionesDto;
     }
 
 
