@@ -82,6 +82,7 @@
   <script>
     let cedulaActual = null;
     let estadoActual = null;
+    const estadosCache = [];
 
     document.addEventListener('DOMContentLoaded', () => {
       submit('/cambiarEstado/vistaConectada', '', 'POST');
@@ -138,6 +139,11 @@
         const params = new URLSearchParams({ cedula, posTipoEstado }).toString();
         submit('/cambiarEstadoPropietario', params, 'POST');
       });
+
+      const selectEstado = document.getElementById('selectEstado');
+      selectEstado.addEventListener('change', () => {
+        selectEstado.dataset.seleccionManual = 'true';
+      });
     });
 
     window.mostrar_nombre = (nombre) => {
@@ -146,31 +152,20 @@
 
     window.mostrar_estados = (lista) => {
       const select = document.getElementById('selectEstado');
+      if (!select) return;
+
+      estadosCache.length = 0;
       select.innerHTML = '<option value="">Seleccione…</option>';
-
-      if (!Array.isArray(lista) || lista.length === 0) {
-        const lbl = document.getElementById('estadoCambio');
-        lbl.className = 'msg error';
-        lbl.textContent = 'No hay estados disponibles.';
-        return;
-      }
-
-      lista.forEach((item, index) => {
-        const opt = document.createElement('option');
-        opt.value = String(index);
-        opt.textContent = item.nombre;
-        select.appendChild(opt);
+      lista.forEach((item, indice) => {
+        estadosCache.push(item.nombre);
+        const opt = new Option(item.nombre, indice);
+        select.add(opt);
       });
 
       if (estadoActual) {
-        seleccionarPorTexto('selectEstado', estadoActual);
+        const pos = estadosCache.indexOf(estadoActual);
+        if (pos >= 0) select.value = String(pos);
       }
-    };
-
-    window.mostrar_estadosError = (mensaje) => {
-      const lbl = document.getElementById('estadoCambio');
-      lbl.className = 'msg error';
-      lbl.textContent = mensaje || 'No se pudieron cargar los estados disponibles.';
     };
 
     const renderPropietario = (dto, mensaje) => {
@@ -187,8 +182,9 @@
       `;
 
       estadoActual = dto.estado ?? null;
-      if (estadoActual) {
-        seleccionarPorTexto('selectEstado', estadoActual);
+      if (estadoActual && selectEstado.dataset.seleccionManual !== 'true') {
+        const pos = estadosCache.indexOf(estadoActual);
+        selectEstado.value = pos >= 0 ? String(pos) : '';
       }
     };
 
@@ -209,6 +205,14 @@
       renderPropietario(lista[0] ?? {}, 'Estado actualizado.');
       document.getElementById('estadoCambio').className = 'msg success';
       document.getElementById('estadoCambio').textContent = 'El estado ha sido modificado exitosamente.';
+
+      const estadoActualizado = lista[0]?.estadoActual;
+      if (estadoActualizado) {
+        const select = document.getElementById('selectEstado');
+        Array.from(select.options).forEach((opt) => {
+          opt.selected = (opt.textContent === estadoActualizado);
+        });
+      }
     };
 
     window.mostrar_cambioEstadoExito = (mensaje) => {
@@ -227,9 +231,17 @@
         'Propietario encontrado.'
       );
 
+      selectEstado.dataset.seleccionManual = '';
+
       if (cedulaActual) {
         submit('/estadoPropietario', new URLSearchParams({ cedula: cedulaActual }).toString(), 'POST');
       }
+    };
+
+    window.mostrar_cambioEstadoError = (mensaje) => {
+      const lbl = document.getElementById('estadoCambio');
+      lbl.className = 'msg error';
+      lbl.textContent = mensaje || 'No se pudo cambiar el estado.';
     };
 
     window.mostrar_propietarioerror = (mensaje) => {
@@ -239,6 +251,20 @@
       document.getElementById('estadoCambio').className = 'msg error';
       document.getElementById('estadoCambio').textContent = 'Busque un propietario válido para habilitar el cambio.';
       estadoActual = null;
+      selectEstado.dataset.seleccionManual = '';
+    };
+
+    window.mostrar_cedulaPropietarioSeleccionada = (cedula) => {
+      cedulaActual = cedula ?? null;
+      const campo = document.getElementById('cedula');
+      const oculto = document.getElementById('cedulaSeleccionada');
+      if (campo) campo.value = cedula ?? '';
+      if (oculto) oculto.value = cedula ?? '';
+      if (cedula) {
+        submit('/estadoPropietario',
+               new URLSearchParams({ cedula }).toString(),
+               'POST');
+      }
     };
 
     function extraerEstadoDesdeDescripcion(descripcion) {

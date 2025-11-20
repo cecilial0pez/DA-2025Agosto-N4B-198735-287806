@@ -45,7 +45,17 @@ public class ControladorCambiarEstado implements Observador{
 
    @PostMapping("/cambiarEstado/vistaConectada")
     public List<Respuesta> inicializarVista() {
-        return Respuesta.lista(estados());
+        List<Respuesta> paquete = new ArrayList<>();
+        paquete.add(estados());
+        if (cedulaActual != null) {
+            paquete.add(new Respuesta("cedulaPropietarioSeleccionada", cedulaActual));
+            try {
+                paquete.addAll(crearEstadoPropietario(cedulaActual));
+            } catch (PeajeException e) {
+                paquete.add(new Respuesta("propietarioEstadoError", e.getMessage()));
+            }
+        }
+        return paquete;
     }
 
     private Respuesta estados() {
@@ -74,7 +84,10 @@ public class ControladorCambiarEstado implements Observador{
             this.cedulaActual = cedula;
             Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);
             propietario.agregarObservador(this);
-            return crearEstadoPropietario(cedula);
+            List<Respuesta> paquete = new ArrayList<>();
+            paquete.add(new Respuesta("cedulaPropietarioSeleccionada", cedula));
+            paquete.addAll(crearEstadoPropietario(cedula));
+            return paquete;
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("propietarioEstadoError", e.getMessage()));
         }
