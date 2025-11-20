@@ -41,55 +41,115 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ControladorPropietario implements Observador {
 
     private final ConexionNavegador conexionNavegador; 
-    
+    private Propietario propietarioActual;
+    private String cedulaActual;
+
+      @GetMapping(value = "/registrarSSE", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter registrarSSE() {
+        conexionNavegador.conectarSSE();
+        return conexionNavegador.getConexionSSE(); 
+       
+    }
+
 
     public ControladorPropietario(@Autowired ConexionNavegador conexionNavegador) {
         this.conexionNavegador = conexionNavegador;
     }
     
-    //con esto se que propietario esta conectado
-   private Propietario propietarioEnSesion(HttpSession sesionHttp) throws PeajeException {
-        if (sesionHttp == null) throw new PeajeException("Sesión nula");
-        Object obj = sesionHttp.getAttribute("usuarioProp");
-        if (obj instanceof Propietario prop) {
-            String ced = prop.getCedula();
-            if (ced != null && !ced.trim().isEmpty()) {
-                return prop;
-            }
-            throw new PeajeException("Propietario en sesión inválido (cedula vacía)");
+    private Propietario propietarioEnSesion(HttpSession sesionHttp) throws PeajeException {
+        if (sesionHttp == null) {
+            throw new PeajeException("Sesión nula");
         }
-        throw new PeajeException("Sesión expirada o no iniciada");
+        Object obj = sesionHttp.getAttribute("usuarioProp");
+        if (obj == null || !(obj instanceof Propietario)) {
+            throw new PeajeException("Sesión expirada o no iniciada");
+        }
+        Propietario prop = (Propietario) obj;
+        String ced = prop.getCedula();
+        if (ced == null || ced.trim().isEmpty()) {
+            throw new PeajeException("Propietario en sesión inválido (cédula vacía)");
+        }
+        this.propietarioActual = prop;
+        this.cedulaActual = prop.getCedula();
+        prop.agregarObservador(this);
+        return prop;
     }
 
-     private Respuesta notificaciones(Propietario propietario){
-        return  new Respuesta("notificaciones", NotificacionDTO.listaNotificacionesDto(Fachada.getInstancia().getNotificaciones(propietario)));
+    private Respuesta construirInfo(Propietario prop) {
+        return new Respuesta("infoProp", new PropietarioDTO(prop));
+    }
+
+    private Respuesta construirVehiculos(Propietario prop) {
+        List<VehiculoDTO> listaDto = new ArrayList<>();
+        List<Vehiculo> vehiculos = prop.getVehiculos();
+        if (vehiculos != null) {
+            for (Vehiculo v : vehiculos) {
+                listaDto.add(new VehiculoDTO(v));
+            }
+        }
+        return new Respuesta("vehiculosProp", listaDto);
+    }
+
+    private Respuesta construirTransitos(Propietario prop) {
+        List<TransitoPanelPropietarioDTO> listaDto = new ArrayList<>();
+        List<Transito> transitos = prop.getTransitos();
+        if (transitos != null) {
+            transitos.sort(Comparator.comparing(Transito::getFechaHora).reversed());
+            for (Transito t : transitos) {
+                listaDto.add(new TransitoPanelPropietarioDTO(t));
+            }
+        }
+        return new Respuesta("transitosProp", listaDto);
+    }
+
+    private Respuesta construirAsignaciones(Propietario prop) {
+        List<AsignacionDTO> listaDto = new ArrayList<>();
+        List<Asignacion> asignaciones = prop.getAsignaciones();
+        if (asignaciones != null) {
+            for (Asignacion a : asignaciones) {
+                listaDto.add(new AsignacionDTO(a));
+            }
+        }
+        return new Respuesta("bonificacionesProp", listaDto);
+    }
+
+    private Respuesta construirNotificaciones(Propietario prop) {
+        List<Notificacion> notisOrigen = prop.getNotificaciones();
+        List<Notificacion> notis = notisOrigen == null ? new ArrayList<>() : new ArrayList<>(notisOrigen);
+        notis.sort(Comparator.comparing(Notificacion::getFechaHoraEnvio).reversed());
+
+        List<NotificacionDTO> listaDto = new ArrayList<>();
+        for (Notificacion n : notis) {
+            listaDto.add(new NotificacionDTO(n));
+        }
+        return new Respuesta("notisProp", listaDto);
+    }
+
+    private List<Respuesta> construirPaqueteCompleto(Propietario prop) {
+        List<Respuesta> paquete = new ArrayList<>();
+        paquete.add(construirInfo(prop));
+        paquete.add(construirAsignaciones(prop));
+        paquete.add(construirVehiculos(prop));
+        paquete.add(construirTransitos(prop));
+        paquete.add(construirNotificaciones(prop));
+        return paquete;
     }
 
     @PostMapping("/infoProp")
     public List<Respuesta> infoProp(HttpSession sesionHttp) {
         try {
             Propietario prop = propietarioEnSesion(sesionHttp);
-            PropietarioDTO dto = new PropietarioDTO(prop);
-            return Respuesta.lista(new Respuesta("infoProp", dto));
+            return Respuesta.lista(construirInfo(prop));
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("infoPropError", e.getMessage()));
         }
     }
 
-     @PostMapping("/vehiculosProp")
+    @PostMapping("/vehiculosProp")
     public List<Respuesta> vehiculosProp(HttpSession sesionHttp) {
         try {
             Propietario prop = propietarioEnSesion(sesionHttp);
-
-            List<VehiculoDTO> listaDto = new ArrayList<>();
-            List<Vehiculo> vehiculos = prop.getVehiculos();
-            if (vehiculos != null) {
-                for (Vehiculo v : vehiculos) {
-                    listaDto.add(new VehiculoDTO(v));
-                }
-            }
-
-            return Respuesta.lista(new Respuesta("vehiculosProp", listaDto));
+            return Respuesta.lista(construirVehiculos(prop));
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("vehiculosPropError", e.getMessage()));
         }
@@ -99,35 +159,17 @@ public class ControladorPropietario implements Observador {
     public List<Respuesta> transitosProp(HttpSession sesionHttp) {
         try {
             Propietario prop = propietarioEnSesion(sesionHttp);
-
-            List<TransitoPanelPropietarioDTO> listaDto = new ArrayList<>();
-            List<Transito> transitos = prop.getTransitos();
-            if (transitos != null) {
-              transitos.sort(Comparator.comparing(Transito::getFechaHora).reversed());
-                for (Transito t : transitos) {             
-                    listaDto.add(new TransitoPanelPropietarioDTO(t));
-                }
-            }
-            return Respuesta.lista(new Respuesta("transitosProp", listaDto));
+            return Respuesta.lista(construirTransitos(prop));
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("transitosPropError", e.getMessage()));
         }
     }
 
-        @PostMapping("/bonificacionesProp")
+    @PostMapping("/bonificacionesProp")
     public List<Respuesta> bonificacionesProp(HttpSession sesionHttp) {
         try {
             Propietario prop = propietarioEnSesion(sesionHttp);
-
-            List<AsignacionDTO> listaDto = new ArrayList<>();
-            List<Asignacion> asignaciones = prop.getAsignaciones();
-            if (asignaciones != null) {
-                for (Asignacion a : asignaciones) {
-                    listaDto.add(new AsignacionDTO(a));
-                }
-            }
-
-            return Respuesta.lista(new Respuesta("bonificacionesProp", listaDto));
+            return Respuesta.lista(construirAsignaciones(prop));
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("bonificacionesPropError", e.getMessage()));
         }
@@ -135,17 +177,9 @@ public class ControladorPropietario implements Observador {
 
     @PostMapping("/notisProp")
     public List<Respuesta> notisProp(HttpSession sesionHttp) {
-        try{
-            Propietario prop=propietarioEnSesion(sesionHttp);
-            List<NotificacionDTO> listaDto=new ArrayList<>();
-            List<Notificacion> notis=prop.getNotificaciones();
-            if(notis!=null){
-                notis.sort(Comparator.comparing(Notificacion::getFechaHoraEnvio).reversed());
-                for(Notificacion n:notis){
-                    listaDto.add(new NotificacionDTO(n));
-                }
-            }
-            return Respuesta.lista(new Respuesta("notisProp", listaDto));
+        try {
+            Propietario prop = propietarioEnSesion(sesionHttp);
+            return Respuesta.lista(construirNotificaciones(prop));
         } catch (PeajeException e) {
             return Respuesta.lista(new Respuesta("notisPropError", e.getMessage()));
         }
@@ -166,34 +200,21 @@ public class ControladorPropietario implements Observador {
         }
     }
     
-   @Override
-   public void actualizar(Object evento, Observable origen) {
-    // TODO Auto-generated method stub
-   
-           // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'actualizar'");
-        
-   }
+    @PostMapping("/panelPropietario/vistaConectada")
+    public List<Respuesta> vistaConectada(HttpSession sesionHttp) {
+        try {
+            Propietario prop = propietarioEnSesion(sesionHttp);
+            return construirPaqueteCompleto(prop);
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("panelPropError", e.getMessage()));
+        }
+    }
 
-//     @Override
-//     public void actualizar(Object evento, Observable origen) {
-        
+    @Override
+    public void actualizar(Object evento, Observable origen) {
+        if (cedulaActual == null || propietarioActual == null) return;
+        if (!(evento instanceof Propietario.Eventos)) return;
 
-//             Propietario propietario = fachada.buscarPropietario(cedulaSesion);
-
-//             List<Respuesta> respuestas = new ArrayList<>();
-
-//             respuestas.add(new Respuesta("infoProp", new PropietarioDTO(propietario)));
-
-//             respuestas.add(new Respuesta("bonificaciones", obtenerBonificaciones(propietario)));
-//             respuestas.add(new Respuesta("vehiculos", obtenerVehiculosRegistrados(propietario, cedulaSesion)));
-//             respuestas.add(new Respuesta("transitos", obtenerTransitosRealizados(cedulaSesion)));
-//             respuestas.add(new Respuesta("notificaciones", obtenerNotificacionesPropietario(propietario)));
-//             respuestas.add(new Respuesta("exito", "Datos actualizados"));
-
-//             conexionNavegador.enviarJSON(respuestas);
-//     }
-// } 
-
-
+        conexionNavegador.enviarJSON(construirPaqueteCompleto(propietarioActual));
+    }
 }

@@ -69,6 +69,7 @@
 
   <script src="/js/utilesVista.js"></script>
   <script src="/js/vistaWeb.js"></script>
+
   <script>
     (function () {
       const infoEl = document.getElementById('infoProp');
@@ -80,6 +81,7 @@
       const nombreProp = document.getElementById('nombreProp');
 
       const endpoints = {
+        conectar: '/panelPropietario/vistaConectada',
         info: '/infoProp',
         bonificaciones: '/bonificacionesProp',
         vehiculos: '/vehiculosProp',
@@ -88,23 +90,70 @@
         borrarNotis: '/borrarNotisProp'
       };
 
-      function renderTabla(destino, lista, vacio) {
+      const normalizar = (dato) => Array.isArray(dato) ? dato : (dato ? [dato] : []);
+
+      const actualizarResumen = (dto) => {
+        if (!dto) return;
+        nombreProp.textContent = dto.nombre ? `${dto.nombre} (${dto.estado})` : 'Propietario';
+        infoEl.innerHTML = `
+          <div><span>Nombre</span><strong>${dto.nombre || '-'}</strong></div>
+          <div><span>Estado</span><strong>${dto.estado || '-'}</strong></div>
+          <div><span>Saldo</span><strong>${dto.saldo ?? '-'}</strong></div>
+        `;
+      };
+
+      const renderTabla = (destino, lista, vacio) => {
         if (!Array.isArray(lista) || lista.length === 0) {
-          destino.innerHTML = '<p class="msg">' + vacio + '</p>';
+          destino.innerHTML = `<p class="msg">${vacio}</p>`;
           return;
         }
         destino.innerHTML = crearTablaDesdeJson(lista);
-      }
+      };
 
-      function refrescarTodo() {
+      const refrescarTodo = () => {
         submit(endpoints.info, '', 'POST');
         submit(endpoints.bonificaciones, '', 'POST');
         submit(endpoints.vehiculos, '', 'POST');
         submit(endpoints.transitos, '', 'POST');
         submit(endpoints.notis, '', 'POST');
-      }
+      };
 
-      document.addEventListener('DOMContentLoaded', refrescarTodo);
+      document.addEventListener('DOMContentLoaded', () => {
+        const sse = new EventSource('/registrarSSE');
+        if (typeof window.registrarHook !== 'function') {
+          window.registrarHook = (sse) => {
+            const despachar = (payload) => {
+              const lista = Array.isArray(payload) ? payload : [payload];
+              lista.forEach((respuesta) => {
+                if (!respuesta || typeof respuesta.id !== 'string') return;
+                const handler = window[`mostrar_${respuesta.id}`];
+                if (typeof handler === 'function') {
+                  handler(respuesta.parametro);
+                } else {
+                  console.warn(`No existe handler para ${respuesta.id}`, respuesta);
+                }
+              });
+            };
+
+            sse.onmessage = (evento) => {
+              try {
+                const datos = JSON.parse(evento.data);
+                console.log('SSE recibido:', datos);
+                despachar(datos);
+              } catch (error) {
+                console.error('Error al procesar SSE', error, evento.data);
+              }
+            };
+
+            sse.onerror = (evento) => {
+              console.error('Error en la conexión SSE', evento);
+            };
+          };
+        }
+        registrarHook(sse);  // <- llamada necesaria
+        submit('/panelPropietario/vistaConectada', '', 'POST');
+        refrescarTodo();
+      });
 
       document.getElementById('btnRefrescarTodo').addEventListener('click', () => {
         refrescarTodo();
@@ -116,52 +165,33 @@
         submit(endpoints.borrarNotis, '', 'POST');
       });
 
-      window.mostrar_infoProp = function (dto) {
-        if (!dto) return;
-        nombreProp.textContent = dto.nombre ? dto.nombre + ' (' + dto.estado + ')' : 'Propietario';
-        infoEl.innerHTML = `
-          <div><span>Nombre</span><strong>${dto.nombre || '-'}</strong></div>
-          <div><span>Estado</span><strong>${dto.estado || '-'}</strong></div>
-          <div><span>Saldo</span><strong>${dto.saldo ?? '-'}</strong></div>
-        `;
+      window.mostrar_infoProp = (dto) => actualizarResumen(dto);
+      window.mostrar_infoPropError = (texto) => {
+        infoEl.innerHTML = `<p class="msg error">${texto || 'No se pudo cargar la información personal.'}</p>`;
       };
 
-      window.mostrar_infoPropError = function (texto) {
-        infoEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudo cargar la información personal.') + '</p>';
+      window.mostrar_bonificacionesProp = (lista) => renderTabla(bonifEl, normalizar(lista), 'No hay bonificaciones asignadas.');
+      window.mostrar_bonificacionesPropError = (texto) => {
+        bonifEl.innerHTML = `<p class="msg error">${texto || 'No se pudo cargar la lista de bonificaciones.'}</p>`;
       };
 
-      window.mostrar_bonificacionesProp = function (lista) {
-        renderTabla(bonifEl, lista, 'No hay bonificaciones asignadas.');
+      window.mostrar_vehiculosProp = (lista) => renderTabla(vehEl, normalizar(lista), 'Sin vehículos registrados.');
+      window.mostrar_vehiculosPropError = (texto) => {
+        vehEl.innerHTML = `<p class="msg error">${texto || 'No se pudo cargar la lista de vehículos.'}</p>`;
       };
 
-      window.mostrar_bonificacionesPropError = function (texto) {
-        bonifEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudo cargar la lista de bonificaciones.') + '</p>';
+      window.mostrar_transitosProp = (lista) => renderTabla(transEl, normalizar(lista), 'Sin tránsitos registrados.');
+      window.mostrar_transitosPropError = (texto) => {
+        transEl.innerHTML = `<p class="msg error">${texto || 'No se pudo cargar la lista de tránsitos.'}</p>`;
       };
 
-      window.mostrar_vehiculosProp = function (lista) {
-        renderTabla(vehEl, lista, 'Sin vehículos registrados.');
-      };
-
-      window.mostrar_vehiculosPropError = function (texto) {
-        vehEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudo cargar la lista de vehículos.') + '</p>';
-      };
-
-      window.mostrar_transitosProp = function (lista) {
-        renderTabla(transEl, lista, 'Sin tránsitos registrados.');
-      };
-
-      window.mostrar_transitosPropError = function (texto) {
-        transEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudo cargar la lista de tránsitos.') + '</p>';
-      };
-
-      window.mostrar_notisProp = function (lista) {
+      window.mostrar_notisProp = (lista) => {
         estadoNotis.textContent = '';
         estadoNotis.className = 'msg';
-        renderTabla(notisEl, lista, 'No hay notificaciones.');
+        renderTabla(notisEl, normalizar(lista), 'No hay notificaciones.');
       };
-
-      window.mostrar_notisPropError = function (texto) {
-        notisEl.innerHTML = '<p class="msg error">' + (texto || 'No se pudieron cargar las notificaciones.') + '</p>';
+      window.mostrar_notisPropError = (texto) => {
+        notisEl.innerHTML = `<p class="msg error">${texto || 'No se pudieron cargar las notificaciones.'}</p>`;
       };
 
       window.mostrar_borrarNotisProp = function (mensaje) {
