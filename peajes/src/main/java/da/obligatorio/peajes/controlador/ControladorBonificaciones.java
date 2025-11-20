@@ -17,6 +17,7 @@ import da.obligatorio.peajes.dto.AsignacionDTO;
 import da.obligatorio.peajes.dto.NombreDTO;
 import da.obligatorio.peajes.dto.TarifaDTO;
 import da.obligatorio.peajes.dto.TransitoDTO;
+import da.obligatorio.peajes.modelo.Administrador;
 import da.obligatorio.peajes.modelo.Asignacion;
 import da.obligatorio.peajes.modelo.Bonificacion;
 import da.obligatorio.peajes.modelo.Fachada;
@@ -25,6 +26,7 @@ import da.obligatorio.peajes.modelo.Propietario;
 import da.obligatorio.peajes.modelo.Puesto;
 import da.obligatorio.peajes.modelo.Tarifa;
 import da.obligatorio.peajes.modelo.Transito;
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,14 +41,26 @@ public class ControladorBonificaciones {
     private String cedulaActual;
     private List<AsignacionDTO> asignacionesActuales = new ArrayList<>();
 
+      private Administrador administradorEnSesion(HttpSession sesion) throws PeajeException {
+        if (sesion == null) {
+            throw new PeajeException("Sesión nula");
+        }
+        Object obj = sesion.getAttribute("usuarioAdm");
+        if (!(obj instanceof Administrador)) {
+            throw new PeajeException("Sesión expirada o no iniciada");
+        }
+        return (Administrador) obj;
+    }
+
     @PostMapping("/bonificaciones/vistaConectada")
-    public List<Respuesta> inicializarVista() {
+    public List<Respuesta> inicializarVista(HttpSession sesion) throws PeajeException {
+        administradorEnSesion(sesion);
         List<Respuesta> paquete = new ArrayList<>();
         paquete.add(puestos());
         paquete.add(bonificaciones());
         if (cedulaActual != null) {
-            paquete.add(new Respuesta("asignacionesPropietario", asignacionesActuales));
             paquete.add(new Respuesta("cedulaPropietarioSeleccionada", cedulaActual));
+            paquete.add(new Respuesta("asignacionesPropietario", asignacionesActuales));
         }
         return paquete;
     }
@@ -87,8 +101,10 @@ public class ControladorBonificaciones {
     }
 
     @PostMapping("/asignacionesPropietario")
-    public List<Respuesta> asignacionesPropietario(@RequestParam String cedula) {
+    public List<Respuesta> asignacionesPropietario(@RequestParam String cedula,
+                                                   HttpSession sesion) {
         try {
+            administradorEnSesion(sesion);
             this.cedulaActual = cedula;
             this.asignacionesActuales = construirAsignaciones(cedula);
             return Respuesta.lista(
@@ -102,8 +118,10 @@ public class ControladorBonificaciones {
     @PostMapping("/asignarBonificacion")
     public List<Respuesta> asignarBonificacion(@RequestParam int posPuesto,
                                                @RequestParam int posBonificacion,
-                                               @RequestParam String cedula) {
+                                               @RequestParam String cedula,
+                                               HttpSession sesion) {
         try {
+            administradorEnSesion(sesion);
             if (posPuesto < 0) {
                 throw new PeajeException("Debe especificar un puesto");
             }
@@ -142,16 +160,7 @@ public class ControladorBonificaciones {
   
 }
 
-  
-// Curso normal:
 
-// Cursos alternativos:
-
-// 6) No hay una bonificación seleccionada. Mensaje “Debe especificar una bonificación”
-//  No hay un puesto seleccionado. Mensaje “Debe especificar un puesto”
-
-//  El propietario está deshabilitado. Mensaje “El propietario esta deshabilitado. No se pueden
-// asignar bonificaciones".
 
 
 

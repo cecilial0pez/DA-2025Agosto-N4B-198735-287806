@@ -40,10 +40,22 @@ import jakarta.servlet.http.HttpSession;
 public class ControladorEmularTransito {
    
 
+    private Administrador administradorEnSesion(HttpSession sesion) throws PeajeException {
+        if (sesion == null) {
+            throw new PeajeException("Sesión nula");
+        }
+        Object obj = sesion.getAttribute("usuarioAdm");
+        if (!(obj instanceof Administrador)) {
+            throw new PeajeException("Sesión expirada o no iniciada");
+        }
+        return (Administrador) obj;
+    }
+
     @PostMapping("/vistaConectada")
-	public List<Respuesta> inicializarVista() {
-		return puestos();
-	}
+    public List<Respuesta> inicializarVista(HttpSession sesion) throws PeajeException {
+        administradorEnSesion(sesion);
+        return puestos();
+    }
    
     private List<Respuesta> puestos() {
             List<NombreDTO> puestosDto = new ArrayList<NombreDTO>();
@@ -57,8 +69,9 @@ public class ControladorEmularTransito {
     }
 
     @GetMapping("/tarifasPuesto")
-    public List<Respuesta> tarifasPuesto(@RequestParam int indPuesto) throws PeajeException {
-        try{
+    public List<Respuesta> tarifasPuesto(@RequestParam int indPuesto,  HttpSession sesion) {
+        try {
+            administradorEnSesion(sesion);
             Puesto puesto = Fachada.getInstancia().getPuestosPeaje().get(indPuesto);
             List<TarifaDTO> listaDto = new ArrayList<>();
             List<Tarifa> tarifas = Fachada.getInstancia().getTarifasPuesto(puesto.getNombre());
@@ -74,7 +87,7 @@ public class ControladorEmularTransito {
     }
 
     @PostMapping("/transitoEmulado")
-    public List<Respuesta> transitoEmulado(@RequestParam int posPuesto, @RequestParam String matricula, @RequestParam Long fechaHora) {
+    public List<Respuesta> transitoEmulado(@RequestParam int posPuesto, @RequestParam String matricula, @RequestParam Long fechaHora, HttpSession sesion) {
         try {
             if (posPuesto < 0) {
                 throw new PeajeException("Seleccione un puesto");

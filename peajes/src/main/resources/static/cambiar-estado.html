@@ -20,10 +20,10 @@
       <button class="nav-item" id="btnMonitor">Monitor de actividad</button>
       <button class="nav-item" id="btnEmular">Emular tránsito</button>
       <button class="nav-item" id="btnBonificaciones">Asignar bonificaciones</button>
-      <button class="nav-item active">Cambiar estado</button>
+      <button class="nav-item active" id="btnCambiarEstado">Cambiar estado</button>
     </nav>
 
-    <button class="logout" id="btnLogout">Cerrar sesión</button>
+    <button id="btnLogout" class="nav-item danger">Cerrar sesión</button>
   </aside>
 
   <main class="dash-main">
@@ -80,6 +80,15 @@
   <script src="/js/utilesVista.js"></script>
   <script src="/js/vistaWeb.js"></script>
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnLogout = document.getElementById('btnLogout');
+      btnLogout.addEventListener('click', (e) => {
+        e.preventDefault();
+        submit('/logoutAdmin', '', 'POST');
+      });
+    });
+  </script>
+  <script>
     let cedulaActual = null;
     let estadoActual = null;
     const estadosCache = [];
@@ -88,9 +97,18 @@
     document.addEventListener('DOMContentLoaded', () => {
       submit('/cambiarEstado/vistaConectada', '', 'POST');
 
-      document.getElementById('btnMonitor').addEventListener('click', () => window.location.href = '/monitor-actividad.html');
-      document.getElementById('btnEmular').addEventListener('click', () => window.location.href = '/emular-transito.html');
-      document.getElementById('btnBonificaciones').addEventListener('click', () => window.location.href = '/bonificaciones.html');
+      document.getElementById('btnMonitor').addEventListener('click', () => {
+        window.location.href = '/monitor-actividad.html';
+      });
+      document.getElementById('btnEmular').addEventListener('click', () => {
+        window.location.href = '/emular-transito.html';
+      });
+      document.getElementById('btnBonificaciones').addEventListener('click', () => {
+        window.location.href = '/bonificaciones.html';
+      });
+      document.getElementById('btnCambiarEstado').addEventListener('click', () => {
+        window.location.href = '/cambiar-estado.html';
+      });
       document.getElementById('btnLogout').addEventListener('click', (ev) => {
         ev.preventDefault();
         submit('/logoutAdmin', '', 'POST');
@@ -281,6 +299,10 @@
       cedulaActual = cedula ?? null;
       if (campo) campo.value = cedula ?? '';
       if (oculto) oculto.value = cedula ?? '';
+    };
+
+    window.mostrar_logout = (ruta) => {
+      window.location.href = ruta || '/login-admin.html';
     };
 
     function extraerEstadoDesdeDescripcion(descripcion) {

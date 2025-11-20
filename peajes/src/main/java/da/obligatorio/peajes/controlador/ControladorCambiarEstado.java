@@ -26,6 +26,8 @@ import da.obligatorio.peajes.modelo.Puesto;
 import da.obligatorio.peajes.modelo.Suspendido;
 import da.obligatorio.peajes.modelo.TipoEstado;
 import da.obligatorio.peajes.modelo.Transito;
+import jakarta.servlet.http.HttpSession;
+import da.obligatorio.peajes.modelo.Administrador;
 import da.obligatorio.peajes.modelo.Asignacion;
 import da.obligatorio.peajes.modelo.Deshabilitado;
 import da.obligatorio.peajes.modelo.Estado;
@@ -43,8 +45,22 @@ public class ControladorCambiarEstado implements Observador{
         this.conexionNavegador = conexionNavegador;
     }
 
+    
+      private Administrador administradorEnSesion(HttpSession sesion) throws PeajeException {
+        if (sesion == null) {
+            throw new PeajeException("Sesión nula");
+        }
+        Object obj = sesion.getAttribute("usuarioAdm");
+        if (!(obj instanceof Administrador)) {
+            throw new PeajeException("Sesión expirada o no iniciada");
+        }
+        return (Administrador) obj;
+    }
+
+
    @PostMapping("/cambiarEstado/vistaConectada")
-    public List<Respuesta> inicializarVista() {
+    public List<Respuesta> inicializarVista(HttpSession sesion) throws PeajeException {
+        administradorEnSesion(sesion);
         List<Respuesta> paquete = new ArrayList<>();
         paquete.add(estados());
         if (cedulaActual != null) {
@@ -94,10 +110,29 @@ public class ControladorCambiarEstado implements Observador{
     }
     
 
+    @PostMapping("/buscarPropietarioEstado")
+    public List<Respuesta> buscarPropietarioEstado(@RequestParam String cedula,
+                                                   HttpSession sesion) {
+        try {
+            administradorEnSesion(sesion);
+            this.cedulaActual = cedula;
+            Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);
+            propietario.agregarObservador(this);
+            List<Respuesta> paquete = new ArrayList<>();
+            paquete.add(new Respuesta("cedulaPropietarioSeleccionada", cedula));
+            paquete.addAll(crearEstadoPropietario(cedula));
+            return paquete;
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("propietarioEstadoError", e.getMessage()));
+        }
+    }
+
     @PostMapping("/cambiarEstadoPropietario")
     public List<Respuesta> cambiarEstadoPropietario(@RequestParam String cedula,
-                                                    @RequestParam int posTipoEstado) {
+                                                    @RequestParam int posTipoEstado,
+                                                    HttpSession sesion) {
         try {
+            administradorEnSesion(sesion);
             Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);
             TipoEstado tipoEstado = Fachada.getInstancia().getTiposEstado().get(posTipoEstado);
 
@@ -151,30 +186,6 @@ public class ControladorCambiarEstado implements Observador{
 
 }
 
-//     Estados de propietarios - Información básica: nombre del estado.
-// Hasta el momento hay 4 estados de propietarios definidos en el sistema, aunque en el
-// futuro podrían definirse más. Los estados actualmente definidos son:
-// Habilitado: Es el estado por defecto de los propietarios cuando se dan de alta en el
-// sistema. El propietario tiene todas las funcionalidades habilitadas.
-// Deshabilitado: El usuario no puede ingresar al sistema ni puede realizar tránsitos.
-// Tampoco se le pueden asignar bonificaciones.
-// Suspendido: El usuario puede ingresar al sistema, pero no puede realizar tránsitos.
-// Penalizado: El usuario puede ingresar al sistema, pero no se le registran notificaciones.
-// Puede realizar tránsitos, pero no aplican las bonificaciones que tenga asignadas. 
-// 1) El administrador ingresa una cedula de identidad de un propietario e indica que desea
-//  buscarlo.
-// 2) El sistema muestra el nombre completo del propietario y su estado.
-// 3) El sistema muestra la lista de estados de propietario definidos en el sistema con el estado
-// actual del propietario seleccionado en la lista.
-// 4) El usuario selecciona un nuevo estado de la lista e indica que desea cambiarlo.
-// 5) El sistema cambia el estado del propietario y registra una notificación al propietario:
-//  [Fecha y hora de la notificación] + “Se ha cambiado tu estado en el sistema. Tu estado actual
-// es “ + nombre del estado actual. (Esta notificación siempre se registra, sin importar si el estado
-// actual o el anterior permiten registrar notificaciones)
-// Cursos alternativos:
-// 2) No se encuentra un propietario con la cedula especificada. Mensaje “no existe el propietario”
-// 5) El estado seleccionado es igual al actual. Mensaje “El propietario ya esta en estado “ +
-// nombre del estado actual.
 
 
 
