@@ -24,7 +24,7 @@ public class DatosPrueba {
         // Datos prueba usuarios
         Administrador a1 = new Administrador("a", "1234567", "Administrador Prueba");
         Administrador a2 = new Administrador("a2", "8765432", "Segundo admin");
-        Propietario p1 = new Propietario("prop123", "1122334", "Propietario1", 5000.0, 500.0);
+        Propietario p1 = new Propietario("prop123", "1122334", "Propietario1", 600.0, 500.0);
         // datos de prueba por letra que tienen que estar precargados:
         Administrador a3 = new Administrador("admin.123", "12345678", "Usuario Administrador");
         Propietario p2 = new Propietario("prop.123", "23456789", "Usuario Propietario", 2000.0, 500.0);

@@ -76,14 +76,21 @@ public class Propietario extends Usuario  {
     // saldo actual es
     // de $ “ + saldo actual + “ Te recomendamos hacer una recarga”;
     public boolean haySaldoSuficiente(double totalPagar) {
-        if (this.saldo - totalPagar <= this.saldoMinimo) {
+        if (this.saldo - totalPagar <= 0) {
             return false;
         }
         return true;
     }
 
-    public double actualizarSaldo(double montoGastado) {
+    public double actualizarSaldo(double montoGastado) throws PeajeException {
         this.saldo -= montoGastado;
+        if(this.saldo < this.saldoMinimo){
+            try {
+                registrarNotificacion("Tu saldo actual es de $ " + this.saldo + " Te recomendamos hacer una recarga");
+            } catch (PeajeException e) {
+                throw new PeajeException("Error en registro notificacion ");
+            }
+        }
         observable.avisar(Eventos.cambioSaldo);
         Fachada.getInstancia().avisar(Eventos.cambioSaldo);
         return this.saldo;
@@ -165,22 +172,22 @@ public class Propietario extends Usuario  {
             Bonificacion bonif = bonificacionporPuesto(puesto);
             transito.setNombreBonificacion(bonif.getNombre());
             Double porcentajeDescuento = bonif.getPorcentajeDescuento();
-            Double aApagar = transito.calcularTotalAPagar(transito.getTarifa().getMonto(), porcentajeDescuento);
+            Double aApagar = calcularTotalAPagar(transito, porcentajeDescuento);
             transito.setTotalPagado(aApagar);
         } else {
             transito.setTotalPagado(transito.getTarifa().getMonto());
         }
-        // getTotalPagado
-        if (haySaldoSuficiente(transito.getTotalPagado()) == false) {
-            registrarNotificacion("Tu saldo actual es de $ " + this.saldo + " Te recomendamos hacer una recarga");
+        if (haySaldoSuficiente(transito.getTotalPagado()) == false && this.estado.getNombre() != "Penalizado") {
+           
             throw new PeajeException("Saldo insuficiente para realizar el transito. Saldo actual: " + this.saldo);
         } else {
             actualizarSaldo(transito.getTotalPagado());
             this.transitos.add(transito);
             observable.avisar(Eventos.cambioListaTransitos);
              Fachada.getInstancia().avisar(Eventos.cambioListaTransitos);
+             if(this.estado.getNombre() != "Penalizado"){
             registrarNotificacion("Pasaste por el puesto " + transito.getPuesto().getNombre() + " con el vehículo "
-                    + transito.getVehiculo().getMatricula());
+                    + transito.getVehiculo().getMatricula());}
         }
 
     }
@@ -200,9 +207,10 @@ public class Propietario extends Usuario  {
         }
         Asignacion a = new Asignacion(bonificacion, this, puesto);
         this.asignaciones.add(a);
-
+        if (this.estado.getNombre() != "Penalizado") {
         registrarNotificacion(
                 "Se ha asignado la bonificacion " + bonificacion.getNombre() + " para el puesto " + puesto.getNombre());
+        }
         observable.avisar(Eventos.cambioListaAsignaciones);
         Fachada.getInstancia().avisar(Eventos.cambioListaAsignaciones);
 
@@ -271,6 +279,31 @@ public class Propietario extends Usuario  {
     public void quitarObservador(observador.Observador obs) {
          observable.quitarObservador(obs); 
     }
+
+    
+    public double calcularTotalAPagar(Transito t, double descuento){
+         double montobonificado= 0;
+         if(this.getEstado().getNombre()!="Penalizado"){
+            montobonificado= t.getTarifa().getMonto() * descuento;
+            
+         }
+            t.setMontoBonificacion(montobonificado);
+          double  total = t.getTarifa().getMonto() - montobonificado;
+           t.getVehiculo().incrementarMontoTotalGastado(total);
+             return total;
+       
+    }
+
+    //  public double calcularTotalAPagar(double tarifa, double descuento){
+    //    double montobonificado= tarifa * descuento;
+    //    this.setMontoBonificacion(montobonificado);
+    //    double total = tarifa - montobonificado;
+    //     this.vehiculo.incrementarMontoTotalGastado(total);
+    //     return total;
+    
+    //     
+    // }
+
 
    
 
