@@ -27,9 +27,6 @@ public class Habilitado extends Estado {
         getPropietario().aplicarCambioDirecto(new Penalizado(getPropietario()));
     }
 
-    @Override
-    public boolean puedeLoguearse() {
-        return true;
-    }
+    
 
 }

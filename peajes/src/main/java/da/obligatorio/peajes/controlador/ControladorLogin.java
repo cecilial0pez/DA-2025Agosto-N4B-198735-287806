@@ -17,22 +17,26 @@ import jakarta.servlet.http.HttpSession;
 public class ControladorLogin {
 
     @PostMapping("/loginAdm")
-    public List<Respuesta> loginAdministrador(HttpSession sesionHttp,
-                                              @RequestParam String cedula,
-                                              @RequestParam String password) {
+    public List<Respuesta> loginAdministrador(@RequestParam String cedula,
+                                              @RequestParam String contrasenia,
+                                              HttpSession sesionHttp) {
         try {
-            Administrador adm = Fachada.getInstancia().loginAdministrador(cedula, password);
+            if (sesionHttp.getAttribute("usuarioAdm") != null) {
+                throw new PeajeException("Ya hay un administrador activo.");
+            }
+            Administrador adm = Fachada.getInstancia()
+                    .loginAdministrador(cedula, contrasenia);
             sesionHttp.setAttribute("usuarioAdm", adm);
-            return Respuesta.lista(new Respuesta("loginExitoso", "/monitor-actividad.html"));
-        } catch (PeajeException ex) {
-            return Respuesta.lista(new Respuesta("loginError", ex.getMessage()));
+            return Respuesta.lista(new Respuesta("loginAdmExito", "/monitor-actividad.html"));
+        } catch (PeajeException e) {
+            return Respuesta.lista(new Respuesta("loginAdmError", e.getMessage()));
         }
     }
 
     @PostMapping("/loginProp")
-    public List<Respuesta> loginPropietario(HttpSession sesionHttp,
-                                            @RequestParam String cedula,
-                                            @RequestParam String password) {
+    public List<Respuesta> loginPropietario(@RequestParam String cedula,
+                                            @RequestParam String password,
+                                            HttpSession sesionHttp) {
         try {
             Propietario prop = Fachada.getInstancia().loginPropietario(cedula, password);
             sesionHttp.setAttribute("usuarioProp", prop);

@@ -26,4 +26,10 @@ public class Deshabilitado extends Estado {
     public void suspender() throws PeajeException {
         getPropietario().aplicarCambioDirecto(new Suspendido(getPropietario()));
     }
+    
+    @Override
+    public boolean puedeLoguearse() {
+        return false;
+    }
+
 }

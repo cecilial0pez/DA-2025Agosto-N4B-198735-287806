@@ -31,7 +31,7 @@ public abstract class Estado {
      * hija); => sobrescribe este método puedeLoguearse() y lo pasa a true
      */
     public boolean puedeLoguearse() {
-        return false;
+        return true;
     }
 
 }

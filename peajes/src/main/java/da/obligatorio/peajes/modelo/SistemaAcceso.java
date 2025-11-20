@@ -32,6 +32,9 @@ private List<Propietario> propietarios = new ArrayList<>();
         if (prop == null) {
             throw new PeajeException("Login incorrecto");
         }
+        if (!prop.puedeLoguearse()) {
+            throw new PeajeException("Usuario deshabilitado, no puede ingresar al sistema");
+        }
         return prop;
     }
 
