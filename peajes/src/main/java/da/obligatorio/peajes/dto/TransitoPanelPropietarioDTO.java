@@ -32,12 +32,15 @@ public class TransitoPanelPropietarioDTO {
    
     }
 
-  Nombre Bonificacion	Nombre Tarifa		Saldo Propietario	Fecha Hora	Total Pagado
 
-    public String getNombrePuesto() { return puesto; }
+    public String getNombrePuesto() { return puesto }
     public String getMatricula(){return matricula;}
     public String getMontoTarifa(){return montoTarifa;}
-    public String getMontoBonificacion(){(return montoBonificacion; }
+    public String getMontoBonificacion(){return montoBonificacion; }
+    public String getNombreBonificacion(){return nombreBonificacion;}
+    public String getNombreTarifa(){return Nombretarifa;}
+    public double getTotalPagado(){return montoPagado;}
+    public String getFechaHora(){return fechayHora; }
 
 
 }

@@ -100,12 +100,12 @@ public class ControladorPropietario implements Observador {
         try {
             Propietario prop = propietarioEnSesion(sesionHttp);
 
-            List<TransitoDTO> listaDto = new ArrayList<>();
+            List<TransitoPanelPropietarioDTO> listaDto = new ArrayList<>();
             List<Transito> transitos = prop.getTransitos();
             if (transitos != null) {
               transitos.sort(Comparator.comparing(Transito::getFechaHora).reversed());
                 for (Transito t : transitos) {             
-                    listaDto.add(new TransitoDTO(t));
+                    listaDto.add(new TransitoPanelPropietarioDTO(t));
                 }
             }
             return Respuesta.lista(new Respuesta("transitosProp", listaDto));
