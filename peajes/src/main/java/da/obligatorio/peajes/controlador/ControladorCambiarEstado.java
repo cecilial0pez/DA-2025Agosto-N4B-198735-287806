@@ -157,7 +157,9 @@ public class ControladorCambiarEstado implements Observador{
                     throw new PeajeException("Estado no válido: " + tipoEstado.getNombre());
             }
 
-            propietario.cambiarEstado(nuevoEstado);
+           Fachada.getInstancia().cambiarEstadoPropietario(propietario, nuevoEstado);
+
+            
 
             return Respuesta.lista(new Respuesta(
                 "cambioEstadoExito",
