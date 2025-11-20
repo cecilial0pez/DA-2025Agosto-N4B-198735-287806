@@ -83,6 +83,7 @@
     let cedulaActual = null;
     let estadoActual = null;
     const estadosCache = [];
+    let selectEstado = null;
 
     document.addEventListener('DOMContentLoaded', () => {
       submit('/cambiarEstado/vistaConectada', '', 'POST');
@@ -116,15 +117,31 @@
         submit('/estadoPropietario', params, 'POST');
       });
 
+      selectEstado = document.getElementById('selectEstado');
+      selectEstado.addEventListener('change', () => {
+        selectEstado.dataset.seleccionManual = 'true';
+      });
+
       document.getElementById('formCambiarEstado').addEventListener('submit', (ev) => {
         ev.preventDefault();
-        const cedula = document.getElementById('cedulaSeleccionada').value;
-        const posTipoEstado = document.getElementById('selectEstado').value;
+        const campoCedula = document.getElementById('cedula');
+        const ocultoCedula = document.getElementById('cedulaSeleccionada');
+        let cedula = ocultoCedula.value.trim();
+
+        if (!cedula && campoCedula) {
+          cedula = campoCedula.value.trim();
+          ocultoCedula.value = cedula;
+          if (cedula) {
+            cedulaActual = cedula;
+          }
+        }
+
+        const posTipoEstado = selectEstado ? selectEstado.value : '';
         const estado = document.getElementById('estadoCambio');
 
         if (!cedula) {
           estado.className = 'msg error';
-          estado.textContent = 'Busque y seleccione un propietario primero.';
+          estado.textContent = 'Indique la cédula del propietario.';
           return;
         }
         if (posTipoEstado === '') {
@@ -140,7 +157,7 @@
         submit('/cambiarEstadoPropietario', params, 'POST');
       });
 
-      const selectEstado = document.getElementById('selectEstado');
+      selectEstado = document.getElementById('selectEstado');
       selectEstado.addEventListener('change', () => {
         selectEstado.dataset.seleccionManual = 'true';
       });
@@ -182,7 +199,7 @@
       `;
 
       estadoActual = dto.estado ?? null;
-      if (estadoActual && selectEstado.dataset.seleccionManual !== 'true') {
+      if (estadoActual && selectEstado && selectEstado.dataset.seleccionManual !== 'true') {
         const pos = estadosCache.indexOf(estadoActual);
         selectEstado.value = pos >= 0 ? String(pos) : '';
       }
@@ -207,9 +224,8 @@
       document.getElementById('estadoCambio').textContent = 'El estado ha sido modificado exitosamente.';
 
       const estadoActualizado = lista[0]?.estadoActual;
-      if (estadoActualizado) {
-        const select = document.getElementById('selectEstado');
-        Array.from(select.options).forEach((opt) => {
+      if (estadoActualizado && selectEstado) {
+        Array.from(selectEstado.options).forEach((opt) => {
           opt.selected = (opt.textContent === estadoActualizado);
         });
       }
@@ -255,16 +271,16 @@
     };
 
     window.mostrar_cedulaPropietarioSeleccionada = (cedula) => {
-      cedulaActual = cedula ?? null;
       const campo = document.getElementById('cedula');
       const oculto = document.getElementById('cedulaSeleccionada');
+
+      if (document.activeElement === campo) {
+        return;
+      }
+
+      cedulaActual = cedula ?? null;
       if (campo) campo.value = cedula ?? '';
       if (oculto) oculto.value = cedula ?? '';
-      if (cedula) {
-        submit('/estadoPropietario',
-               new URLSearchParams({ cedula }).toString(),
-               'POST');
-      }
     };
 
     function extraerEstadoDesdeDescripcion(descripcion) {
