@@ -217,4 +217,18 @@ public class ControladorPropietario implements Observador {
 
         conexionNavegador.enviarJSON(construirPaqueteCompleto(propietarioActual));
     }
+
+    @PostMapping("propietario/vistaCerrada")
+    public void vistaCerrada(HttpSession sesion) {
+        try {
+            propietarioEnSesion(sesion);
+            if (cedulaActual != null) {
+                Propietario propietario = Fachada.getInstancia().buscarPropietario(cedulaActual);
+                propietario.quitarObservador(this);
+                cedulaActual = null;
+            }
+        } catch (PeajeException e) {
+           
+        }
+    }
 }

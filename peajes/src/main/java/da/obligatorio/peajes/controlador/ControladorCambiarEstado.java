@@ -169,6 +169,20 @@ public class ControladorCambiarEstado implements Observador{
         }
     }
 
+    @PostMapping("/vistaCerrada")
+    public void vistaCerrada(HttpSession sesion) {
+        try {
+            administradorEnSesion(sesion);
+            if (cedulaActual != null) {
+                Propietario propietario = Fachada.getInstancia().buscarPropietario(cedulaActual);
+                propietario.quitarObservador(this);
+                cedulaActual = null;
+            }
+        } catch (PeajeException e) {
+           
+        }
+    }
+
     @Override
     public void actualizar(Object evento, Observable origen) {
         if (cedulaActual == null) return;
