@@ -109,22 +109,3 @@ public class ControladorEmularTransito {
 
 }
 
-// //     ctrl k u para descomentar 
-// //Curso normal:
-
-// //  Si el saldo del usuario es menor al valor de la alerta de saldo mínimo el sistema registra
-// //  una notificación al propietario: [Fecha y hora de la notificación] + “Tu saldo actual es
-// //  de $ “ + saldo actual + “ Te recomendamos hacer una recarga”;
-
-// // Cursos alternativos:
-// // 5) No existe un vehículo registrado con la matricula ingresada. Mensaje: “No existe el
-// //  vehículo”.
-// //  El propietario no tiene saldo suficiente para abonar el tránsito. Mensaje: “Saldo
-// //  insuficiente:” + el saldo actual del propietario.
-
-// //  El propietario está en estado deshabilitado. Mensaje: “El propietario del vehículo está
-// //  deshabilitado, no puede realizar tránsitos” y no se registra el tránsito.
-
-
-// //  El propietario está en estado penalizado. El transito se registra, pero no se aplican
-// //  bonificaciones (si hubiera) y no se envía la notificación al propietario.

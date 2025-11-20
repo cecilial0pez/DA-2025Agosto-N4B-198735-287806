@@ -26,10 +26,7 @@ public abstract class Estado {
 
     public abstract void suspender() throws PeajeException;
 
-    /**
-     * Por defecto el estado devuelve false salvo si está habilitado (subclase
-     * hija); => sobrescribe este método puedeLoguearse() y lo pasa a true
-     */
+   
     public boolean puedeLoguearse() {
         return true;
     }

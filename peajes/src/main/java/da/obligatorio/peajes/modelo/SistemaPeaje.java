@@ -108,7 +108,7 @@ public class SistemaPeaje {
         }
     }
 
-    //Falta arreglar vistas 
+    
      public Transito agregarTransito(String matricula, Date fechaHora, String nombrePuesto) throws PeajeException{
         Vehiculo v = buscarVehiculo(matricula);
         Propietario propietario = v.getPropietario();

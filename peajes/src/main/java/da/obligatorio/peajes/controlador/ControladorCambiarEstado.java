@@ -111,8 +111,7 @@ public class ControladorCambiarEstado implements Observador{
     
 
     @PostMapping("/buscarPropietarioEstado")
-    public List<Respuesta> buscarPropietarioEstado(@RequestParam String cedula,
-                                                   HttpSession sesion) {
+    public List<Respuesta> buscarPropietarioEstado(@RequestParam String cedula, HttpSession sesion) {
         try {
             administradorEnSesion(sesion);
             this.cedulaActual = cedula;
@@ -128,9 +127,7 @@ public class ControladorCambiarEstado implements Observador{
     }
 
     @PostMapping("/cambiarEstadoPropietario")
-    public List<Respuesta> cambiarEstadoPropietario(@RequestParam String cedula,
-                                                    @RequestParam int posTipoEstado,
-                                                    HttpSession sesion) {
+    public List<Respuesta> cambiarEstadoPropietario(@RequestParam String cedula,@RequestParam int posTipoEstado, HttpSession sesion) {
         try {
             administradorEnSesion(sesion);
             Propietario propietario = Fachada.getInstancia().buscarPropietario(cedula);

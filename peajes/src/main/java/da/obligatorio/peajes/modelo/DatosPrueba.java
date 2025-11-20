@@ -24,10 +24,10 @@ public class DatosPrueba {
         // Datos prueba usuarios
         Administrador a1 = new Administrador("a", "1234567", "Administrador Prueba");
         Administrador a2 = new Administrador("a2", "8765432", "Segundo admin");
-        Propietario p1 = new Propietario("prop123", "1122334", "Propietario1", 600.0, 500.0);
+        Propietario p2 = new Propietario("prop123", "1122334", "Propietario1", 600.0, 500.0);
         // datos de prueba por letra que tienen que estar precargados:
         Administrador a3 = new Administrador("admin.123", "12345678", "Usuario Administrador");
-        Propietario p2 = new Propietario("prop.123", "23456789", "Usuario Propietario", 2000.0, 500.0);
+        Propietario p1 = new Propietario("prop.123", "23456789", "Usuario Propietario", 2000.0, 500.0);
 
         // Datos prueba Categoria
         Categoria c1 = new Categoria("Automovil");
@@ -41,6 +41,9 @@ public class DatosPrueba {
         Vehiculo v2 = new Vehiculo("DEF5678", c2, "Honda CBR500R", "Azul", p1);
         Vehiculo v3 = new Vehiculo("GHI9012", c3, "Ford F-150", "Negro", p1);
         Vehiculo v4 = new Vehiculo("JKL3456", c4, "Mercedes-Benz Sprinter", "Blanco", p1);
+        Vehiculo v5= new Vehiculo("ASE1243", c1, "Nissan Sentra", "Gris", p2);
+        Vehiculo v6 = new Vehiculo ("QER4576",c2,"Yamaha YZF-R3","Verde",p2);
+        Vehiculo v7 = new Vehiculo ("TUI7890",c3,"Volvo FH16","Azul Oscuro",p2);
 
         // Datos prueba Puesto
         Puesto puesto1 = new Puesto("Santa Lucia", "Ruta 11 km 81");
@@ -75,6 +78,9 @@ public class DatosPrueba {
         fachada.agregarVehiculo(v2);
         fachada.agregarVehiculo(v3);
         fachada.agregarVehiculo(v4);
+        fachada.agregarVehiculo(v5);
+        fachada.agregarVehiculo(v6);
+        fachada.agregarVehiculo(v7);
 
         fachada.agregarPuesto(puesto1);
         fachada.agregarPuesto(puesto2);
@@ -109,6 +115,7 @@ public class DatosPrueba {
         fachada.agregarAsignacion("Santa Lucia", "Frecuente", "1122334");
         fachada.agregarAsignacion("Pando", "Trabajador", "1122334");
         fachada.agregarAsignacion("Colonia", "Exonerado", "1122334");
+        fachada.agregarAsignacion("Canelones", "Frecuente", "23456789");
 
         // Datos prueba transito
         fachada.agregarTransito("ABC1234", new Date(), "Santa Lucia");

@@ -25,14 +25,7 @@ public class Trabajador extends Bonificacion {
         
     }
 
-    /*
-     * auxiliar
-     * Date.toString() muestra hora según zona local;
-     * Instant imprime siempre en UTC (la hora puede “moverse” según la zona).
-     *  if (esDiaDeSemana(fecha)) {
-            return descuento;
-        }
-     */
+ 
     public boolean esDiaDeSemana(Date fecha) {
         DayOfWeek dia = fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getDayOfWeek();
         return dia != DayOfWeek.SATURDAY && dia != DayOfWeek.SUNDAY;
